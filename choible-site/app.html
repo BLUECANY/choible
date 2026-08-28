@@ -299,14 +299,16 @@
 
     /* 일정 사이드바 */
     #timeline-panel{
-      position:fixed;right:-290px;top:76px;bottom:0;width:290px;
+      position:fixed;right:-304px;top:76px;bottom:0;width:290px;
       background:#fff;z-index:2500;
-      box-shadow:-4px 0 28px rgba(0,0,0,.12);
+      box-shadow:-6px 0 32px rgba(0,0,0,.13);
       display:flex;flex-direction:column;
       transition:right .3s cubic-bezier(.4,0,.2,1);
+      border-radius:14px 0 0 0;
+      border-top:3px solid #5b8af5;
     }
     #timeline-panel.open{right:0}
-    #tl-header{display:flex;align-items:center;justify-content:space-between;padding:20px 18px 14px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+    #tl-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
     #tl-title{font-size:15px;font-weight:800;color:#1a1a2e;display:flex;align-items:center;gap:7px}
     #tl-close{width:28px;height:28px;border:none;background:#f5f5f5;border-radius:50%;cursor:pointer;font-size:12px;color:#666;display:flex;align-items:center;justify-content:center;transition:background .15s}
     #tl-close:hover{background:#ffeeee;color:#ff6b6b}
@@ -326,13 +328,14 @@
     .tl-travel{display:flex;align-items:center;gap:6px;padding:5px 0 5px 14px;font-size:11px;color:#aaa;font-weight:600}
     .tl-travel-icon{font-size:13px}
     #tl-toggle{
-      position:fixed;right:0;top:50%;transform:translateY(-50%);
+      position:fixed;right:0;top:calc(76px + 48px);
       z-index:2600;background:#1a1a2e;color:#fff;border:none;
-      width:28px;height:56px;border-radius:12px 0 0 12px;
-      cursor:pointer;font-size:11px;writing-mode:vertical-rl;
-      font-weight:700;letter-spacing:1px;
+      width:26px;height:64px;border-radius:10px 0 0 10px;
+      cursor:pointer;font-size:10px;writing-mode:vertical-rl;
+      font-weight:700;letter-spacing:1.5px;
       transition:right .3s cubic-bezier(.4,0,.2,1),background .15s;
-      box-shadow:-2px 0 12px rgba(0,0,0,.15);
+      box-shadow:-3px 0 14px rgba(0,0,0,.18);
+      border-top:2px solid #5b8af5;
     }
     #tl-toggle:hover{background:#5b8af5}
     #tl-toggle.open{right:290px}
@@ -405,8 +408,8 @@
     .em-item:hover{background:rgba(255,255,255,.12)}
     .em-item.active{background:rgba(91,138,245,.4);border-color:rgba(91,138,245,.8)}
     /* 이미지 저장 버튼 */
-    #tl-save-img{width:28px;height:28px;border:none;background:#f0f5ff;border-radius:50%;cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
-    #tl-save-img:hover{background:#dce8ff}
+    #tl-save-img{width:28px;height:28px;border:none;background:#f0f5ff;border-radius:50%;cursor:pointer;font-size:13px;color:#5b8af5;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s;flex-shrink:0}
+    #tl-save-img:hover{background:#dce8ff;color:#3b6fd4}
 
     /* ── Day 구역 박스 ── */
     .day-zone{position:absolute;z-index:3;border:2px dashed;border-radius:20px;box-sizing:border-box;min-width:80px;min-height:60px;cursor:grab;user-select:none}
