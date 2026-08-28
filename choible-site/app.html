@@ -602,6 +602,8 @@
     @media(max-width:480px){
       #total-cost-bar{bottom:82px}
       #stats-bar{bottom:42px}
+      /* 모바일 미니맵도 위쪽으로 */
+      #minimap-toggle,#minimap-panel{bottom:136px;right:8px}
     }
 
     /* 자동저장 표시 */
@@ -624,9 +626,9 @@
     .n-gmap-btn:hover{background:#d2e3fc}
     .n-gmap-btn svg{flex-shrink:0}
 
-    /* 미니맵 */
+    /* 미니맵 — total-cost-bar(우하단)와 겹치지 않도록 우하단보다 위에 배치 */
     #minimap-panel{
-      position:fixed;bottom:56px;right:12px;
+      position:fixed;bottom:112px;right:14px;
       width:220px;height:150px;
       border-radius:14px;overflow:hidden;
       box-shadow:0 4px 20px rgba(0,0,0,.18);
@@ -637,7 +639,7 @@
     }
     #minimap-panel.show{display:block}
     #minimap-toggle{
-      position:fixed;bottom:56px;right:12px;
+      position:fixed;bottom:112px;right:14px;
       z-index:1501;background:#1a1a2e;color:#fff;
       border:none;border-radius:10px;padding:6px 10px;
       font-size:10px;font-weight:700;cursor:pointer;
@@ -740,6 +742,10 @@
   <div class="tm-title">교통수단 선택</div>
   <div class="tm-sub" id="tm-sub"></div>
   <div class="tm-ctx" id="tm-ctx" style="display:none"></div>
+  <div id="tm-no-coord-banner" style="display:none;align-items:center;gap:7px;background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:12px;color:#8a6000;">
+    <span style="font-size:14px">📍</span>
+    <span>위치 정보 없음 — 이동 시간 계산 불가<br><span style="font-size:11px;opacity:.8">이동수단 종류만 선택할 수 있습니다</span></span>
+  </div>
   <div class="tm-grid">
     <button class="tm-btn" id="tmb-driving" style="--c:#5b8af5" onclick="confirmConnect('driving')">
       <span class="tm-rec-badge" id="tmr-driving"></span><span class="tm-icon">🚗</span><span class="tm-label">자동차</span><span class="tm-time" id="tm-t-driving">–</span>
@@ -1023,6 +1029,15 @@ inp.addEventListener('input',()=>{
   const q=inp.value.trim();
   if(q.length<2){acEl.style.display='none';return}
   acTimer=setTimeout(()=>doSearch(q),380);
+});
+// Enter → 첫 번째 검색결과 선택
+inp.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){
+    e.preventDefault();
+    const first=acEl.querySelector('.ac-item');
+    if(first)first.click();
+  }
+  if(e.key==='Escape'){acEl.style.display='none';inp.blur();}
 });
 document.addEventListener('click',e=>{if(!e.target.closest('#toolbar'))acEl.style.display='none'});
 
@@ -1701,12 +1716,25 @@ cvs.addEventListener('touchend',e=>{
   cvs.classList.remove('panning');
 },{passive:true});
 
-// 배경 클릭 → 선택 해제
+// 배경 클릭 → 선택 해제 + 사이드바·AC 닫기
 cvs.addEventListener('click',e=>{
   if(panMoved){panMoved=false;return}
   const t=e.target;
   if(t===cvs||t===world||t.id==='svg'||t===document.getElementById('empty')||t.closest('#empty')){
     deselect();closeReorder();
+    // 타임라인 패널 닫기
+    const tlPanel=document.getElementById('timeline-panel');
+    if(tlPanel?.classList.contains('open')){
+      tlPanel.classList.remove('open');
+      const tlTog=document.getElementById('tl-toggle');
+      if(tlTog)tlTog.classList.remove('open');
+    }
+    // 자동완성 드롭다운 닫기
+    document.getElementById('ac').style.display='none';
+    // 미니맵 닫기
+    closeMinimap();
+    // 위키 팝업 닫기
+    closeWikiPop();
   }
 });
 
@@ -1837,6 +1865,13 @@ function onNodeClick(id){
       const an=analyzeRoute(a,b);applyRec(an);
       const d=an.dist;
       modalTimes={};
+      // 위치 정보 없을 때 시간 셀 숨기기
+      document.querySelectorAll('.tm-time').forEach(el=>{
+        el.style.display=an.noCoords?'none':'';
+        if(!an.noCoords)el.textContent='–';
+      });
+      const noCoordBanner=document.getElementById('tm-no-coord-banner');
+      if(noCoordBanner)noCoordBanner.style.display=an.noCoords?'flex':'none';
       if(!an.noCoords){
         setMT('driving',d/13.9);setMT('foot',d/1.3);setMT('bike',d/4.2);
         setMT('transit',d/13.9*1.3);setMT('ferry',d/7.8+1800);setMT('plane',d/222+5400);
@@ -1991,8 +2026,11 @@ function redrawSVG(){
     const hit=mk('path',{d:path,stroke:'transparent','stroke-width':'20',fill:'none'});
     hit.style.pointerEvents='stroke';hit.style.cursor='pointer';
     hit.addEventListener('click',()=>removeConn(conn.id));svg.appendChild(hit);
-    const label=conn.mode==='link'?'':(conn.loading?'…':fmtDur(conn.dur));
-    const text=conn.mode==='link'?m.icon:`${m.icon} ${label}`;
+    // 위치 없는 노드는 SVG 라벨에서 시간 생략
+    const pA=places.find(p=>p.id===conn.a),pB=places.find(p=>p.id===conn.b);
+    const connHasCoords=pA?.lat!=null&&pA?.lng!=null&&pB?.lat!=null&&pB?.lng!=null;
+    const label=conn.mode==='link'?'':(conn.loading?'…':(connHasCoords?fmtDur(conn.dur):''));
+    const text=conn.mode==='link'?m.icon:`${m.icon}${label?' '+label:''}`;
     const bw=Math.max(48,text.length*7.5+18),bh=26;
     const g=document.createElementNS(ns,'g');
     g.style.pointerEvents='all';g.style.cursor='pointer';
@@ -2055,8 +2093,12 @@ function undo(){
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
   if(e.key==='Escape'){
-    if(document.getElementById('transport-modal').style.display==='block')cancelConnect();
-    else{deselect();document.getElementById('reorder-pop').style.display='none';}
+    if(document.getElementById('transport-modal').style.display==='block'){cancelConnect();return;}
+    closeWikiPop();
+    closeMinimap();
+    const tlPanel=document.getElementById('timeline-panel');
+    if(tlPanel?.classList.contains('open')){tlPanel.classList.remove('open');document.getElementById('tl-toggle')?.classList.remove('open');return;}
+    deselect();document.getElementById('reorder-pop').style.display='none';
   }
   if((e.key==='Delete'||e.key==='Backspace')&&selectedId){
     e.preventDefault();snapshot();deleteAny(selectedId);
@@ -2494,7 +2536,10 @@ function updateTimeline(){
     const prevP=fi>0?fp[fi-1]:null;
     const prevI=prevP?places.indexOf(prevP):-1;
     const conn=prevP?connBetween(prevI,i):null;
-    const travelHtml=conn?`<div class="tl-travel"><span class="tl-travel-icon">${MODE[conn.mode].icon}</span><span>${MODE[conn.mode].label}${conn.dur?` · ${fmtDur(conn.dur)}`:conn.loading?' · 계산 중…':''}</span></div>`:'';
+    const prevHasCoords=prevP&&prevP.lat!=null&&prevP.lng!=null;
+    const curHasCoords=p.lat!=null&&p.lng!=null;
+    const noLocPair=conn&&(!prevHasCoords||!curHasCoords);
+    const travelHtml=conn?`<div class="tl-travel"><span class="tl-travel-icon">${MODE[conn.mode].icon}</span><span>${MODE[conn.mode].label}${noLocPair?'':conn.dur?` · ${fmtDur(conn.dur)}`:conn.loading?' · 계산 중…':''}</span></div>`:'';
     if(dayNum&&dayNum!==lastDay){lastDay=dayNum;html+=`<div class="tl-day-badge"><span class="tl-day-badge-pill">Day ${dayNum}</span><div class="tl-day-badge-line"></div></div>`;}
     html+=`${fi>0?travelHtml:''}<div class="tl-item" onclick="focusNode(${p.id})">
       <div class="tl-spine"><div class="tl-dot" style="background:${color}">${i+1}</div></div>
@@ -2574,9 +2619,9 @@ function manualAddHTML(){
     <div><div class="ac-manual-label">직접 추가</div><div class="ac-manual-sub">검색 결과에 없는 장소를 직접 입력</div></div>
   </div>
   <div id="manual-form">
-    <input class="mf-input" id="mf-name" placeholder="장소 이름 *" type="text" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+    <input class="mf-input" id="mf-name" placeholder="장소 이름 *" type="text" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" onkeydown="if(event.key==='Enter')submitManualPlace();if(event.key==='Escape')hideManualForm();">
     <div class="mf-row">
-      <input class="mf-input" id="mf-addr" placeholder="주소 또는 위치 (위치 검색용, 선택)" type="text" style="flex:1" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+      <input class="mf-input" id="mf-addr" placeholder="주소 (선택 — 경로 계산에 필요)" type="text" style="flex:1" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()" onkeydown="if(event.key==='Enter')submitManualPlace();if(event.key==='Escape')hideManualForm();">
       <button class="mf-btn" onclick="submitManualPlace()">추가</button>
       <button class="mf-cancel" onclick="hideManualForm()">취소</button>
     </div>
@@ -2593,7 +2638,8 @@ function hideManualForm(){
 async function submitManualPlace(){
   const nameEl=document.getElementById('mf-name'),addrEl=document.getElementById('mf-addr');
   const name=(nameEl?.value||'').trim();
-  if(!name){nameEl?.focus();return}
+  if(!name){nameEl?.focus();showHint('⚠️ 장소 이름을 입력해주세요');return}
+  snapshot(); // undo 지원
   const addr=(addrEl?.value||'').trim();
   let lat=null,lng=null;
   if(addr){
@@ -2611,8 +2657,8 @@ async function submitManualPlace(){
   buildPlaceNode(id);
   document.getElementById('empty').style.display='none';
   if(addr&&lat)fetchPhoto(id,name);
-  updateStats();updateTimeline();
-  showHint(`✚ "${name}" 추가됐어요!`);
+  updateStats();updateTimeline();updateMinimap();
+  showHint(`✚ "${name}" 추가됐어요!${!lat?' (위치 정보 없음 — 주소 입력 시 경로 계산 가능)':''}`);
 }
 
 // ══════════════════════════════════════════
@@ -2920,6 +2966,14 @@ function updateMinimap(){
   leafletMap.fitBounds(bounds,{padding:[16,16],maxZoom:13});
 }
 let minimapOpen=false;
+function closeMinimap(){
+  if(!minimapOpen)return;
+  minimapOpen=false;
+  const panel=document.getElementById('minimap-panel');
+  const btn=document.getElementById('minimap-toggle');
+  if(panel){panel.classList.remove('open');panel.style.display='none';}
+  if(btn)btn.textContent='🗺️ 지도';
+}
 function toggleMinimap(){
   const panel=document.getElementById('minimap-panel');
   const btn=document.getElementById('minimap-toggle');
