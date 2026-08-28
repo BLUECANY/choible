@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>개인정보처리방침 — 여행 마인드맵</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<meta name="description" content="여행 마인드맵 서비스의 개인정보처리방침입니다.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://choible.com/privacy.html">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2293239362569484" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg:        #f0f5fc;
+  --bg2:       #ffffff;
+  --surface:   #ffffff;
+  --border:    #e2eaf6;
+  --text:      #0f172a;
+  --text2:     #5a6a80;
+  --accent:    #0ea5e9;
+  --accent-dk: #0284c7;
+  --accent-lt: #e0f2fe;
+  --nav-bg:    #ffffff;
+  --footer-bg: #0a1525;
+  --footer-bd: #17263d;
+  --footer-t:  #e2eaf6;
+  --footer-t2: #6a7d98;
+}
+/* 항상 라이트 모드 */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+}
+a { text-decoration: none; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(20px,5vw,60px); height: 62px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 12px rgba(0,0,0,.06);
+}
+.nav-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800; font-size: 17px;
+  color: var(--text); letter-spacing: -.015em;
+}
+.nav-logo span { color: var(--accent); }
+.nav-back {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 600;
+  color: var(--text2);
+  display: flex; align-items: center; gap: 6px;
+  transition: color .15s;
+}
+.nav-back:hover { color: var(--accent); }
+
+/* MAIN */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 100px clamp(20px,5vw,40px) 80px;
+}
+
+.page-eyebrow {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 14px; display: block;
+}
+.page-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: clamp(28px,4vw,38px);
+  font-weight: 800; line-height: 1.15;
+  letter-spacing: -.022em;
+  color: var(--text); margin-bottom: 10px;
+}
+.page-date {
+  font-size: 13px; color: var(--text2); margin-bottom: 48px;
+  padding-bottom: 28px; border-bottom: 1.5px solid var(--border);
+}
+
+/* ARTICLE */
+.policy-article { display: flex; flex-direction: column; gap: 36px; }
+.policy-section {}
+.policy-section h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px; font-weight: 700;
+  color: var(--text); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.policy-section h2::before {
+  content: '';
+  display: inline-block;
+  width: 4px; height: 18px;
+  background: var(--accent); border-radius: 2px;
+  flex-shrink: 0;
+}
+.policy-section p {
+  font-size: 15px; color: var(--text2);
+  line-height: 1.85;
+}
+.policy-section p + p { margin-top: 12px; }
+.policy-list {
+  list-style: none; margin-top: 10px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.policy-list li {
+  font-size: 14px; color: var(--text2); line-height: 1.7;
+  padding-left: 18px; position: relative;
+}
+.policy-list li::before {
+  content: '•';
+  position: absolute; left: 0;
+  color: var(--accent); font-weight: 700;
+}
+.policy-highlight {
+  background: var(--accent-lt); border-radius: 12px;
+  padding: 16px 20px; margin-top: 14px;
+  font-size: 14px; color: var(--accent-dk); line-height: 1.75;
+}
+.policy-contact {
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: 14px; padding: 20px 24px;
+  margin-top: 16px;
+}
+.policy-contact a {
+  color: var(--accent); font-weight: 600;
+  transition: opacity .15s;
+}
+.policy-contact a:hover { opacity: .75; }
+
+/* FOOTER */
+footer {
+  background: var(--footer-bg);
+  padding: 28px clamp(20px,5vw,60px);
+  border-top: 1px solid var(--footer-bd);
+}
+.footer-top {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--footer-bd);
+}
+.footer-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700; font-size: 15px; color: var(--footer-t);
+}
+.footer-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.footer-links a {
+  font-size: 13px; color: var(--footer-t2);
+  transition: color .15s;
+}
+.footer-links a:hover { color: var(--footer-t); }
+.footer-bottom { font-size: 12px; color: var(--footer-t2); line-height: 1.6; }
+
+@media(max-width:540px) {
+  main { padding: 88px 18px 60px; }
+  .footer-top { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="/">✈️ 여행 <span>마인드맵</span></a>
+  <a class="nav-back" href="/">← 홈으로</a>
+</nav>
+
+<!-- MAIN -->
+<main>
+  <span class="page-eyebrow">법적 고지</span>
+  <h1 class="page-title">개인정보처리방침</h1>
+  <p class="page-date">최종 수정일: 2026년 8월 27일 · 시행일: 2025년 1월 1일</p>
+
+  <div class="policy-article">
+
+    <div class="policy-section">
+      <h2>1. 수집하는 개인정보 항목 및 목적</h2>
+      <p>여행 마인드맵(이하 "서비스")은 별도의 서버를 운영하지 않으며, 사용자의 개인정보를 수집·저장하지 않습니다. 회원가입, 로그인, 결제 등 개인정보를 요구하는 기능이 없습니다.</p>
+      <p>사용자가 서비스 내에서 입력하는 모든 여행 데이터(장소 이름, 주소, 메모, 경비 등)는 오직 사용자 본인의 기기 내 브라우저 저장소(localStorage)에만 저장되며, 외부 서버로 전송되거나 제3자와 공유되지 않습니다.</p>
+      <div class="policy-highlight">
+        🔒 사용자의 여행 계획 데이터는 인터넷에 전송되지 않습니다. 모든 데이터는 사용 중인 기기 안에만 존재합니다.
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <h2>2. 제3자 외부 서비스 이용</h2>
+      <p>서비스는 장소 검색, 경로 계산, 이미지 제공을 위해 아래 외부 API를 사용합니다. 해당 서비스 이용 시 검색어, 좌표 정보 등이 각 서비스 서버에 전달될 수 있으며, 해당 서비스의 개인정보처리방침이 적용됩니다.</p>
+      <ul class="policy-list">
+        <li><strong>Photon / Nominatim</strong> — OpenStreetMap 기반 장소 검색 서비스. 검색어 및 좌표 정보가 전달될 수 있습니다.</li>
+        <li><strong>OSRM (Open Source Routing Machine)</strong> — 출발지·목적지 좌표를 이용한 경로 및 이동 시간 계산 서비스.</li>
+        <li><strong>Wikipedia / Wikimedia Commons</strong> — 장소 관련 이미지 및 정보 제공 서비스.</li>
+        <li><strong>Google AdSense</strong> — 광고 서비스. 쿠키 및 비슷한 기술을 사용하여 맞춤 광고를 제공할 수 있으며, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google 개인정보처리방침</a>이 적용됩니다.</li>
+      </ul>
+    </div>
+
+    <div class="policy-section">
+      <h2>3. 쿠키 및 로컬 스토리지</h2>
+      <p>서비스는 아래 목적으로만 브라우저 로컬 스토리지를 사용합니다.</p>
+      <ul class="policy-list">
+        <li><strong>tmv2_onboard_done</strong> — 온보딩 튜토리얼 표시 여부 기록 (처음 방문자에게 사용법 안내 후 중복 표시 방지)</li>
+        <li><strong>tmv2_data</strong> — 사용자가 작성한 여행 계획 데이터 자동 저장</li>
+      </ul>
+      <p>위 데이터는 외부로 전송되지 않으며, 사용자는 브라우저 설정에서 언제든지 삭제할 수 있습니다. Google AdSense 광고 쿠키는 Google에서 관리하며, 사용자는 <a href="https://adssettings.google.com/" target="_blank" rel="noopener">Google 광고 설정</a>에서 맞춤 광고를 비활성화할 수 있습니다.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>4. 정보의 보유 및 파기</h2>
+      <p>서비스가 수집하는 정보가 없으므로 별도의 보유 기간 및 파기 절차가 존재하지 않습니다. 브라우저에 저장된 여행 데이터는 사용자 본인이 브라우저 데이터를 삭제하거나 앱 내 "전체 삭제" 기능을 이용해 언제든지 완전히 제거할 수 있습니다.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>5. 아동 개인정보 보호</h2>
+      <p>서비스는 만 14세 미만 아동으로부터 고의적으로 개인정보를 수집하지 않습니다. 만 14세 미만 아동의 경우 보호자의 지도 하에 서비스를 이용하시기 바랍니다.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>6. 개인정보처리방침 변경</h2>
+      <p>본 방침은 관련 법령 또는 서비스 변경에 따라 업데이트될 수 있습니다. 변경 시 본 페이지 상단의 "최종 수정일"을 업데이트하여 공지합니다. 중요한 변경 사항이 있을 경우 서비스 내 공지를 통해 별도로 안내할 수 있습니다.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>7. 개인정보 관련 문의</h2>
+      <p>개인정보 처리에 관한 문의, 불만, 또는 열람·정정·삭제 요청이 있으시면 아래로 연락해 주세요.</p>
+      <div class="policy-contact">
+        <strong>여행 마인드맵 개인정보 담당</strong><br>
+        이메일: <a href="mailto:choihh38@gmail.com">choihh38@gmail.com</a><br>
+        <span style="font-size:13px;color:var(--text2);margin-top:6px;display:block;">문의 접수 후 영업일 기준 3일 이내에 답변 드립니다.</span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <span class="footer-logo">✈️ 여행 마인드맵</span>
+    <nav class="footer-links" aria-label="푸터 링크">
+      <a href="/">홈</a>
+      <a href="/app.html">앱 시작하기</a>
+      <a href="/privacy.html" aria-current="page">개인정보처리방침</a>
+    </nav>
+  </div>
+  <div class="footer-bottom">© 2026 여행 마인드맵 · 문의: choihh38@gmail.com</div>
+</footer>
+
+</body>
+</html>
