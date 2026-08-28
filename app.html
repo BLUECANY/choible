@@ -604,7 +604,7 @@
       #total-cost-bar{bottom:82px}
       #stats-bar{bottom:42px}
       /* 모바일 미니맵도 위쪽으로 */
-      #minimap-toggle,#minimap-panel{bottom:136px;right:8px}
+      #minimap-toggle,#minimap-panel{bottom:88px!important;left:8px!important}
     }
 
     /* 자동저장 표시 */
@@ -627,10 +627,10 @@
     .n-gmap-btn:hover{background:#d2e3fc}
     .n-gmap-btn svg{flex-shrink:0}
 
-    /* 미니맵 — total-cost-bar(우하단)와 겹치지 않도록 우하단보다 위에 배치 */
+    /* 미니맵 — stats-bar(좌하단) 바로 위에 배치 */
     #minimap-panel{
-      position:fixed;bottom:112px;right:14px;
-      width:220px;height:150px;
+      position:fixed;bottom:94px;left:14px;
+      width:240px;height:160px;
       border-radius:14px;overflow:hidden;
       box-shadow:0 4px 20px rgba(0,0,0,.18);
       z-index:1500;
@@ -640,18 +640,17 @@
     }
     #minimap-panel.show{display:block}
     #minimap-toggle{
-      position:fixed;bottom:112px;right:14px;
-      z-index:1501;background:#1a1a2e;color:#fff;
-      border:none;border-radius:10px;padding:6px 10px;
+      position:fixed;bottom:94px;left:14px;
+      z-index:1501;background:#fff;color:#3a4270;
+      border:1.5px solid #dce4f8;border-radius:10px;padding:6px 12px;
       font-size:10px;font-weight:700;cursor:pointer;
-      box-shadow:0 2px 10px rgba(0,0,0,.2);
-      transition:background .15s;
-      display:none;
+      box-shadow:0 2px 12px rgba(0,0,0,.10);
+      transition:background .15s,color .15s,box-shadow .15s;
+      display:block;
     }
-    #minimap-toggle.show{display:block}
-    #minimap-toggle:hover{background:#5b8af5}
+    #minimap-toggle:hover{background:#5b8af5;color:#fff;border-color:#5b8af5;box-shadow:0 4px 16px rgba(91,138,245,.3)}
     #minimap-panel.open{
-      transform:translateY(-32px);
+      transform:translateY(-36px);
     }
 
     /* 위키 팝업 */
@@ -700,7 +699,7 @@
     [data-theme="dark"] .tcb-label{color:#7080b0}
     [data-theme="dark"] .tcb-amt{color:#c9d1f5}
     [data-theme="dark"] #minimap-panel{background:#1e1e3c;border-color:#383860}
-    [data-theme="dark"] #minimap-toggle{background:#4a5af0}
+    [data-theme="dark"] #minimap-toggle{background:#3a4af0;color:#fff;border-color:#5b6af5}
     [data-theme="dark"] #timeline-panel{background:#1e1e3c;border-color:#383860}
     [data-theme="dark"] .tl-card{background:#252545;border-color:#383860}
     [data-theme="dark"] .tl-name{color:#c9d1f5}
@@ -1175,8 +1174,10 @@ document.addEventListener('click',e=>{if(!e.target.closest('#toolbar'))acEl.styl
 
 function norm_nomi(d,q){
   const ql=(q||'').toLowerCase().trim();
+  const isKo=/[ㄱ-ㅎ가-힣]/.test(q);
   return (d||[]).map(it=>{
-    const name=it.name||(it.display_name||'').split(',')[0].trim();
+    // 한국어 쿼리면 name:ko 우선, 없으면 name
+    const name=(isKo&&it.namedetails?.['name:ko'])||it.name||(it.display_name||'').split(',')[0].trim();
     if(!name||isNaN(parseFloat(it.lat)))return null;
     const nl=name.toLowerCase();
     let score=parseFloat(it.importance||0)*2;
@@ -1187,14 +1188,33 @@ function norm_nomi(d,q){
     const cls=(it.class||'')+'/'+(it.type||'');
     if(/tourism|attraction|museum|park/.test(cls))score+=1.2;
     if(/city|town|village/.test(cls))score+=0.8;
-    return {name,addr:it.display_name||'',lat:parseFloat(it.lat),lng:parseFloat(it.lon),score};
+    // amenity(식당, 카페 등) 가중치
+    if(/amenity|shop|leisure|office/.test(it.class||''))score+=0.6;
+    // 한국어 쿼리 + 한국 결과 보너스
+    const isKrResult=it.address?.country_code==='kr';
+    if(isKo&&isKrResult)score+=1.5;
+    // 한국어 주소 포맷: 시/구/동 조합
+    let addrStr=it.display_name||'';
+    if(isKrResult&&it.address){
+      const a=it.address;
+      const parts=[
+        a.road||a.pedestrian||a.footway||a.amenity,
+        a.neighbourhood||a.suburb||a.quarter,
+        a.city_district||a.county,
+        a.city||a.town||a.village||a.state,
+      ].filter(Boolean);
+      if(parts.length)addrStr=parts.join(' ');
+    }
+    return {name,addr:addrStr,lat:parseFloat(it.lat),lng:parseFloat(it.lon),score};
   }).filter(Boolean).sort((a,b)=>b.score-a.score);
 }
 function norm_photon(d,q){
   const ql=(q||'').toLowerCase().trim();
+  const isKo=/[ㄱ-ㅎ가-힣]/.test(q);
   return ((d||{}).features||[]).map(f=>{
     const p=f.properties||{};
-    const name=p.name||p.city||p.county||p.state||p.country||'';
+    // 한국어 쿼리면 name:ko 우선
+    const name=(isKo&&(p['name:ko']||p.name_ko))||p.name||p.city||p.county||p.state||p.country||'';
     if(!name)return null;
     const addrParts=[p.name,p.street,p.city||p.county,p.state,p.country].filter(Boolean);
     const nl=name.toLowerCase();
@@ -1206,8 +1226,10 @@ function norm_photon(d,q){
     const osm=(p.osm_value||p.type||'').toLowerCase();
     if(/attraction|museum|monument|castle|palace|temple|shrine|park/.test(osm))score+=1.2;
     if(/city|town|village/.test(osm))score+=0.8;
+    // 식당/카페/상점 등 amenity 가중치
+    if(/restaurant|cafe|coffee|shop|mall|market|hotel|hospital|pharmacy/.test(osm))score+=0.8;
     // 한국어 쿼리에 한국 결과 가중치
-    if(/[ㄱ-ㅎ가-힣]/.test(ql)&&(p.country==='South Korea'||p.country==='대한민국'))score+=1;
+    if(/[ㄱ-ㅎ가-힣]/.test(ql)&&(p.country==='South Korea'||p.country==='대한민국'||p.countrycode==='KR'))score+=2;
     return {name,addr:addrParts.join(', '),lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],score};
   }).filter(Boolean).sort((a,b)=>b.score-a.score);
 }
@@ -1228,30 +1250,43 @@ function mergeDedup(lists){
       return false;
     });
     if(!dup)kept.push(it);
-    if(kept.length>=8)break;
+    if(kept.length>=10)break;
   }
   return kept;
 }
 async function doSearch(q){
   spinner.style.display='block';acEl.style.display='none';
-  // 4개 병렬 검색: Photon 한국어/영어/기본 + Nominatim
-  const [ph_ko,ph_en,ph_raw,nm]=await Promise.allSettled([
-    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=12&lang=ko`).then(r=>r.json()).then(d=>norm_photon(d,q)),
-    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=12&lang=en`).then(r=>r.json()).then(d=>norm_photon(d,q)),
-    fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=12`).then(r=>r.json()).then(d=>norm_photon(d,q)),
-    fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=12&addressdetails=1&namedetails=1`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)),
+  const isKo=/[ㄱ-ㅎ가-힣]/.test(q);
+  // 한국어 쿼리면 한반도 중심(36.5,127.5)으로 위치 바이어스 적용
+  const krBias=isKo?'&lat=36.5&lon=127.5&location_bias_scale=0.5':'';
+  const qEnc=encodeURIComponent(q);
+  // 5개 병렬: Photon(ko바이어스/en/기본) + Nominatim(전체/한국한정)
+  const [ph_ko,ph_en,ph_raw,nm,nm_kr]=await Promise.allSettled([
+    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=15&lang=ko${krBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
+    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=12&lang=en`).then(r=>r.json()).then(d=>norm_photon(d,q)),
+    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=12${krBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
+    fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=12&addressdetails=1&namedetails=1`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)),
+    isKo?fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=15&addressdetails=1&namedetails=1&countrycodes=kr`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)):Promise.resolve([]),
   ]);
   const pkoL=ph_ko.status==='fulfilled'?ph_ko.value:[];
   const penL=ph_en.status==='fulfilled'?ph_en.value:[];
   const prwL=ph_raw.status==='fulfilled'?ph_raw.value:[];
   const nL=nm.status==='fulfilled'?nm.value:[];
-  let res=mergeDedup([pkoL,penL,prwL,nL]);
+  const nkrL=nm_kr.status==='fulfilled'?nm_kr.value:[];
+  // 한국어 검색 시 한국 결과 점수 추가 부여
+  if(isKo)[pkoL,prwL,nkrL].flat().forEach(it=>{if(it)it.score=(it.score||0)+1.2;});
+  let res=mergeDedup([pkoL,prwL,nkrL,penL,nL]);
   if(!res.length){
-    // 영어 전용 재시도
-    try{const fb=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=12&addressdetails=1`,{headers:{'Accept-Language':'en'}}).then(r=>r.json()).then(d=>norm_nomi(d,q));res=mergeDedup([fb])}catch(_){}
+    // 한국 한정 재시도
+    try{
+      const fb=isKo
+        ?await fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=12&addressdetails=1&countrycodes=kr`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q))
+        :await fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=12&addressdetails=1`,{headers:{'Accept-Language':'en'}}).then(r=>r.json()).then(d=>norm_nomi(d,q));
+      res=mergeDedup([fb]);
+    }catch(_){}
   }
   spinner.style.display='none';
-  if(!res.length){acEl.innerHTML=`<div style="padding:14px 16px 10px;text-align:center;color:#aaa;font-size:13px">검색 결과가 없습니다.<br><small style="color:#bbb">영어로 검색해보세요</small></div>`+manualAddHTML();acEl.style.display='block';return}
+  if(!res.length){acEl.innerHTML=`<div style="padding:14px 16px 10px;text-align:center;color:#aaa;font-size:13px">검색 결과가 없습니다.<br><small style="color:#bbb">${isKo?'더 구체적인 주소나 상호명으로 검색해보세요':'Try searching in English or Korean'}</small></div>`+manualAddHTML();acEl.style.display='block';return}
   acData=res;
   acEl.innerHTML=res.map((it,i)=>`<div class="ac-item" onclick="addPlace(${i})">
     <div class="ac-thumb" id="ac-thumb-${i}"><img alt=""><span class="ac-type-icon">📍</span></div>
@@ -3090,8 +3125,7 @@ function initMinimap(){
 }
 function updateMinimap(){
   const btn=document.getElementById('minimap-toggle');
-  if(!places.length){if(btn)btn.style.display='none';document.getElementById('minimap-panel').classList.remove('open');return;}
-  if(btn)btn.style.display='block';
+  if(!places.length){document.getElementById('minimap-panel').classList.remove('open');if(minimapOpen)closeMinimap();return;}
   if(!leafletMap)return;
   // 기존 마커 제거
   leafletMarkers.forEach(m=>m.remove());leafletMarkers=[];
@@ -3117,6 +3151,7 @@ function closeMinimap(){
   if(btn)btn.textContent='🗺️ 지도';
 }
 function toggleMinimap(){
+  if(!places.length){showHint('📍 장소를 추가하면 지도에서 볼 수 있어요!');return;}
   const panel=document.getElementById('minimap-panel');
   const btn=document.getElementById('minimap-toggle');
   minimapOpen=!minimapOpen;
@@ -3218,9 +3253,9 @@ function applyDark(on){
 function toggleDark(){applyDark(!darkMode);}
 (function(){
   try{
+    // 기본값: 화이트모드. 사용자가 직접 다크로 바꾼 경우만 다크 적용
     const stored=localStorage.getItem('tmv2_dark');
     if(stored==='1'){applyDark(true);}
-    else if(stored===null&&window.matchMedia('(prefers-color-scheme: dark)').matches){applyDark(true);}
   }catch(_){}
 })();
 
