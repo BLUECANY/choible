@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>여행 마인드맵 — 인터랙티브 여행 계획 도구</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <meta name="description" content="장소 검색, 경로 연결, 메모·경비 관리까지 — 여행 일정을 한 캔버스에서 시각적으로 계획하는 무료 인터랙티브 마인드맵 도구입니다.">
 <meta name="keywords" content="여행 계획, 여행 마인드맵, 여행 일정, 여행 경로, 여행 경비, 인터랙티브 지도, 무료 여행 앱">
@@ -547,8 +548,7 @@ footer { background: var(--footer-bg); padding: 32px clamp(20px,5vw,60px); borde
 <nav>
   <a class="nav-logo" href="/">✈️<span class="logo-text"> 여행 <span>마인드맵</span></span></a>
   <div class="nav-links">
-    <a class="nav-link" href="#features">기능</a>
-    <a class="nav-link" href="#howto">사용법</a>
+    <a class="nav-link" href="#about">소개</a>
     <a class="nav-link" href="#faq">FAQ</a>
   </div>
   <a class="nav-cta" href="app.html">앱 시작하기 →</a>
@@ -857,6 +857,19 @@ footer { background: var(--footer-bg); padding: 32px clamp(20px,5vw,60px); borde
   }, { threshold: .12, rootMargin: '0px 0px -40px 0px' });
   els.forEach(el => io.observe(el));
 })();
+
+// 스무스 스크롤 — 앵커 링크 클릭 시
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', function(e) {
+    const id = this.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (!target) return;
+    e.preventDefault();
+    const navH = 62;
+    const top = target.getBoundingClientRect().top + window.scrollY - navH;
+    window.scrollTo({ top, behavior: 'smooth' });
+  });
+});
 </script>
 </body>
 </html>
