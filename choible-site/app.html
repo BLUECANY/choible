@@ -93,14 +93,14 @@
     @keyframes flowAnim{to{stroke-dashoffset:-22}}
     .flow{stroke-dasharray:6 5;animation:flowAnim 1.1s linear infinite}
 
-    /* 리사이즈 핸들 */
+    /* 리사이즈 핸들 — 터치/트랙패드 대응으로 히트 영역 확대 */
     .rh{position:absolute;z-index:30;display:flex;align-items:center;justify-content:center}
-    .rh-l{top:0;bottom:0;width:10px;cursor:ew-resize;left:-5px}
-    .rh-r{top:0;bottom:0;width:10px;cursor:ew-resize;right:-5px}
-    .rh-t{left:0;right:0;height:10px;cursor:ns-resize;top:-5px}
-    .rh-b{left:0;right:0;height:10px;cursor:ns-resize;bottom:-5px}
-    .rh-l::after,.rh-r::after{content:'';width:3px;height:30px;border-radius:3px;background:#aaa;opacity:0;transition:opacity .2s}
-    .rh-t::after,.rh-b::after{content:'';height:3px;width:30px;border-radius:3px;background:#aaa;opacity:0;transition:opacity .2s}
+    .rh-l{top:0;bottom:0;width:16px;cursor:ew-resize;left:-8px}
+    .rh-r{top:0;bottom:0;width:16px;cursor:ew-resize;right:-8px}
+    .rh-t{left:0;right:0;height:16px;cursor:ns-resize;top:-8px}
+    .rh-b{left:0;right:0;height:16px;cursor:ns-resize;bottom:-8px}
+    .rh-l::after,.rh-r::after{content:'';width:4px;height:32px;border-radius:4px;background:#aaa;opacity:0;transition:opacity .2s}
+    .rh-t::after,.rh-b::after{content:'';height:4px;width:32px;border-radius:4px;background:#aaa;opacity:0;transition:opacity .2s}
     .node:hover .rh::after,.memo-card:hover .rh::after,.cost-card:hover .rh::after{opacity:.6}
     .rh:hover::after{opacity:1!important}
 
@@ -463,6 +463,13 @@
     .ob-skip{background:none;border:none;color:#ccc;font-size:12px;cursor:pointer;padding:13px 12px;transition:color .15s}
     .ob-skip:hover{color:#888}
 
+    /* ─── 노트북 (641px ~ 1200px) 툴바 압축 ─── */
+    @media(min-width:641px) and (max-width:1200px){
+      #toolbar{gap:6px;padding:8px 14px}
+      #search-input{width:160px}
+      .t-btn{padding:6px 8px;font-size:11px}
+      .t-zoom-val{min-width:30px}
+    }
     /* ─── 모바일 최적화 ─── */
     @media(max-width:640px){
       /* ── 컴팩트 모바일 툴바 ── */
@@ -596,8 +603,75 @@
       #total-cost-bar{bottom:82px}
       #stats-bar{bottom:42px}
     }
+
+    /* 자동저장 표시 */
+    #autosave-badge{
+      font-size:10px;color:#aaa;white-space:nowrap;
+      display:flex;align-items:center;gap:4px;
+      transition:color .3s;
+    }
+    #autosave-badge.saved{color:#22c55e}
+    #autosave-badge svg{flex-shrink:0}
+
+    /* 구글 맵 버튼 */
+    .n-gmap-btn{
+      display:inline-flex;align-items:center;gap:4px;
+      margin-top:7px;font-size:10px;font-weight:700;
+      color:#4285F4;background:#e8f0fe;border:none;
+      border-radius:8px;padding:4px 9px;cursor:pointer;
+      text-decoration:none;transition:background .15s;
+    }
+    .n-gmap-btn:hover{background:#d2e3fc}
+    .n-gmap-btn svg{flex-shrink:0}
+
+    /* 미니맵 */
+    #minimap-panel{
+      position:fixed;bottom:56px;right:12px;
+      width:220px;height:150px;
+      border-radius:14px;overflow:hidden;
+      box-shadow:0 4px 20px rgba(0,0,0,.18);
+      z-index:1500;
+      border:2px solid #fff;
+      transition:opacity .3s,transform .3s;
+      display:none;
+    }
+    #minimap-panel.show{display:block}
+    #minimap-toggle{
+      position:fixed;bottom:56px;right:12px;
+      z-index:1501;background:#1a1a2e;color:#fff;
+      border:none;border-radius:10px;padding:6px 10px;
+      font-size:10px;font-weight:700;cursor:pointer;
+      box-shadow:0 2px 10px rgba(0,0,0,.2);
+      transition:background .15s;
+      display:none;
+    }
+    #minimap-toggle.show{display:block}
+    #minimap-toggle:hover{background:#5b8af5}
+    #minimap-panel.open{
+      transform:translateY(-32px);
+    }
+
+    /* 위키 팝업 */
+    #wiki-pop{
+      position:fixed;z-index:5000;
+      background:#fff;border-radius:16px;
+      box-shadow:0 12px 40px rgba(0,0,0,.18);
+      width:280px;max-height:320px;overflow:hidden;
+      display:none;flex-direction:column;
+      border:1.5px solid #e8edf8;
+    }
+    #wiki-pop.show{display:flex}
+    #wiki-pop-img{width:100%;height:100px;object-fit:cover;flex-shrink:0;display:none}
+    #wiki-pop-body{padding:14px 16px;overflow-y:auto;flex:1}
+    #wiki-pop-title{font-size:13px;font-weight:800;color:#1a1a2e;margin-bottom:6px}
+    #wiki-pop-desc{font-size:12px;color:#555;line-height:1.65}
+    #wiki-pop-close{position:absolute;top:8px;right:8px;width:22px;height:22px;background:rgba(0,0,0,.12);border:none;border-radius:50%;cursor:pointer;font-size:11px;color:#fff;display:flex;align-items:center;justify-content:center}
+    #wiki-pop-link{display:block;font-size:10px;color:#5b8af5;font-weight:700;margin-top:8px;text-decoration:none}
+    #wiki-pop-link:hover{text-decoration:underline}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
 
@@ -631,6 +705,11 @@
   <div class="t-div"></div>
   <button class="t-btn" onclick="showOnboard()" title="사용법 보기">❓</button>
   <button class="t-btn del-btn" onclick="clearAll()">전체 삭제</button>
+  <div class="t-div"></div>
+  <div id="autosave-badge" title="자동 저장">
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    <span id="autosave-txt">—</span>
+  </div>
 </div>
 
 <div id="modal-overlay" onclick="handleOverlayClick()"></div>
@@ -841,6 +920,21 @@
   <div class="sb-item">🔗 <span id="sb-conns">0</span>개 경로</div>
 </div>
 
+<!-- 미니맵 -->
+<button id="minimap-toggle" onclick="toggleMinimap()" title="지도에서 보기">🗺️ 지도</button>
+<div id="minimap-panel"><div id="leaflet-map" style="width:100%;height:100%"></div></div>
+
+<!-- 위키 팝업 -->
+<div id="wiki-pop">
+  <img id="wiki-pop-img" alt="">
+  <button id="wiki-pop-close" onclick="closeWikiPop()">✕</button>
+  <div id="wiki-pop-body">
+    <div id="wiki-pop-title"></div>
+    <div id="wiki-pop-desc"></div>
+    <a id="wiki-pop-link" href="#" target="_blank" rel="noopener">Wikipedia에서 더 보기 →</a>
+  </div>
+</div>
+
 <div id="canvas">
   <div id="world">
     <svg id="draw-layer" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;overflow:visible;pointer-events:none"></svg>
@@ -1038,6 +1132,7 @@ function worldCenter(){
   return {cx:(window.innerWidth/2-panX)/sc, cy:(window.innerHeight/2-panY)/sc};
 }
 function addPlace(i){
+  snapshot();
   const it=acData[i];if(!it)return;
   const ci=places.length%COLORS.length, id=++idCtr;
   const {cx,cy}=worldCenter();
@@ -1048,7 +1143,7 @@ function addPlace(i){
   buildPlaceNode(id);
   document.getElementById('empty').style.display='none';
   fetchPhoto(id,it.name);
-  updateStats();updateTimeline();
+  updateStats();updateTimeline();updateMinimap();
   showHint('노드 클릭 → 다른 노드 클릭해서 연결! 번호 클릭으로 순서 변경');
 }
 async function fetchPhoto(id,name){
@@ -1129,6 +1224,14 @@ function buildPlaceNode(id){
       <button class="n-visit-stamp${visited?' visited':''}">
         ${visited?'✓ 방문완료':'○ 방문 전'}
       </button>
+      <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+        <a class="n-gmap-btn" href="https://maps.google.com/?q=${p.lat},${p.lng}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>구글 지도
+        </a>
+        <button class="n-gmap-btn" style="background:#f0f5ff;color:#5b8af5;border:none;cursor:pointer" onclick="event.stopPropagation();showWiki('${escHtml(p.name)}',${p.lat},${p.lng})" title="Wikipedia 정보">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>정보
+        </button>
+      </div>
     </div>`;
   el.querySelector('.n-num').addEventListener('click',e=>{e.stopPropagation();openReorder(id,e)});
   el.querySelector('.n-del').addEventListener('click',e=>{e.stopPropagation();deleteAny(id)});
@@ -1512,10 +1615,19 @@ document.addEventListener('mouseup',()=>{
   cvs.classList.remove('panning');
 });
 
-// 휠 줌
+// 휠 — 트랙패드: Ctrl/Cmd+스크롤 → 줌, 일반 스크롤 → 패닝 (Figma 방식)
 cvs.addEventListener('wheel',e=>{
   e.preventDefault();
-  zoomAt(e.clientX,e.clientY,e.deltaY<0?1.1:1/1.1);
+  if(e.ctrlKey||e.metaKey){
+    // 핀치 줌 or Ctrl+스크롤 → 줌
+    const factor=e.deltaY<0?1.1:1/1.1;
+    zoomAt(e.clientX,e.clientY,factor);
+  }else{
+    // 트랙패드 두 손가락 스크롤 → 패닝
+    const dx=e.deltaX!==undefined?e.deltaX:0;
+    const dy=e.deltaY!==undefined?e.deltaY:0;
+    panX-=dx;panY-=dy;applyT();
+  }
 },{passive:false});
 
 // ── 터치 이벤트 (패닝 + 핀치 줌 + 노드 드래그) ──
@@ -1829,19 +1941,23 @@ document.addEventListener('click',e=>{
 // 삭제
 // ══════════════════════════════════════════
 function deleteAny(id){
+  snapshot();
   if(selectedId===id)selectedId=null;
   document.getElementById(`n${id}`)?.remove();
   places=places.filter(p=>p.id!==id);
   extras=extras.filter(e=>e.id!==id);
   connections=connections.filter(c=>c.a!==id&&c.b!==id);
   renumberAll();redrawSVG();updateTotalCost();updateStats();updateDateConstraints();updateTimeline();
+  updateMinimap();
   if(!places.length&&!extras.length){document.getElementById('empty').style.display='block';showHint('장소를 검색해서 추가해보세요!')}
 }
 function clearAll(){
+  snapshot();
   clearDayZones();
   [...places,...extras].forEach(n=>document.getElementById(`n${n.id}`)?.remove());
   places=[];extras=[];connections=[];selectedId=null;pendingConn=null;
   cancelConnect();redrawSVG();updateTotalCost();updateStats();updateTimeline();
+  updateMinimap();
   document.getElementById('empty').style.display='block';showHint('장소를 검색해서 추가해보세요!');
 }
 
@@ -1906,6 +2022,36 @@ function fmtDur(s){
 // ══════════════════════════════════════════
 // 키보드 단축키
 // ══════════════════════════════════════════
+// ══════════════════════════════════════════
+// 실행취소 (Ctrl+Z)
+// ══════════════════════════════════════════
+const undoStack=[];
+function snapshot(){
+  try{
+    undoStack.push(JSON.stringify({places,extras,connections,idCtr,costItemCtr,panX,panY,sc,drawings,dayZones,dzCtr}));
+    if(undoStack.length>40)undoStack.shift();
+  }catch(_){}
+}
+function undo(){
+  if(!undoStack.length){showHint('↩️ 되돌릴 작업이 없어요');return;}
+  const d=JSON.parse(undoStack.pop());
+  clearDayZones();
+  [...places,...extras].forEach(n=>document.getElementById(`n${n.id}`)?.remove());
+  places=d.places;extras=d.extras;connections=d.connections;
+  idCtr=d.idCtr;costItemCtr=d.costItemCtr;
+  panX=d.panX;panY=d.panY;sc=d.sc;applyT();
+  drawings=d.drawings||[];
+  dayZones=d.dayZones||[];dzCtr=d.dzCtr||0;
+  places.forEach(p=>{buildPlaceNode(p.id)});
+  extras.forEach(ext=>{ext.type==='memo'?buildMemoNode(ext):buildCostNode(ext)});
+  dayZones.forEach(z=>buildDayZone(z));
+  redrawSVG();redrawDrawLayer();updateTotalCost();updateStats();renumberAll();updateDateConstraints();updateTimeline();
+  const anyNode=places.length||extras.length;
+  document.getElementById('empty').style.display=anyNode?'none':'block';
+  showHint('↩️ 실행 취소됨');
+  updateMinimap();
+}
+
 document.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
   if(e.key==='Escape'){
@@ -1913,8 +2059,9 @@ document.addEventListener('keydown',e=>{
     else{deselect();document.getElementById('reorder-pop').style.display='none';}
   }
   if((e.key==='Delete'||e.key==='Backspace')&&selectedId){
-    e.preventDefault();deleteAny(selectedId);
+    e.preventDefault();snapshot();deleteAny(selectedId);
   }
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo();}
 });
 
 // ══════════════════════════════════════════
@@ -2713,6 +2860,123 @@ window.addEventListener('load',()=>initOnboard());
     if(swipeY !== null && e.touches[0].clientY - swipeY > 60) closeDrawer();
   }, {passive:true});
 })();
+
+// ══════════════════════════════════════════
+// 자동 저장 (localStorage, 30초마다)
+// ══════════════════════════════════════════
+let lastAutoSave=null;
+function doAutoSave(){
+  try{
+    const data={v:2,places,extras,connections,idCtr,costItemCtr,panX,panY,sc,drawings,dayZones,dzCtr};
+    localStorage.setItem('tmv2_data',JSON.stringify(data));
+    lastAutoSave=new Date();
+    const badge=document.getElementById('autosave-badge');
+    const txt=document.getElementById('autosave-txt');
+    if(badge&&txt){
+      txt.textContent='방금 저장됨';
+      badge.classList.add('saved');
+      setTimeout(()=>{badge.classList.remove('saved');updateAutoSaveBadge();},2000);
+    }
+  }catch(_){}
+}
+function updateAutoSaveBadge(){
+  const txt=document.getElementById('autosave-txt');
+  if(!txt||!lastAutoSave)return;
+  const diff=Math.round((Date.now()-lastAutoSave)/60000);
+  txt.textContent=diff<1?'방금 저장됨':diff===1?'1분 전 저장':diff<60?`${diff}분 전 저장`:'1시간+ 전 저장';
+}
+setInterval(doAutoSave,30000);
+setInterval(updateAutoSaveBadge,60000);
+// 시작 시 기존 자동저장 데이터 로드 타임스탬프 업데이트
+setTimeout(()=>{if(lastAutoSave)updateAutoSaveBadge();},1000);
+
+// ══════════════════════════════════════════
+// 미니맵 (Leaflet)
+// ══════════════════════════════════════════
+let leafletMap=null,leafletMarkers=[];
+function initMinimap(){
+  if(leafletMap||typeof L==='undefined')return;
+  leafletMap=L.map('leaflet-map',{zoomControl:false,attributionControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,touchZoom:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18}).addTo(leafletMap);
+  L.control.attribution({position:'bottomright',prefix:false}).addTo(leafletMap);
+}
+function updateMinimap(){
+  const btn=document.getElementById('minimap-toggle');
+  if(!places.length){if(btn)btn.style.display='none';document.getElementById('minimap-panel').classList.remove('open');return;}
+  if(btn)btn.style.display='block';
+  if(!leafletMap)return;
+  // 기존 마커 제거
+  leafletMarkers.forEach(m=>m.remove());leafletMarkers=[];
+  const pts=places.filter(p=>p.lat&&p.lng);
+  if(!pts.length)return;
+  pts.forEach((p,i)=>{
+    const color=COLORS[p.ci]||'#5b8af5';
+    const icon=L.divIcon({className:'',html:`<div style="width:20px;height:20px;background:${color};border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;box-shadow:0 1px 4px rgba(0,0,0,.3)">${i+1}</div>`,iconSize:[20,20],iconAnchor:[10,10]});
+    const marker=L.marker([p.lat,p.lng],{icon}).addTo(leafletMap);
+    marker.bindTooltip(p.name,{permanent:false,direction:'top'});
+    leafletMarkers.push(marker);
+  });
+  const bounds=L.latLngBounds(pts.map(p=>[p.lat,p.lng]));
+  leafletMap.fitBounds(bounds,{padding:[16,16],maxZoom:13});
+}
+let minimapOpen=false;
+function toggleMinimap(){
+  const panel=document.getElementById('minimap-panel');
+  const btn=document.getElementById('minimap-toggle');
+  minimapOpen=!minimapOpen;
+  panel.classList.toggle('open',minimapOpen);
+  panel.style.display=minimapOpen?'block':'none';
+  btn.textContent=minimapOpen?'🗺️ 닫기':'🗺️ 지도';
+  if(minimapOpen){
+    initMinimap();
+    setTimeout(()=>{
+      if(leafletMap)leafletMap.invalidateSize();
+      updateMinimap();
+    },50);
+  }
+}
+
+// ══════════════════════════════════════════
+// Wikipedia 팝업
+// ══════════════════════════════════════════
+async function showWiki(name,lat,lng){
+  const pop=document.getElementById('wiki-pop');
+  const titleEl=document.getElementById('wiki-pop-title');
+  const descEl=document.getElementById('wiki-pop-desc');
+  const imgEl=document.getElementById('wiki-pop-img');
+  const linkEl=document.getElementById('wiki-pop-link');
+  titleEl.textContent=name;
+  descEl.textContent='정보를 불러오는 중…';
+  imgEl.style.display='none';
+  pop.style.cssText=`display:flex;top:${Math.min(window.innerHeight-340,200)}px;left:${Math.max(20,window.innerWidth/2-140)}px`;
+  // 영문 위키 summary 시도
+  try{
+    const d=await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g,'_'))}`).then(r=>r.ok?r.json():Promise.reject());
+    descEl.textContent=d.extract||'설명을 찾을 수 없습니다.';
+    if(d.thumbnail?.source){imgEl.src=d.thumbnail.source;imgEl.style.display='block';}
+    linkEl.href=d.content_urls?.desktop?.page||`https://en.wikipedia.org/wiki/${encodeURIComponent(name)}`;
+    return;
+  }catch(_){}
+  // 한국어 위키 fallback
+  try{
+    const s=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());
+    const t=s?.query?.search?.[0]?.title;
+    if(t){
+      const d=await fetch(`https://ko.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`).then(r=>r.ok?r.json():Promise.reject());
+      descEl.textContent=d.extract||'설명을 찾을 수 없습니다.';
+      if(d.thumbnail?.source){imgEl.src=d.thumbnail.source;imgEl.style.display='block';}
+      linkEl.href=d.content_urls?.desktop?.page||`https://ko.wikipedia.org/wiki/${encodeURIComponent(t)}`;
+      return;
+    }
+  }catch(_){}
+  descEl.textContent='Wikipedia에서 정보를 찾을 수 없습니다.';
+  linkEl.href=`https://www.google.com/search?q=${encodeURIComponent(name)}`;
+}
+function closeWikiPop(){document.getElementById('wiki-pop').style.display='none';}
+document.addEventListener('click',e=>{
+  const pop=document.getElementById('wiki-pop');
+  if(pop.style.display!=='none'&&!pop.contains(e.target)&&!e.target.closest('.n-gmap-btn'))closeWikiPop();
+});
 </script>
 </body>
 </html>
