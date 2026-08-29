@@ -235,6 +235,51 @@ footer{
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}
 .reveal.in{opacity:1;transform:translateY(0)}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
+
+/* ── COUPANG PARTNERS ── */
+.cp-filter{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;justify-content:center}
+.cp-chip{
+  padding:7px 16px;border-radius:999px;border:1.5px solid #DDE6F8;
+  background:transparent;font-size:12px;font-weight:700;color:#6A7894;
+  cursor:pointer;transition:all .18s;font-family:inherit;white-space:nowrap;
+}
+.cp-chip:hover,.cp-chip.cp-active{background:#4F6EF7;border-color:#4F6EF7;color:#fff}
+.cp-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));
+  gap:14px;margin-top:28px;
+}
+.cp-card{
+  background:#F7FAFF;border:1.5px solid #DDE6F8;border-radius:16px;
+  padding:20px 18px 16px;display:flex;flex-direction:column;gap:10px;
+  text-decoration:none;color:inherit;
+  transition:transform .18s,box-shadow .18s,border-color .18s;
+}
+.cp-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(79,110,247,.13);border-color:rgba(79,110,247,.3)}
+.cp-card[hidden]{display:none}
+.cp-emoji{font-size:30px;line-height:1}
+.cp-badge{
+  display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;
+  font-size:10px;font-weight:700;width:fit-content;
+  text-transform:uppercase;letter-spacing:.04em;
+}
+.cp-badge.gear{background:#DBEAFE;color:#1D4ED8}
+.cp-badge.tech{background:#FEF3C7;color:#D97706}
+.cp-badge.outdoor{background:#DCFCE7;color:#16A34A}
+.cp-badge.health{background:#FCE7F3;color:#BE185D}
+.cp-name{font-size:14px;font-weight:800;color:#0B1526;line-height:1.35}
+.cp-desc{font-size:11px;color:#7A8AA8;line-height:1.6;flex:1}
+.cp-price{font-size:12px;color:#6A7894;font-weight:600}
+.cp-price strong{color:#4F6EF7;font-size:14px;font-weight:800}
+.cp-cta{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 13px;background:#E8003D;border-radius:9px;
+  color:#fff;font-size:12px;font-weight:700;margin-top:4px;
+}
+.cp-disclaimer{
+  font-size:11px;color:#9AAAC8;text-align:center;margin-top:28px;
+  padding-top:18px;border-top:1px solid #EDF0FA;line-height:1.7;
+}
 </style>
 </head>
 <body>
@@ -513,6 +558,94 @@ footer{
   </div>
 </section>
 
+<!-- TRAVEL PRODUCT RECOMMENDATIONS (쿠팡파트너스) -->
+<section id="travel-items" style="background:#F7FAFF;border-top:1px solid #EDF0FA">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="sect-tag" style="background:#FFF0F3;color:#E8003D;border:1px solid rgba(232,0,61,.15)">쿠팡파트너스 추천</div>
+      <h2 class="sect-title">여행 준비물 추천 🧳</h2>
+      <p class="sect-sub" style="margin:0 auto">여행 마인드맵 사용자들이 많이 찾는 필수 여행 아이템만 모았어요</p>
+    </div>
+    <div class="cp-filter reveal">
+      <button class="cp-chip cp-active" onclick="filterCP('all',this)">전체</button>
+      <button class="cp-chip" onclick="filterCP('gear',this)">🎒 여행 가방</button>
+      <button class="cp-chip" onclick="filterCP('tech',this)">🔌 여행 기기</button>
+      <button class="cp-chip" onclick="filterCP('outdoor',this)">🏔 아웃도어</button>
+      <button class="cp-chip" onclick="filterCP('health',this)">💊 건강·위생</button>
+    </div>
+    <div class="cp-grid reveal">
+      <a class="cp-card" data-cat="gear" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">🎒</div>
+        <span class="cp-badge gear">여행 가방</span>
+        <div class="cp-name">방수 기내반입 백팩 40L</div>
+        <div class="cp-desc">항공사 기준 적합 · 방수 소재 · 다용도 수납 포켓</div>
+        <div class="cp-price">최저 <strong>₩49,900~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="tech" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">🔌</div>
+        <span class="cp-badge tech">여행 기기</span>
+        <div class="cp-name">해외 멀티 어댑터 USB-C PD</div>
+        <div class="cp-desc">전 세계 220개국 호환 · USB-C 65W 고속 충전 지원</div>
+        <div class="cp-price">최저 <strong>₩18,000~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="tech" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">🔋</div>
+        <span class="cp-badge tech">여행 기기</span>
+        <div class="cp-name">대용량 보조배터리 20000mAh</div>
+        <div class="cp-desc">USB-C PD 45W · 기내 반입 가능 용량 · 초경량</div>
+        <div class="cp-price">최저 <strong>₩32,000~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="outdoor" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">👟</div>
+        <span class="cp-badge outdoor">아웃도어</span>
+        <div class="cp-name">경량 방수 트레킹화</div>
+        <div class="cp-desc">고어텍스 방수 소재 · 경량 270g · 미끄럼 방지 아웃솔</div>
+        <div class="cp-price">최저 <strong>₩89,000~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="outdoor" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">🧥</div>
+        <span class="cp-badge outdoor">아웃도어</span>
+        <div class="cp-name">경량 패커블 방수 재킷</div>
+        <div class="cp-desc">접어서 파우치로 수납 · 방수·방풍 · 여행 필수 아우터</div>
+        <div class="cp-price">최저 <strong>₩55,000~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="health" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">💊</div>
+        <span class="cp-badge health">건강·위생</span>
+        <div class="cp-name">여행용 상비약 세트</div>
+        <div class="cp-desc">소화제·지사제·해열제·진통제 포함 · 해외 여행 필수</div>
+        <div class="cp-price">최저 <strong>₩12,500~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="health" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">🧴</div>
+        <span class="cp-badge health">건강·위생</span>
+        <div class="cp-name">여행용 소분 위생용품 세트</div>
+        <div class="cp-desc">100ml 이하 용기 세트 · 기내 반입 가능 · 리필 편리</div>
+        <div class="cp-price">최저 <strong>₩8,900~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+      <a class="cp-card" data-cat="gear" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <div class="cp-emoji">🔒</div>
+        <span class="cp-badge gear">여행 가방</span>
+        <div class="cp-name">TSA 여행용 자물쇠 3개 세트</div>
+        <div class="cp-desc">미국 TSA 인증 · 다이얼 잠금 · 캐리어·백팩 겸용</div>
+        <div class="cp-price">최저 <strong>₩6,900~</strong></div>
+        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
+      </a>
+    </div>
+    <p class="cp-disclaimer reveal">
+      이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br>
+      구매 비용은 소비자에게 추가로 발생하지 않습니다.
+    </p>
+  </div>
+</section>
+
 <!-- CTA -->
 <section style="background:#F7FAFF">
   <div class="container">
@@ -541,6 +674,14 @@ const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)} });
 },{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+function filterCP(cat, btn){
+  document.querySelectorAll('.cp-chip').forEach(c => c.classList.remove('cp-active'));
+  btn.classList.add('cp-active');
+  document.querySelectorAll('.cp-card').forEach(card => {
+    card.hidden = cat !== 'all' && card.dataset.cat !== cat;
+  });
+}
 </script>
 </body>
 </html>
