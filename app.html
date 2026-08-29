@@ -1297,13 +1297,23 @@ async function doSearch(q){
   res.forEach((_,i)=>loadAcPhoto(i,res[i].name));
 }
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+// 제목 유사도: 검색어와 위키 문서 제목이 어느 정도 일치해야 사진 사용
+function _photoTitleSim(query,title){
+  if(!query||!title)return 0;
+  const q=query.toLowerCase().trim().replace(/[^\w가-힣\s]/g,'');
+  const t=title.toLowerCase().trim().replace(/[^\w가-힣\s]/g,'');
+  if(t===q||t.includes(q)||q.includes(t))return 1;
+  const qw=q.split(/\s+/),tw=t.split(/\s+/);
+  const hits=qw.filter(w=>w.length>1&&tw.some(tv=>tv.includes(w)||w.includes(tv))).length;
+  return hits/Math.max(qw.length,1);
+}
 async function loadAcPhoto(i,name){
   const th=document.getElementById(`ac-thumb-${i}`);if(!th)return;
   const img=th.querySelector('img');
   const tries=[
-    ()=>fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g,'_'))}`).then(r=>r.ok?r.json():Promise.reject()).then(d=>d.thumbnail?.source||null),
-    async()=>{const s=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t)return null;const p=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=300&format=json&origin=*`).then(r=>r.json());return Object.values(p?.query?.pages||{})[0]?.thumbnail?.source||null},
-    async()=>{const s=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t)return null;const p=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=300&format=json&origin=*`).then(r=>r.json());return Object.values(p?.query?.pages||{})[0]?.thumbnail?.source||null},
+    async()=>{const d=await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g,'_'))}`).then(r=>r.ok?r.json():Promise.reject());if(_photoTitleSim(name,d.title)<0.4)return null;return d.thumbnail?.source||null},
+    async()=>{const s=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t||_photoTitleSim(name,t)<0.35)return null;const p=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=300&format=json&origin=*`).then(r=>r.json());return Object.values(p?.query?.pages||{})[0]?.thumbnail?.source||null},
+    async()=>{const s=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t||_photoTitleSim(name,t)<0.35)return null;const p=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=300&format=json&origin=*`).then(r=>r.json());return Object.values(p?.query?.pages||{})[0]?.thumbnail?.source||null},
   ];
   for(const fn of tries){try{const u=await fn();if(!u)continue;img.onload=()=>img.classList.add('loaded');img.src=u;th.querySelector('.ac-type-icon').style.display='none';return}catch(_){}}
 }
@@ -1335,12 +1345,11 @@ async function fetchPhoto(id,name){
   const p2=places.find(p=>p.id===id);
   const addrCity=p2?.addr?.split(',').slice(-3,-1).join(' ').trim()||'';
   const tries=[
-    ()=>fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g,'_'))}`).then(r=>r.ok?r.json():Promise.reject()).then(d=>d.thumbnail?.source||null),
-    async()=>{const s=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t)return null;const pg=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=400&format=json&origin=*`).then(r=>r.json());return Object.values(pg?.query?.pages||{})[0]?.thumbnail?.source||null},
-    async()=>{const s=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t)return null;const pg=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=400&format=json&origin=*`).then(r=>r.json());return Object.values(pg?.query?.pages||{})[0]?.thumbnail?.source||null},
-    // 주소의 도시명 포함해 검색 (해외 공항/식당에 유용)
-    async()=>{if(!addrCity)return null;const q2=`${name} ${addrCity}`;const s=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q2)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t)return null;const pg=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=400&format=json&origin=*`).then(r=>r.json());return Object.values(pg?.query?.pages||{})[0]?.thumbnail?.source||null},
-    async()=>{const r=await fetch(`https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srnamespace=6&srlimit=1&format=json&origin=*`).then(r=>r.json());const title=r?.query?.search?.[0]?.title;if(!title)return null;const img=await fetch(`https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url&iiurlwidth=400&format=json&origin=*`).then(r=>r.json());return Object.values(img?.query?.pages||{})[0]?.imageinfo?.[0]?.thumburl||null},
+    async()=>{const d=await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g,'_'))}`).then(r=>r.ok?r.json():Promise.reject());if(_photoTitleSim(name,d.title)<0.4)return null;return d.thumbnail?.source||null},
+    async()=>{const s=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t||_photoTitleSim(name,t)<0.35)return null;const pg=await fetch(`https://ko.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=400&format=json&origin=*`).then(r=>r.json());return Object.values(pg?.query?.pages||{})[0]?.thumbnail?.source||null},
+    async()=>{const s=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(name)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t||_photoTitleSim(name,t)<0.35)return null;const pg=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=400&format=json&origin=*`).then(r=>r.json());return Object.values(pg?.query?.pages||{})[0]?.thumbnail?.source||null},
+    // 주소 도시명 포함 검색
+    async()=>{if(!addrCity)return null;const q2=`${name} ${addrCity}`;const s=await fetch(`https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q2)}&srlimit=1&format=json&origin=*`).then(r=>r.json());const t=s?.query?.search?.[0]?.title;if(!t||_photoTitleSim(name,t)<0.3)return null;const pg=await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(t)}&prop=pageimages&pithumbsize=400&format=json&origin=*`).then(r=>r.json());return Object.values(pg?.query?.pages||{})[0]?.thumbnail?.source||null},
   ];
   for(const fn of tries){try{const u=await fn();if(u){applyPhoto(id,u);return}}catch(_){}}
 }
@@ -3111,8 +3120,56 @@ function updateAutoSaveBadge(){
 }
 setInterval(doAutoSave,30000);
 setInterval(updateAutoSaveBadge,60000);
-// 시작 시 기존 자동저장 데이터 로드 타임스탬프 업데이트
-setTimeout(()=>{if(lastAutoSave)updateAutoSaveBadge();},1000);
+
+// 자동저장 데이터 복원
+function restoreAutoSave(){
+  try{
+    const raw=localStorage.getItem('tmv2_data');
+    if(!raw)return false;
+    const d=JSON.parse(raw);
+    if(!d||(!d.places?.length&&!d.extras?.length))return false;
+    clearAll();
+    if(d.panX!=null)panX=d.panX;if(d.panY!=null)panY=d.panY;
+    if(d.sc!=null)sc=d.sc;applyT();
+    if(d.idCtr!=null)idCtr=d.idCtr;
+    if(d.costItemCtr!=null)costItemCtr=d.costItemCtr;
+    (d.places||[]).forEach(p=>{places.push(p);buildPlaceNode(p.id)});
+    (d.extras||[]).forEach(ext=>{extras.push(ext);ext.type==='memo'?buildMemoNode(ext):buildCostNode(ext)});
+    connections=d.connections||[];
+    if(d.drawings)drawings=d.drawings;
+    if(d.dayZones){d.dayZones.forEach(z=>{dayZones.push(z);buildDayZone(z);});if(d.dzCtr)dzCtr=d.dzCtr;}
+    redrawSVG();redrawDrawLayer();updateTotalCost();updateStats();renumberAll();updateDateConstraints();updateTimeline();updateMinimap();
+    if(places.length||extras.length)document.getElementById('empty').style.display='none';
+    lastAutoSave=new Date();
+    return true;
+  }catch(_){return false;}
+}
+// 시작 시 자동 복원
+(function(){
+  try{
+    const raw=localStorage.getItem('tmv2_data');
+    if(!raw)return;
+    const d=JSON.parse(raw);
+    if(!d||(!d.places?.length&&!d.extras?.length))return;
+    // 배지에 복원 알림 표시
+    const badge=document.getElementById('autosave-badge');
+    const txt=document.getElementById('autosave-txt');
+    if(txt)txt.textContent=`저장된 여행 (${(d.places||[]).length}곳)`;
+    if(badge){
+      badge.style.cursor='pointer';
+      badge.title='클릭해서 자동 저장된 여행 불러오기';
+      badge.style.background='rgba(91,138,245,.12)';
+      badge.style.borderRadius='8px';
+      badge.style.padding='2px 8px';
+      badge.onclick=()=>{
+        if(restoreAutoSave()){
+          badge.style.cursor='';badge.title='자동 저장';badge.style.background='';badge.style.padding='';badge.onclick=null;
+          showHint('✅ 자동 저장된 여행을 불러왔어요!');
+        }
+      };
+    }
+  }catch(_){}
+})();
 
 // ══════════════════════════════════════════
 // 미니맵 (Leaflet)
