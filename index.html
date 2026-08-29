@@ -1,3 +1,8 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>여행 마인드맵</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
 <style>
@@ -8,11 +13,7 @@
   --hero:#0c1128;
   --green:#10b981;--red:#ff6b6b;--yellow:#f7c948;--purple:#9f7aea;
 }
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0e1220;--surface:#161d30;--border:#1e2840;
-  --text:#dde3ff;--text2:#8898c8;--text3:#404870;
-  --hero:#060a14;
-}}
+/* dark mode disabled — default is always light */
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
@@ -643,3 +644,5 @@ const io = new IntersectionObserver(entries => {
 }, {threshold: 0.12});
 els.forEach(el => io.observe(el));
 </script>
+</body>
+</html>
