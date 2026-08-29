@@ -4,441 +4,356 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>여행 마인드맵</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<meta name="description" content="장소 검색, 경로 연결, 경비 관리, 캘린더 내보내기까지 — 여행 일정을 한 캔버스에서 시각적으로 계획하는 무료 인터랙티브 마인드맵 도구입니다.">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#f6f8ff;--surface:#fff;--border:#e4e9f8;
-  --accent:#5b8af5;--accent-d:#3f6ee0;
-  --text:#0c1128;--text2:#4a5278;--text3:#9099bc;
-  --hero:#0c1128;
-  --green:#10b981;--red:#ff6b6b;--yellow:#f7c948;--purple:#9f7aea;
-}
-/* dark mode disabled — default is always light */
-*{margin:0;padding:0;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Noto Sans KR',system-ui,sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;background:#F7FAFF;color:#0B1526;overflow-x:hidden}
 
 /* ── NAV ── */
 nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  background:rgba(12,17,40,.82);backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(255,255,255,.06);
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid #EDF0FA;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 clamp(16px,5vw,60px);height:60px;
+  padding:0 clamp(14px,4vw,60px);height:60px;
+  box-shadow:0 1px 12px rgba(79,110,247,.06);
 }
-.nav-logo{font-size:15px;font-weight:900;color:#fff;display:flex;align-items:center;gap:7px;text-decoration:none}
-.nav-logo span{opacity:.55;font-weight:400;font-size:12px}
+.nav-logo{font-size:clamp(12px,3.5vw,14px);font-weight:900;color:#0B1526;display:flex;align-items:center;gap:6px;text-decoration:none;white-space:nowrap;overflow:hidden;min-width:0}
+.nav-logo-badge{background:#4F6EF7;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:6px;letter-spacing:.3px;flex-shrink:0}
+@media(max-width:400px){.nav-logo-badge{display:none}}
 .nav-cta{
-  background:var(--accent);color:#fff;font-size:12px;font-weight:700;
-  padding:8px 18px;border-radius:20px;text-decoration:none;
-  transition:background .15s,transform .15s;
+  background:#4F6EF7;color:#fff;font-size:clamp(11px,3vw,12px);font-weight:700;
+  padding:8px clamp(12px,3vw,20px);border-radius:20px;text-decoration:none;
+  box-shadow:0 4px 16px rgba(79,110,247,.32);flex-shrink:0;white-space:nowrap;
+  transition:transform .15s,box-shadow .15s;
 }
-.nav-cta:hover{background:var(--accent-d);transform:translateY(-1px)}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(79,110,247,.42)}
 
 /* ── HERO ── */
 .hero{
-  background:var(--hero);
-  min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:80px clamp(16px,5vw,80px) 60px;
-  text-align:center;position:relative;overflow:hidden;
+  min-height:100svh;display:flex;align-items:center;gap:48px;
+  padding:100px clamp(16px,5vw,80px) 64px;
+  background:#F7FAFF;
+  background-image:radial-gradient(circle at 70% 50%,rgba(79,110,247,.07) 0%,transparent 58%);
 }
-.hero-glow{
-  position:absolute;width:700px;height:700px;border-radius:50%;
-  background:radial-gradient(circle,rgba(91,138,245,.18) 0%,transparent 65%);
-  top:50%;left:50%;transform:translate(-50%,-55%);pointer-events:none;
+@media(max-width:820px){
+  .hero{flex-direction:column;gap:32px;padding:80px 16px 52px;text-align:center;align-items:stretch}
 }
+.hero-info{flex:1;min-width:0}
+.hero-visual{flex:1;min-width:0}
 .hero-eyebrow{
   display:inline-flex;align-items:center;gap:6px;
-  background:rgba(91,138,245,.15);border:1px solid rgba(91,138,245,.3);
-  color:#8ab0ff;font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  padding:5px 14px;border-radius:20px;margin-bottom:24px;
+  background:rgba(79,110,247,.09);border:1px solid rgba(79,110,247,.18);
+  color:#4F6EF7;font-size:10px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;
+  padding:5px 13px;border-radius:18px;margin-bottom:20px;
 }
-.hero-title{
-  font-size:clamp(32px,6.5vw,68px);font-weight:900;color:#fff;
-  line-height:1.08;letter-spacing:-1.5px;margin-bottom:20px;
-  text-wrap:balance;
+.hero-h1{
+  font-size:clamp(30px,4.8vw,54px);font-weight:900;color:#0B1526;
+  line-height:1.1;letter-spacing:-1.2px;margin-bottom:16px;text-wrap:balance;
 }
-.hero-title em{
-  background:linear-gradient(90deg,#7baeff 0%,#b084fc 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  font-style:normal;
+.hero-h1 em{color:#4F6EF7;font-style:normal}
+.hero-sub{font-size:clamp(13px,1.5vw,15px);color:#5A6A8A;line-height:1.9;margin-bottom:26px;max-width:440px}
+@media(max-width:820px){.hero-sub{margin-left:auto;margin-right:auto}}
+.hero-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:28px}
+@media(max-width:820px){.hero-chips{justify-content:center}}
+.hero-chip{
+  display:inline-flex;align-items:center;gap:4px;
+  background:rgba(79,110,247,.07);color:#4F6EF7;
+  font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;
 }
-.hero-sub{
-  font-size:clamp(14px,2vw,17px);color:rgba(255,255,255,.5);
-  max-width:520px;margin:0 auto 36px;line-height:1.75;
-}
-.hero-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:64px}
+.hero-btns{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:820px){.hero-btns{justify-content:center}}
 .btn-primary{
-  background:var(--accent);color:#fff;font-size:14px;font-weight:700;
-  padding:14px 28px;border-radius:24px;text-decoration:none;
-  box-shadow:0 8px 28px rgba(91,138,245,.45);
-  transition:transform .2s,box-shadow .2s;
+  background:#4F6EF7;color:#fff;font-size:13px;font-weight:700;
+  padding:13px 26px;border-radius:22px;text-decoration:none;
+  box-shadow:0 6px 22px rgba(79,110,247,.38);transition:transform .18s,box-shadow .18s;
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(91,138,245,.55)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(79,110,247,.45)}
 .btn-secondary{
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);
-  font-size:14px;font-weight:600;padding:14px 28px;border-radius:24px;text-decoration:none;
-  transition:background .15s;
+  background:#fff;color:#4F6EF7;font-size:13px;font-weight:700;
+  padding:13px 26px;border-radius:22px;text-decoration:none;
+  border:2px solid rgba(79,110,247,.18);transition:border-color .18s;
 }
-.btn-secondary:hover{background:rgba(255,255,255,.14)}
+.btn-secondary:hover{border-color:rgba(79,110,247,.45)}
 
 /* App mockup */
 .mockup{
-  position:relative;width:min(720px,90vw);
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;overflow:hidden;
-  box-shadow:0 40px 100px rgba(0,0,0,.5),0 0 0 1px rgba(91,138,245,.15);
+  background:#fff;border-radius:20px;border:1px solid #DDE6F8;
+  box-shadow:0 20px 60px rgba(79,110,247,.1),0 4px 16px rgba(79,110,247,.06);
+  overflow:hidden;
 }
-.mockup-bar{
-  height:40px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.07);
-  display:flex;align-items:center;padding:0 14px;gap:6px;
-}
-.mb-dot{width:10px;height:10px;border-radius:50%}
-.mockup-canvas{
-  height:320px;background:#0f1424;position:relative;overflow:hidden;
-  background-image:radial-gradient(circle,rgba(91,138,245,.15) 1px,transparent 1px);
-  background-size:28px 28px;
-}
-/* Animated nodes */
-.m-node{
-  position:absolute;background:#fff;border-radius:12px;
-  padding:8px 12px;font-size:10px;font-weight:700;color:#1a1a2e;
-  box-shadow:0 4px 20px rgba(0,0,0,.3);white-space:nowrap;
-  border-top:3px solid var(--c);
-  animation:nodeFloat 6s ease-in-out infinite;
-}
-@keyframes nodeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-.m-node:nth-child(2){animation-delay:-1.5s}
-.m-node:nth-child(3){animation-delay:-3s}
-.m-node:nth-child(4){animation-delay:-4.5s}
-/* SVG edges */
-.mockup-svg{position:absolute;inset:0;width:100%;height:100%}
-/* Mini toolbar */
-.mockup-toolbar{
-  position:absolute;top:12px;left:50%;transform:translateX(-50%);
-  background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);
-  border-radius:14px;padding:6px 14px;display:flex;gap:8px;align-items:center;
-}
-.mt-pill{
-  background:rgba(91,138,245,.25);border-radius:8px;padding:3px 8px;
-  font-size:9px;font-weight:700;color:#8ab0ff;white-space:nowrap;
-}
-/* Mini stats */
-.mockup-stats{
-  position:absolute;bottom:12px;left:12px;
-  background:rgba(26,26,46,.85);border-radius:10px;padding:5px 10px;
-  font-size:9px;color:rgba(255,255,255,.6);font-weight:600;display:flex;gap:8px;
-}
-/* Mini minimap */
-.mockup-minimap{
-  position:absolute;bottom:12px;left:12px;top:auto;
-  width:80px;height:54px;background:rgba(20,30,60,.9);border:1px solid rgba(91,138,245,.3);
-  border-radius:8px;overflow:hidden;
-}
-.mm-tile{width:100%;height:100%;background:linear-gradient(135deg,#1a2848,#0f1c38)}
-.mm-dot{position:absolute;width:6px;height:6px;border-radius:50%;border:1px solid #fff}
-/* Timeline */
-.mockup-timeline{
-  position:absolute;right:0;top:0;bottom:0;width:140px;
-  background:rgba(15,20,36,.92);border-left:1px solid rgba(91,138,245,.15);
-  padding:12px 10px;display:flex;flex-direction:column;gap:8px;
-}
-.mt-item{display:flex;align-items:center;gap:6px}
-.mt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.mt-name{font-size:9px;color:rgba(255,255,255,.65);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mt-travel{font-size:8px;color:rgba(255,255,255,.3);padding-left:14px;margin-top:-4px}
-
-/* ── BODY ── */
-section{padding:clamp(60px,10vw,100px) clamp(16px,5vw,60px)}
-.container{max-width:1040px;margin:0 auto}
-.section-tag{
-  display:inline-block;background:rgba(91,138,245,.1);color:var(--accent);
-  font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;
-  padding:4px 12px;border-radius:20px;margin-bottom:14px;
-}
-.section-title{font-size:clamp(24px,4vw,40px);font-weight:900;line-height:1.15;letter-spacing:-.5px;margin-bottom:10px;text-wrap:balance}
-.section-sub{font-size:15px;color:var(--text2);line-height:1.75;max-width:540px}
-
-/* ── FEATURES ROW ── */
-.feat-row{display:flex;gap:48px;align-items:center;margin-top:60px}
-.feat-row.rev{flex-direction:row-reverse}
-.feat-info{flex:1;min-width:0}
-.feat-visual{flex:1;min-width:0}
-@media(max-width:700px){.feat-row,.feat-row.rev{flex-direction:column}}
-.feat-num{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:.5px;margin-bottom:8px}
-.feat-title{font-size:clamp(20px,3vw,28px);font-weight:900;line-height:1.2;margin-bottom:12px}
-.feat-desc{font-size:14px;color:var(--text2);line-height:1.85;margin-bottom:20px}
-.feat-chip{
-  display:inline-flex;align-items:center;gap:5px;
-  background:rgba(91,138,245,.1);color:var(--accent);
-  font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;margin:0 4px 4px 0;
-}
-
-/* Visual panels */
-.v-panel{
-  background:var(--surface);border:1px solid var(--border);border-radius:18px;
-  overflow:hidden;box-shadow:0 8px 40px rgba(91,138,245,.08);
-}
-.v-panel-dark{background:#0e1220;border-color:#1e2840}
-
-/* Map viz */
-.map-viz{padding:24px;position:relative;min-height:220px}
-.mv-bg{
-  width:100%;height:180px;border-radius:12px;
-  background:linear-gradient(135deg,#1a2848 0%,#0e1c38 100%);
-  position:relative;overflow:hidden;
-}
-.mv-grid{
-  position:absolute;inset:0;
-  background-image:radial-gradient(circle,rgba(91,138,245,.18) 1px,transparent 1px);
+.mock-bar{height:38px;background:#F2F5FC;border-bottom:1px solid #EDF0FA;display:flex;align-items:center;padding:0 13px;gap:5px}
+.mdot{width:9px;height:9px;border-radius:50%}
+.mock-body{
+  height:clamp(180px,45vw,240px);background:#F7FAFF;position:relative;overflow:hidden;
+  background-image:radial-gradient(circle,rgba(79,110,247,.1) 1px,transparent 1px);
   background-size:22px 22px;
 }
-.mv-pin{
-  position:absolute;background:var(--c,#5b8af5);border:2px solid #fff;
-  width:18px;height:18px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.4);
-  display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:800;
+.m-node{
+  position:absolute;background:#fff;border-radius:10px;
+  padding:7px 11px;font-size:9px;font-weight:700;color:#0B1526;
+  box-shadow:0 2px 14px rgba(79,110,247,.14);white-space:nowrap;
+  border-left:3px solid var(--c);
+  animation:nf 5s ease-in-out infinite;
 }
-.mv-line{position:absolute;height:2px;transform-origin:left center;border-radius:1px;opacity:.7}
-
-/* Dark mode toggle viz */
-.theme-viz{display:flex;gap:10px;padding:20px}
-.tv-card{
-  flex:1;border-radius:14px;overflow:hidden;border:2px solid transparent;
-  transition:border-color .2s;cursor:pointer;
+@keyframes nf{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.m-node:nth-child(2){animation-delay:-1.5s}
+.m-node:nth-child(3){animation-delay:-3s}
+.m-node:nth-child(4){animation-delay:-4.2s}
+.mock-stats{
+  position:absolute;bottom:10px;left:10px;right:10px;
+  background:rgba(79,110,247,.08);border-radius:9px;padding:6px 11px;
+  display:flex;gap:8px;font-size:9px;font-weight:700;color:#4F6EF7;
 }
-.tv-card.active-light{border-color:var(--accent)}
-.tv-card.active-dark{border-color:#8ab0ff}
-.tv-light{background:#fff;padding:10px}
-.tv-dark{background:#1a1a2e;padding:10px}
-.tv-toolbar{height:20px;border-radius:6px;margin-bottom:6px}
-.tv-node{height:36px;border-radius:8px;margin-bottom:4px}
-.tv-label{font-size:9px;font-weight:700;text-align:center;padding:5px 0}
-.tv-light .tv-toolbar{background:#f0f0f0}
-.tv-light .tv-node{background:linear-gradient(135deg,#e8f0ff,#d0deff)}
-.tv-light .tv-label{color:#888}
-.tv-dark .tv-toolbar{background:#252545}
-.tv-dark .tv-node{background:linear-gradient(135deg,#23234a,#2d2d5c)}
-.tv-dark .tv-label{color:#5060a0}
+.mock-minimap{
+  position:absolute;top:10px;right:10px;width:70px;height:48px;
+  background:rgba(20,30,60,.88);border:1px solid rgba(79,110,247,.32);border-radius:8px;overflow:hidden;
+}
 
-/* Chart viz */
-.chart-viz{padding:24px}
-.cv-total{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px}
-.cv-bar{height:10px;border-radius:5px;margin-bottom:10px;overflow:hidden;display:flex;gap:2px}
-.cv-seg{border-radius:5px;transition:width .8s}
-.cv-legend{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:12px}
-.cv-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
-.cv-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+/* ── SECTION BASE ── */
+section{padding:clamp(48px,8vw,96px) clamp(16px,5vw,80px)}
+.container{max-width:1060px;margin:0 auto}
+.sect-tag{display:inline-block;background:rgba(79,110,247,.08);color:#4F6EF7;font-size:10px;font-weight:800;padding:4px 12px;border-radius:16px;letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px}
+.sect-title{font-size:clamp(22px,3.5vw,38px);font-weight:900;line-height:1.15;letter-spacing:-.5px;margin-bottom:10px;text-wrap:balance}
+.sect-sub{font-size:14px;color:#5A6A8A;line-height:1.8;max-width:500px}
+
+/* ── FEAT ROWS ── */
+.feat-row{display:flex;gap:clamp(24px,5vw,52px);align-items:center;margin-top:48px}
+.feat-row.rev{flex-direction:row-reverse}
+@media(max-width:720px){.feat-row,.feat-row.rev{flex-direction:column;gap:24px;margin-top:32px}}
+.feat-info{flex:1;min-width:0}
+.feat-visual{flex:1;min-width:0}
+.feat-num{font-size:10px;font-weight:800;color:#4F6EF7;letter-spacing:.5px;margin-bottom:8px}
+.feat-title{font-size:clamp(18px,2.8vw,26px);font-weight:900;line-height:1.2;margin-bottom:10px}
+.feat-desc{font-size:13px;color:#5A6A8A;line-height:1.9;margin-bottom:18px}
+.feat-chips{display:flex;flex-wrap:wrap;gap:5px}
+.feat-chip{display:inline-flex;align-items:center;gap:4px;background:rgba(79,110,247,.07);color:#4F6EF7;font-size:10px;font-weight:700;padding:3px 9px;border-radius:7px}
+
+/* Visual panels */
+.v-panel{background:#fff;border:1.5px solid #DDE6F8;border-radius:18px;overflow:hidden;box-shadow:0 6px 32px rgba(79,110,247,.07)}
+
+/* Map viz */
+.map-viz{padding:22px;min-height:200px;position:relative}
+.mv-bg{width:100%;height:170px;border-radius:12px;background:linear-gradient(135deg,#1a2848,#0e1c38);position:relative;overflow:hidden}
+.mv-grid{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(79,110,247,.2) 1px,transparent 1px);background-size:20px 20px}
+.mv-pin{position:absolute;background:var(--c,#4F6EF7);border:2px solid #fff;width:18px;height:18px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:800}
 
 /* Timeline viz */
 .tl-viz{padding:20px;display:flex;flex-direction:column;gap:0}
-.tlv-day{font-size:10px;font-weight:800;color:var(--accent);margin:8px 0 4px;display:flex;align-items:center;gap:6px}
-.tlv-day::after{content:'';flex:1;height:1px;background:var(--border)}
-.tlv-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.tlv-day{font-size:10px;font-weight:800;color:#4F6EF7;margin:8px 0 4px;display:flex;align-items:center;gap:6px}
+.tlv-day::after{content:'';flex:1;height:1px;background:#EDF0FA}
+.tlv-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #F2F5FC}
 .tlv-row:last-child{border:none}
 .tlv-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.tlv-name{font-size:12px;font-weight:700;color:var(--text);flex:1}
-.tlv-time{font-size:10px;color:var(--text3)}
-.tlv-travel{font-size:10px;color:var(--text3);padding-left:16px;display:flex;align-items:center;gap:4px}
+.tlv-name{font-size:12px;font-weight:700;color:#0B1526;flex:1}
+.tlv-time{font-size:10px;color:#9AAAC8}
+.tlv-travel{font-size:10px;color:#9AAAC8;padding-left:16px;display:flex;align-items:center;gap:4px}
+
+/* Chart viz */
+.chart-viz{padding:22px}
+.cv-total{font-size:12px;font-weight:700;color:#0B1526;margin-bottom:12px}
+.cv-bar{height:10px;border-radius:5px;margin-bottom:10px;overflow:hidden;display:flex;gap:2px}
+.cv-seg{border-radius:5px;height:100%}
+.cv-legend{display:flex;flex-wrap:wrap;gap:5px 14px;margin-top:10px}
+.cv-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#5A6A8A}
+.cv-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* Theme viz */
+.theme-viz{display:flex;gap:10px;padding:18px}
+.tv-card{flex:1;border-radius:12px;overflow:hidden;border:2px solid transparent;transition:border-color .2s}
+.tv-card.a-light{border-color:#4F6EF7}
+.tv-card.a-dark{border-color:#8ab0ff}
+.tv-bar{height:18px;border-radius:5px;margin-bottom:5px}
+.tv-node{height:32px;border-radius:7px;margin-bottom:4px}
+.tv-lbl{font-size:9px;font-weight:700;text-align:center;padding:4px 0}
+.light-p{background:#fff;padding:9px}
+.light-p .tv-bar{background:#f0f0f0}
+.light-p .tv-node{background:linear-gradient(135deg,#e8f0ff,#d0deff)}
+.light-p .tv-lbl{color:#888}
+.dark-p{background:#1a1a2e;padding:9px}
+.dark-p .tv-bar{background:#252545}
+.dark-p .tv-node{background:linear-gradient(135deg,#23234a,#2d2d5c)}
+.dark-p .tv-lbl{color:#506080}
 
 /* ── HOW-TO ── */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}
-@media(max-width:640px){.steps{grid-template-columns:1fr}}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+@media(max-width:700px){.steps{grid-template-columns:1fr;gap:12px}}
 .step-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:18px;
-  padding:28px 24px;position:relative;overflow:hidden;
-}
-.step-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--accent),var(--ac2,#b084fc));
-}
-.step-num{
-  display:inline-block;font-size:10px;font-weight:800;
-  background:rgba(91,138,245,.1);color:var(--accent);
-  padding:3px 9px;border-radius:10px;letter-spacing:.3px;margin-bottom:14px;
-}
-.step-icon{font-size:28px;margin-bottom:12px;display:block}
-.step-title{font-size:16px;font-weight:800;margin-bottom:8px}
-.step-desc{font-size:13px;color:var(--text2);line-height:1.75}
-
-/* ── NEW FEATURES GRID ── */
-.nf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:40px}
-.nf-card{
-  background:var(--surface);border:1px solid var(--border);border-radius:16px;
-  padding:20px;display:flex;gap:14px;align-items:flex-start;
+  background:#fff;border:1.5px solid #DDE6F8;border-radius:18px;
+  padding:26px 22px;position:relative;overflow:hidden;
   transition:transform .18s,box-shadow .18s;
 }
-.nf-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(91,138,245,.1)}
-.nf-icon{
-  font-size:22px;width:42px;height:42px;border-radius:12px;
-  background:rgba(91,138,245,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+.step-card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(79,110,247,.1)}
+.step-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--a1),var(--a2,#8ab4ff))}
+.step-num{display:inline-block;font-size:10px;font-weight:800;background:rgba(79,110,247,.08);color:#4F6EF7;padding:3px 9px;border-radius:9px;letter-spacing:.3px;margin-bottom:12px}
+.step-icon{font-size:26px;margin-bottom:10px;display:block}
+.step-title{font-size:15px;font-weight:800;margin-bottom:7px;color:#0B1526}
+.step-desc{font-size:12px;color:#6A7894;line-height:1.8}
+
+/* ── NEW FEATURES GRID ── */
+.nf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:12px;margin-top:36px}
+.nf-card{
+  background:#fff;border:1.5px solid #DDE6F8;border-radius:16px;
+  padding:18px;display:flex;gap:13px;align-items:flex-start;
+  transition:transform .18s,box-shadow .18s,border-color .18s;
 }
-.nf-title{font-size:13px;font-weight:700;margin-bottom:4px}
-.nf-desc{font-size:11px;color:var(--text2);line-height:1.6}
+.nf-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(79,110,247,.1);border-color:rgba(79,110,247,.28)}
+.nf-icon{font-size:20px;width:40px;height:40px;border-radius:11px;background:rgba(79,110,247,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nf-title{font-size:12px;font-weight:800;margin-bottom:4px;color:#0B1526}
+.nf-desc{font-size:11px;color:#7A8AA8;line-height:1.6}
 
 /* ── CTA ── */
 .cta-wrap{
-  background:linear-gradient(135deg,#0c1128 0%,#1a1060 50%,#0c1128 100%);
-  border-radius:24px;padding:clamp(40px,7vw,72px) clamp(20px,5vw,60px);
+  background:linear-gradient(135deg,#3855F2 0%,#6B8BF8 100%);
+  border-radius:clamp(16px,3vw,24px);padding:clamp(40px,7vw,72px) clamp(20px,5vw,64px);
   text-align:center;position:relative;overflow:hidden;
 }
-.cta-glow{
-  position:absolute;width:400px;height:400px;border-radius:50%;
-  background:radial-gradient(circle,rgba(91,138,245,.2),transparent 65%);
-  top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;
-}
-.cta-title{font-size:clamp(24px,4vw,38px);font-weight:900;color:#fff;margin-bottom:12px;text-wrap:balance}
-.cta-sub{font-size:14px;color:rgba(255,255,255,.5);margin-bottom:32px}
-.cta-note{font-size:11px;color:rgba(255,255,255,.28);margin-top:14px}
+.cta-glow{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.1),transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.cta-title{font-size:clamp(22px,4vw,38px);font-weight:900;color:#fff;margin-bottom:10px;text-wrap:balance}
+.cta-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:28px}
+.cta-btn{background:#fff;color:#4F6EF7;font-size:14px;font-weight:800;padding:14px 34px;border-radius:24px;text-decoration:none;box-shadow:0 6px 24px rgba(0,0,0,.14);transition:transform .18s;display:inline-block}
+.cta-btn:hover{transform:translateY(-2px)}
+.cta-note{font-size:10px;color:rgba(255,255,255,.35);margin-top:12px}
 
 /* ── FOOTER ── */
 footer{
-  border-top:1px solid var(--border);
-  padding:28px clamp(16px,5vw,60px);
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  border-top:1px solid #DDE6F8;
+  padding:20px clamp(16px,5vw,60px);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  background:#F7FAFF;
 }
-.ft-logo{font-size:13px;font-weight:800;color:var(--text)}
-.ft-links{display:flex;gap:20px}
-.ft-link{font-size:12px;color:var(--text3);text-decoration:none}
-.ft-link:hover{color:var(--text2)}
+.ft-logo{font-size:13px;font-weight:900;color:#0B1526}
+.ft-links{display:flex;gap:16px;flex-wrap:wrap}
+.ft-link{font-size:12px;color:#9AAAC8;text-decoration:none;transition:color .15s}
+.ft-link:hover{color:#4F6EF7}
+.ft-note{font-size:11px;color:#B0BCCC}
+@media(max-width:480px){footer{flex-direction:column;align-items:flex-start;gap:8px}.ft-note{display:none}}
 
-/* Scroll reveal */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+/* Reveal */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}
 .reveal.in{opacity:1;transform:translateY(0)}
-.reveal-d1{transition-delay:.1s}.reveal-d2{transition-delay:.2s}.reveal-d3{transition-delay:.3s}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
 </style>
+</head>
+<body>
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="app.html">✈️ 여행 마인드맵 <span>무료 · 설치 불필요</span></a>
+  <a class="nav-logo" href="app.html">✈️ 여행 마인드맵 <span class="nav-logo-badge">FREE</span></a>
   <a class="nav-cta" href="app.html">지금 시작하기 →</a>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-glow"></div>
-  <div class="hero-eyebrow">✨ 무료 여행 계획 도구</div>
-  <h1 class="hero-title">여행 계획을<br><em>캔버스 위에서</em></h1>
-  <p class="hero-sub">장소 검색, 경로 연결, 이동 시간 계산, 경비 관리까지 — 복잡한 여행 일정을 한 화면에서 시각적으로 정리하세요.</p>
-  <div class="hero-btns">
-    <a class="btn-primary" href="app.html">무료로 시작하기 →</a>
-    <a class="btn-secondary" href="#features">기능 둘러보기</a>
-  </div>
-
-  <!-- App mockup -->
-  <div class="mockup reveal">
-    <div class="mockup-bar">
-      <div class="mb-dot" style="background:#ff5f57"></div>
-      <div class="mb-dot" style="background:#ffbd2e"></div>
-      <div class="mb-dot" style="background:#28c840"></div>
+  <div class="hero-info reveal">
+    <div class="hero-eyebrow">✨ 무료 여행 계획 도구</div>
+    <h1 class="hero-h1">여행 계획을<br><em>더 스마트하게</em></h1>
+    <p class="hero-sub">장소 검색, 경로 연결, 경비 관리까지 — 복잡한 여행 일정을 한 화면에서 시각적으로 정리하세요.</p>
+    <div class="hero-chips">
+      <span class="hero-chip">🔍 장소 검색</span>
+      <span class="hero-chip">🗺️ 경로 연결</span>
+      <span class="hero-chip">💰 경비 관리</span>
+      <span class="hero-chip">📅 캘린더 내보내기</span>
+      <span class="hero-chip">🔄 자동 저장</span>
     </div>
-    <div class="mockup-canvas">
-      <svg class="mockup-svg">
-        <line x1="170" y1="80" x2="340" y2="140" stroke="#5b8af5" stroke-width="2" stroke-dasharray="5 4" opacity=".6"/>
-        <line x1="340" y1="140" x2="480" y2="90" stroke="#48c78e" stroke-width="2" stroke-dasharray="5 4" opacity=".6"/>
-        <line x1="480" y1="90" x2="400" y2="230" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="5 4" opacity=".6"/>
-        <line x1="170" y1="80" x2="140" y2="200" stroke="#f7c948" stroke-width="2" stroke-dasharray="5 4" opacity=".6"/>
-        <!-- travel icons -->
-        <text x="245" y="101" font-size="11" text-anchor="middle" opacity=".7">🚗</text>
-        <text x="415" y="105" font-size="11" text-anchor="middle" opacity=".7">🚶</text>
-        <text x="448" y="170" font-size="11" text-anchor="middle" opacity=".7">🚌</text>
-        <text x="148" y="148" font-size="11" text-anchor="middle" opacity=".7">✈️</text>
-      </svg>
-      <!-- nodes -->
-      <div class="m-node" style="left:100px;top:55px;--c:#5b8af5">📍 도쿄 타워<div style="font-size:8px;color:#888;font-weight:500;margin-top:2px">Day 1 · 13:00</div></div>
-      <div class="m-node" style="left:275px;top:115px;--c:#48c78e">🍜 이치란 라멘<div style="font-size:8px;color:#888;font-weight:500;margin-top:2px">Day 1 · 19:00</div></div>
-      <div class="m-node" style="left:415px;top:65px;--c:#ff6b6b">🏨 신주쿠 호텔<div style="font-size:8px;color:#888;font-weight:500;margin-top:2px">Day 2 · 15:00</div></div>
-      <div class="m-node" style="left:78px;top:178px;--c:#f7c948">✈️ 나리타 공항<div style="font-size:8px;color:#888;font-weight:500;margin-top:2px">Day 3 · 10:00</div></div>
-      <!-- toolbar -->
-      <div class="mockup-toolbar">
-        <span class="mt-pill">🔍 장소 검색</span>
-        <span class="mt-pill">📅 Day 구역</span>
-        <span class="mt-pill">💾 저장</span>
-        <span class="mt-pill">🌙</span>
+    <div class="hero-btns">
+      <a class="btn-primary" href="app.html">무료로 시작하기 →</a>
+      <a class="btn-secondary" href="#features">기능 둘러보기</a>
+    </div>
+  </div>
+  <div class="hero-visual reveal d2">
+    <div class="mockup">
+      <div class="mock-bar">
+        <div class="mdot" style="background:#FF5F57"></div>
+        <div class="mdot" style="background:#FFBD2E"></div>
+        <div class="mdot" style="background:#28C840"></div>
       </div>
-      <!-- minimap (left) -->
-      <div style="position:absolute;bottom:12px;left:12px;width:78px;height:52px;background:rgba(20,30,60,.9);border:1px solid rgba(91,138,245,.35);border-radius:8px;overflow:hidden">
-        <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a2848,#0e1c38);position:relative">
-          <div style="position:absolute;width:5px;height:5px;background:#5b8af5;border-radius:50%;top:18px;left:22px;border:1px solid #fff"></div>
-          <div style="position:absolute;width:5px;height:5px;background:#48c78e;border-radius:50%;top:28px;left:42px;border:1px solid #fff"></div>
-          <div style="position:absolute;width:5px;height:5px;background:#ff6b6b;border-radius:50%;top:14px;left:55px;border:1px solid #fff"></div>
-          <div style="position:absolute;width:5px;height:5px;background:#f7c948;border-radius:50%;top:35px;left:18px;border:1px solid #fff"></div>
-          <svg style="position:absolute;inset:0;width:100%;height:100%">
-            <line x1="24" y1="20" x2="44" y2="30" stroke="#5b8af5" stroke-width="1" opacity=".7"/>
-            <line x1="44" y1="30" x2="57" y2="16" stroke="#48c78e" stroke-width="1" opacity=".7"/>
-            <line x1="24" y1="20" x2="20" y2="37" stroke="#f7c948" stroke-width="1" opacity=".7"/>
+      <div class="mock-body">
+        <svg style="position:absolute;inset:0;width:100%;height:100%">
+          <line x1="130" y1="58" x2="290" y2="98" stroke="#4F6EF7" stroke-width="2" stroke-dasharray="5 4" opacity=".5"/>
+          <line x1="290" y1="98" x2="400" y2="53" stroke="#22C55E" stroke-width="2" stroke-dasharray="5 4" opacity=".5"/>
+          <line x1="130" y1="58" x2="100" y2="158" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5 4" opacity=".5"/>
+          <text x="206" y="68" font-size="11" text-anchor="middle" opacity=".55">🚗</text>
+          <text x="353" y="62" font-size="11" text-anchor="middle" opacity=".55">🚌</text>
+          <text x="105" y="114" font-size="11" text-anchor="middle" opacity=".55">✈️</text>
+        </svg>
+        <div class="m-node" style="left:58px;top:40px;--c:#4F6EF7">📍 도쿄 타워<br><span style="font-weight:400;color:#9AB">Day 1 · 13:00</span></div>
+        <div class="m-node" style="left:228px;top:78px;--c:#22C55E">🍜 이치란 라멘<br><span style="font-weight:400;color:#9AB">Day 1 · 19:00</span></div>
+        <div class="m-node" style="left:338px;top:34px;--c:#EF4444">🏨 신주쿠 호텔<br><span style="font-weight:400;color:#9AB">Day 2 · 15:00</span></div>
+        <div class="m-node" style="left:36px;top:138px;--c:#F59E0B">✈️ 나리타 공항<br><span style="font-weight:400;color:#9AB">Day 3 · 10:00</span></div>
+        <div class="mock-minimap">
+          <svg width="70" height="48" style="position:absolute;inset:0">
+            <rect width="70" height="48" fill="#0e1c38"/>
+            <circle cx="18" cy="20" r="3" fill="#4F6EF7" stroke="#fff" stroke-width="1"/>
+            <circle cx="36" cy="28" r="3" fill="#22C55E" stroke="#fff" stroke-width="1"/>
+            <circle cx="54" cy="16" r="3" fill="#EF4444" stroke="#fff" stroke-width="1"/>
+            <circle cx="14" cy="36" r="3" fill="#F59E0B" stroke="#fff" stroke-width="1"/>
+            <line x1="18" y1="20" x2="36" y2="28" stroke="#4F6EF7" stroke-width="1" opacity=".7"/>
+            <line x1="36" y1="28" x2="54" y2="16" stroke="#22C55E" stroke-width="1" opacity=".7"/>
+            <line x1="18" y1="20" x2="14" y2="36" stroke="#F59E0B" stroke-width="1" opacity=".7"/>
           </svg>
-          <span style="position:absolute;bottom:3px;right:4px;font-size:7px;color:rgba(255,255,255,.3)">🗺️</span>
         </div>
-      </div>
-      <!-- stats bar -->
-      <div class="mockup-stats" style="left:100px;bottom:12px">📍 4곳 &nbsp;🛣️ 142km &nbsp;🔗 4개 경로</div>
-      <!-- timeline -->
-      <div class="mockup-timeline">
-        <div style="font-size:9px;font-weight:800;color:#5b8af5;margin-bottom:4px">📋 일정</div>
-        <div class="mt-item"><div class="mt-dot" style="background:#5b8af5"></div><div class="mt-name">도쿄 타워</div></div>
-        <div class="mt-travel">🚗 · 38분</div>
-        <div class="mt-item"><div class="mt-dot" style="background:#48c78e"></div><div class="mt-name">이치란 라멘</div></div>
-        <div class="mt-travel">✈️ 나리타行</div>
-        <div class="mt-item"><div class="mt-dot" style="background:#ff6b6b"></div><div class="mt-name">신주쿠 호텔</div></div>
-        <div style="margin-top:6px;font-size:8px;color:rgba(255,255,255,.25);border-top:1px solid rgba(255,255,255,.08);padding-top:6px">총 경비 ₩1,240,000</div>
+        <div class="mock-stats" style="right:auto;max-width:200px">📍 4곳 &nbsp;🛣️ 142km &nbsp;🔗 4개</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FEATURES INTRO -->
-<section id="features">
+<!-- FEATURES -->
+<section id="features" style="background:#fff;border-top:1px solid #EDF0FA;border-bottom:1px solid #EDF0FA">
   <div class="container">
     <div class="reveal">
-      <div class="section-tag">핵심 기능</div>
-      <h2 class="section-title">계획부터 경비까지,<br>한 화면에서</h2>
+      <div class="sect-tag">핵심 기능</div>
+      <h2 class="sect-title">계획부터 경비까지,<br>한 화면에서</h2>
     </div>
 
-    <!-- Feature 1: Search & Connect -->
+    <!-- 01 장소 검색 -->
     <div class="feat-row reveal">
       <div class="feat-info">
         <div class="feat-num">01 · 장소 검색 & 경로 연결</div>
         <h3 class="feat-title">검색하고,<br>클릭 두 번으로 연결</h3>
-        <p class="feat-desc">전 세계 장소를 검색해 캔버스에 노드로 추가하세요. 한국 장소 검색에 최적화되어 있어 국내 관광지·맛집·숙소도 정확하게 찾을 수 있습니다. 노드를 클릭하고 다른 노드를 클릭하면 교통수단을 선택해 연결할 수 있으며, 이동 시간이 자동으로 계산됩니다.</p>
-        <div>
+        <p class="feat-desc">전 세계 장소를 검색해 캔버스에 노드로 추가하세요. 한국 장소 검색에 최적화되어 있어 국내 관광지·맛집·숙소도 정확하게 찾을 수 있습니다. 노드 클릭 → 다른 노드 클릭으로 교통수단을 선택해 연결하면 이동 시간이 자동으로 계산됩니다.</p>
+        <div class="feat-chips">
           <span class="feat-chip">🚗 자동차</span>
           <span class="feat-chip">🚶 도보</span>
           <span class="feat-chip">🚴 자전거</span>
           <span class="feat-chip">🚌 대중교통</span>
           <span class="feat-chip">✈️ 비행기</span>
-          <span class="feat-chip">🇰🇷 한국어 검색 최적화</span>
+          <span class="feat-chip">🇰🇷 한국어 최적화</span>
         </div>
       </div>
       <div class="feat-visual">
-        <div class="v-panel v-panel-dark">
+        <div class="v-panel">
           <div class="map-viz">
             <div class="mv-bg">
               <div class="mv-grid"></div>
               <svg style="position:absolute;inset:0;width:100%;height:100%">
-                <line x1="90" y1="70" x2="210" y2="110" stroke="#5b8af5" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>
-                <line x1="210" y1="110" x2="310" y2="60" stroke="#48c78e" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>
-                <line x1="90" y1="70" x2="80" y2="145" stroke="#ff6b6b" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>
-                <text x="148" y="80" font-size="12" text-anchor="middle">🚗 38분</text>
-                <text x="268" y="76" font-size="12" text-anchor="middle">🚌 22분</text>
-                <text x="76" y="114" font-size="12" text-anchor="middle">✈️</text>
+                <line x1="90" y1="68" x2="210" y2="108" stroke="#4F6EF7" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>
+                <line x1="210" y1="108" x2="310" y2="58" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>
+                <line x1="90" y1="68" x2="78" y2="143" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="6 4" opacity=".8"/>
+                <text x="148" y="78" font-size="12" text-anchor="middle">🚗 38분</text>
+                <text x="268" y="74" font-size="12" text-anchor="middle">🚌 22분</text>
+                <text x="75" y="112" font-size="12" text-anchor="middle">✈️</text>
               </svg>
-              <div class="mv-pin" style="--c:#5b8af5;left:76px;top:58px">1</div>
-              <div class="mv-pin" style="--c:#48c78e;left:200px;top:98px">2</div>
-              <div class="mv-pin" style="--c:#ff6b6b;left:300px;top:48px">3</div>
-              <div class="mv-pin" style="--c:#f7c948;left:66px;top:133px">4</div>
+              <div class="mv-pin" style="--c:#4F6EF7;left:75px;top:56px">1</div>
+              <div class="mv-pin" style="--c:#22C55E;left:198px;top:96px">2</div>
+              <div class="mv-pin" style="--c:#EF4444;left:298px;top:46px">3</div>
+              <div class="mv-pin" style="--c:#F59E0B;left:64px;top:131px">4</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Feature 2: Timeline -->
+    <!-- 02 일정 사이드바 -->
     <div class="feat-row rev reveal">
       <div class="feat-info">
         <div class="feat-num">02 · 일정 사이드바</div>
         <h3 class="feat-title">Day별 일정을<br>한눈에 확인</h3>
-        <p class="feat-desc">오른쪽 일정 사이드바에서 전체 여행 일정을 Day별로 정리해서 볼 수 있습니다. 장소에 날짜를 입력하면 자동으로 분류되며, 이동 시간·방문 완료 여부·카테고리도 표시됩니다. 📅 캘린더 내보내기로 Google Calendar·애플 캘린더에 바로 가져갈 수도 있어요.</p>
-        <div>
+        <p class="feat-desc">오른쪽 일정 사이드바에서 전체 여행 일정을 Day별로 정리해서 볼 수 있습니다. 장소에 날짜를 입력하면 자동으로 분류되며, 이동 시간·방문 완료 여부·카테고리도 표시됩니다. 📅 캘린더 내보내기로 Google·애플·Outlook 캘린더에 바로 가져갈 수도 있어요.</p>
+        <div class="feat-chips">
           <span class="feat-chip">📅 날짜 자동 분류</span>
           <span class="feat-chip">✓ 방문 완료 체크</span>
           <span class="feat-chip">📸 이미지 저장</span>
@@ -449,41 +364,25 @@ footer{
         <div class="v-panel">
           <div class="tl-viz">
             <div class="tlv-day">Day 1</div>
-            <div class="tlv-row">
-              <div class="tlv-dot" style="background:#5b8af5"></div>
-              <div class="tlv-name">도쿄 타워</div>
-              <div class="tlv-time">13:00</div>
-            </div>
+            <div class="tlv-row"><div class="tlv-dot" style="background:#4F6EF7"></div><div class="tlv-name">도쿄 타워</div><div class="tlv-time">13:00</div></div>
             <div class="tlv-travel"><span>🚗</span> 자동차 · 38분</div>
-            <div class="tlv-row">
-              <div class="tlv-dot" style="background:#48c78e"></div>
-              <div class="tlv-name">이치란 라멘</div>
-              <div class="tlv-time">19:00</div>
-            </div>
+            <div class="tlv-row"><div class="tlv-dot" style="background:#22C55E"></div><div class="tlv-name">이치란 라멘</div><div class="tlv-time">19:00</div></div>
             <div class="tlv-day">Day 2</div>
-            <div class="tlv-row">
-              <div class="tlv-dot" style="background:#ff6b6b"></div>
-              <div class="tlv-name" style="text-decoration:line-through;opacity:.5">신주쿠 호텔</div>
-              <div class="tlv-time" style="color:var(--green);font-weight:700">방문완료 ✓</div>
-            </div>
+            <div class="tlv-row"><div class="tlv-dot" style="background:#EF4444"></div><div class="tlv-name" style="text-decoration:line-through;opacity:.45">신주쿠 호텔</div><div class="tlv-time" style="color:#22C55E;font-weight:700">완료 ✓</div></div>
             <div class="tlv-travel"><span>✈️</span> 비행기</div>
-            <div class="tlv-row">
-              <div class="tlv-dot" style="background:#f7c948"></div>
-              <div class="tlv-name">나리타 공항</div>
-              <div class="tlv-time">10:00</div>
-            </div>
+            <div class="tlv-row"><div class="tlv-dot" style="background:#F59E0B"></div><div class="tlv-name">나리타 공항</div><div class="tlv-time">10:00</div></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Feature 3: Cost -->
+    <!-- 03 경비 관리 -->
     <div class="feat-row reveal">
       <div class="feat-info">
         <div class="feat-num">03 · 경비 관리 & 차트</div>
         <h3 class="feat-title">여행 예산을<br>카테고리별로 관리</h3>
         <p class="feat-desc">💰 비용 카드를 추가해 숙박·식비·교통·쇼핑 등 항목별로 경비를 기록하세요. 원·달러·엔·유로 등 다국 통화를 지원하며 자동으로 환산합니다. 📊 차트 버튼으로 카테고리별 파이 차트를 바로 확인할 수 있습니다.</p>
-        <div>
+        <div class="feat-chips">
           <span class="feat-chip">💴 다국 통화</span>
           <span class="feat-chip">📊 카테고리 차트</span>
           <span class="feat-chip">💰 일별 예산 한도</span>
@@ -494,63 +393,63 @@ footer{
           <div class="chart-viz">
             <div class="cv-total">총 여행경비 · <strong>₩ 1,240,000</strong></div>
             <div class="cv-bar">
-              <div class="cv-seg" style="width:38%;background:#5b8af5;height:100%"></div>
-              <div class="cv-seg" style="width:27%;background:#ff6b6b;height:100%"></div>
-              <div class="cv-seg" style="width:20%;background:#f7c948;height:100%"></div>
-              <div class="cv-seg" style="width:15%;background:#48c78e;height:100%"></div>
+              <div class="cv-seg" style="width:38%;background:#4F6EF7"></div>
+              <div class="cv-seg" style="width:27%;background:#EF4444"></div>
+              <div class="cv-seg" style="width:20%;background:#F59E0B"></div>
+              <div class="cv-seg" style="width:15%;background:#22C55E"></div>
             </div>
-            <div style="text-align:center;margin:12px 0">
-              <svg width="120" height="120" viewBox="0 0 120 120">
-                <path d="M60,60 L60,10 A50,50 0 0 1 103,85 Z" fill="#5b8af5"/>
-                <path d="M60,60 L103,85 A50,50 0 0 1 30,97 Z" fill="#ff6b6b"/>
-                <path d="M60,60 L30,97 A50,50 0 0 1 10,32 Z" fill="#f7c948"/>
-                <path d="M60,60 L10,32 A50,50 0 0 1 60,10 Z" fill="#48c78e"/>
-                <circle cx="60" cy="60" r="26" fill="var(--surface)"/>
-                <text x="60" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="var(--text)">₩124만</text>
+            <div style="text-align:center;margin:14px 0">
+              <svg width="110" height="110" viewBox="0 0 120 120">
+                <path d="M60,60 L60,10 A50,50 0 0 1 103,85 Z" fill="#4F6EF7"/>
+                <path d="M60,60 L103,85 A50,50 0 0 1 30,97 Z" fill="#EF4444"/>
+                <path d="M60,60 L30,97 A50,50 0 0 1 10,32 Z" fill="#F59E0B"/>
+                <path d="M60,60 L10,32 A50,50 0 0 1 60,10 Z" fill="#22C55E"/>
+                <circle cx="60" cy="60" r="26" fill="#fff"/>
+                <text x="60" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#0B1526">₩124만</text>
               </svg>
             </div>
             <div class="cv-legend">
-              <div class="cv-item"><div class="cv-dot" style="background:#5b8af5"></div>숙박 38%</div>
-              <div class="cv-item"><div class="cv-dot" style="background:#ff6b6b"></div>식비 27%</div>
-              <div class="cv-item"><div class="cv-dot" style="background:#f7c948"></div>교통 20%</div>
-              <div class="cv-item"><div class="cv-dot" style="background:#48c78e"></div>기타 15%</div>
+              <div class="cv-item"><div class="cv-dot" style="background:#4F6EF7"></div>숙박 38%</div>
+              <div class="cv-item"><div class="cv-dot" style="background:#EF4444"></div>식비 27%</div>
+              <div class="cv-item"><div class="cv-dot" style="background:#F59E0B"></div>교통 20%</div>
+              <div class="cv-item"><div class="cv-dot" style="background:#22C55E"></div>기타 15%</div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Feature 4: Dark mode -->
+    <!-- 04 자동저장 & 다크모드 -->
     <div class="feat-row rev reveal">
       <div class="feat-info">
-        <div class="feat-num">04 · 다크 모드 & 자동 저장</div>
+        <div class="feat-num">04 · 자동 저장 & 다크 모드</div>
         <h3 class="feat-title">편한 테마에서,<br>데이터는 자동으로</h3>
-        <p class="feat-desc">기본은 깔끔한 라이트 모드입니다. 🌙 버튼 하나로 다크 모드로 전환할 수 있으며, 설정은 브라우저에 저장됩니다. 작업 내용은 30초마다 자동으로 저장되고, 다음에 앱을 열면 상단 배지를 클릭해 바로 이어서 계획을 시작할 수 있습니다.</p>
-        <div>
+        <p class="feat-desc">작업 내용은 30초마다 자동으로 저장됩니다. 다음에 앱을 열면 상단 배지를 클릭해 바로 이어서 계획할 수 있습니다. 기본은 깔끔한 라이트 모드이며 🌙 버튼 하나로 다크 모드로 전환할 수 있습니다.</p>
+        <div class="feat-chips">
+          <span class="feat-chip">🔄 30초 자동 저장</span>
           <span class="feat-chip">☀️ 기본 라이트 모드</span>
-          <span class="feat-chip">🌙 / ☀️ 즉시 전환</span>
-          <span class="feat-chip">💾 30초마다 자동 저장</span>
-          <span class="feat-chip">🔄 이어서 계획하기</span>
+          <span class="feat-chip">🌙 다크 모드 전환</span>
+          <span class="feat-chip">설정 자동 저장</span>
         </div>
       </div>
       <div class="feat-visual">
         <div class="v-panel">
           <div class="theme-viz">
-            <div class="tv-card active-light">
-              <div class="tv-light">
-                <div class="tv-toolbar"></div>
+            <div class="tv-card a-light">
+              <div class="light-p">
+                <div class="tv-bar"></div>
                 <div class="tv-node"></div>
-                <div class="tv-node" style="height:28px;opacity:.6"></div>
+                <div class="tv-node" style="height:22px;opacity:.6"></div>
               </div>
-              <div class="tv-label" style="color:#888;font-size:10px;font-weight:700">☀️ 라이트</div>
+              <div class="tv-lbl" style="color:#888;font-size:9px;background:#fff">☀️ 라이트 (기본)</div>
             </div>
-            <div class="tv-card active-dark">
-              <div class="tv-dark">
-                <div class="tv-toolbar"></div>
+            <div class="tv-card a-dark">
+              <div class="dark-p">
+                <div class="tv-bar"></div>
                 <div class="tv-node"></div>
-                <div class="tv-node" style="height:28px;opacity:.6"></div>
+                <div class="tv-node" style="height:22px;opacity:.6"></div>
               </div>
-              <div class="tv-label" style="color:#5060a0;font-size:10px;font-weight:700">🌙 다크</div>
+              <div class="tv-lbl" style="color:#5060a0;font-size:9px;background:#1a1a2e">🌙 다크</div>
             </div>
           </div>
         </div>
@@ -560,68 +459,68 @@ footer{
 </section>
 
 <!-- HOW TO -->
-<section style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+<section style="background:#F7FAFF">
   <div class="container">
     <div class="reveal" style="text-align:center">
-      <div class="section-tag">사용 방법</div>
-      <h2 class="section-title">3단계면 충분해요</h2>
-      <p class="section-sub" style="margin:0 auto">설치도 로그인도 불필요. 브라우저만 있으면 바로 시작할 수 있습니다.</p>
+      <div class="sect-tag">사용 방법</div>
+      <h2 class="sect-title">3단계면 충분해요</h2>
+      <p class="sect-sub" style="margin:0 auto">설치도 로그인도 불필요. 브라우저만 있으면 바로 시작할 수 있습니다.</p>
     </div>
     <div class="steps">
-      <div class="step-card reveal reveal-d1" style="--ac2:#5b8af5">
+      <div class="step-card reveal d1" style="--a1:#4F6EF7;--a2:#8ab4ff">
         <div class="step-num">STEP 01</div>
         <span class="step-icon">🔍</span>
         <h4 class="step-title">장소를 검색하세요</h4>
         <p class="step-desc">상단 검색창에서 도시, 관광지, 호텔, 식당 등 원하는 장소를 검색해 캔버스에 추가하세요. 직접 이름을 입력해 추가하는 것도 가능합니다.</p>
       </div>
-      <div class="step-card reveal reveal-d2" style="--ac2:#48c78e">
+      <div class="step-card reveal d2" style="--a1:#22C55E;--a2:#6ee7a0">
         <div class="step-num">STEP 02</div>
         <span class="step-icon">🔗</span>
         <h4 class="step-title">경로로 연결하세요</h4>
         <p class="step-desc">장소 노드를 클릭하면 선택되고, 다른 노드를 클릭하면 교통수단을 선택해 연결할 수 있습니다. 이동 시간이 자동으로 계산됩니다.</p>
       </div>
-      <div class="step-card reveal reveal-d3" style="--ac2:#ff6b6b">
+      <div class="step-card reveal d3" style="--a1:#F59E0B;--a2:#fcd34d">
         <div class="step-num">STEP 03</div>
         <span class="step-icon">💾</span>
         <h4 class="step-title">저장하고 공유하세요</h4>
-        <p class="step-desc">💾 저장 버튼으로 HTML 파일을 내보내거나, 📅 캘린더로 Google·애플·Outlook 캘린더에 가져가세요. 작업 중에도 30초마다 자동 저장되어 다음 방문 때 이어서 계획할 수 있습니다.</p>
+        <p class="step-desc">💾 저장 버튼으로 HTML 파일을 내보내거나, 📅 캘린더로 Google·애플 캘린더에 가져가세요. 작업 중에도 30초마다 자동 저장됩니다.</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- NEW FEATURES -->
-<section>
+<section style="background:#fff;border-top:1px solid #EDF0FA">
   <div class="container">
     <div class="reveal">
-      <div class="section-tag">신규 추가 기능</div>
-      <h2 class="section-title">더 강력해진<br>12가지 핵심 기능</h2>
+      <div class="sect-tag">전체 기능</div>
+      <h2 class="sect-title">더 강력해진<br>12가지 핵심 기능</h2>
     </div>
     <div class="nf-grid">
-      <div class="nf-card reveal"><div class="nf-icon">🔄</div><div><div class="nf-title">자동 저장 & 복원</div><div class="nf-desc">30초마다 자동 저장 · 다음 방문 시 배지 클릭으로 이어서 계획</div></div></div>
-      <div class="nf-card reveal reveal-d1"><div class="nf-icon">🇰🇷</div><div><div class="nf-title">한국 장소 검색 최적화</div><div class="nf-desc">국내 관광지·맛집·숙소를 정확하게 검색할 수 있도록 개선</div></div></div>
-      <div class="nf-card reveal reveal-d2"><div class="nf-icon">🖼️</div><div><div class="nf-title">연관 사진 자동 표시</div><div class="nf-desc">검색 결과에 장소와 관련된 사진만 정확하게 표시</div></div></div>
-      <div class="nf-card reveal"><div class="nf-icon">🗺️</div><div><div class="nf-title">미니맵 (좌하단)</div><div class="nf-desc">실제 지도 위에 경로 폴리라인 표시 · 통계 바에서 바로 열기</div></div></div>
-      <div class="nf-card reveal reveal-d1"><div class="nf-icon">🌙</div><div><div class="nf-title">다크 모드</div><div class="nf-desc">기본 라이트 모드 · 버튼 하나로 즉시 전환 · 설정 저장</div></div></div>
-      <div class="nf-card reveal reveal-d2"><div class="nf-icon">🕐</div><div><div class="nf-title">최근 검색 히스토리</div><div class="nf-desc">검색창 클릭 시 최근 8곳 바로 표시</div></div></div>
+      <div class="nf-card reveal"><div class="nf-icon">🔄</div><div><div class="nf-title">자동 저장 & 복원</div><div class="nf-desc">30초마다 자동 저장 · 배지 클릭으로 이어서 계획</div></div></div>
+      <div class="nf-card reveal d1"><div class="nf-icon">🇰🇷</div><div><div class="nf-title">한국 장소 검색 최적화</div><div class="nf-desc">국내 관광지·맛집·숙소를 정확하게 검색</div></div></div>
+      <div class="nf-card reveal d2"><div class="nf-icon">🖼️</div><div><div class="nf-title">연관 사진 자동 표시</div><div class="nf-desc">검색 결과에 관련 사진만 정확하게 표시</div></div></div>
+      <div class="nf-card reveal"><div class="nf-icon">🗺️</div><div><div class="nf-title">미니맵 보기</div><div class="nf-desc">실제 지도 위에 경로 폴리라인 표시</div></div></div>
+      <div class="nf-card reveal d1"><div class="nf-icon">🌙</div><div><div class="nf-title">다크 모드</div><div class="nf-desc">기본 라이트 모드 · 버튼으로 즉시 전환</div></div></div>
+      <div class="nf-card reveal d2"><div class="nf-icon">🕐</div><div><div class="nf-title">최근 검색 히스토리</div><div class="nf-desc">검색창 클릭 시 최근 8곳 바로 표시</div></div></div>
       <div class="nf-card reveal"><div class="nf-icon">🔀</div><div><div class="nf-title">경로 최적화</div><div class="nf-desc">Greedy TSP로 최단 순서 자동 정렬</div></div></div>
-      <div class="nf-card reveal reveal-d1"><div class="nf-icon">📅</div><div><div class="nf-title">캘린더 내보내기</div><div class="nf-desc">.ics 파일로 Google·애플·Outlook 캘린더에 바로 가져오기</div></div></div>
-      <div class="nf-card reveal reveal-d2"><div class="nf-icon">🖨️</div><div><div class="nf-title">인쇄 모드</div><div class="nf-desc">UI 요소 숨기고 캔버스만 깔끔하게 인쇄</div></div></div>
-      <div class="nf-card reveal"><div class="nf-icon">📊</div><div><div class="nf-title">경비 카테고리 차트</div><div class="nf-desc">항목별 파이 차트 · 일별 예산 한도 초과 경고</div></div></div>
-      <div class="nf-card reveal reveal-d1"><div class="nf-icon">🌡️</div><div><div class="nf-title">날씨 연동</div><div class="nf-desc">Open-Meteo API 실시간 날씨 · 장소별 날씨 확인</div></div></div>
-      <div class="nf-card reveal reveal-d2"><div class="nf-icon">📱</div><div><div class="nf-title">PWA 오프라인 지원</div><div class="nf-desc">홈 화면 설치 · 설치 없이도 오프라인 사용 가능</div></div></div>
+      <div class="nf-card reveal d1"><div class="nf-icon">📅</div><div><div class="nf-title">캘린더 내보내기</div><div class="nf-desc">.ics 파일로 Google·애플·Outlook에 가져오기</div></div></div>
+      <div class="nf-card reveal d2"><div class="nf-icon">🖨️</div><div><div class="nf-title">인쇄 모드</div><div class="nf-desc">UI 요소 숨기고 캔버스만 깔끔하게 인쇄</div></div></div>
+      <div class="nf-card reveal"><div class="nf-icon">📊</div><div><div class="nf-title">경비 카테고리 차트</div><div class="nf-desc">항목별 파이 차트 · 일별 예산 초과 경고</div></div></div>
+      <div class="nf-card reveal d1"><div class="nf-icon">🌡️</div><div><div class="nf-title">날씨 연동</div><div class="nf-desc">Open-Meteo API 실시간 날씨 조회</div></div></div>
+      <div class="nf-card reveal d2"><div class="nf-icon">📱</div><div><div class="nf-title">PWA 오프라인 지원</div><div class="nf-desc">홈 화면 설치 · 오프라인 사용 가능</div></div></div>
     </div>
   </div>
 </section>
 
 <!-- CTA -->
-<section style="padding-top:0">
+<section style="background:#F7FAFF">
   <div class="container">
     <div class="cta-wrap reveal">
       <div class="cta-glow"></div>
       <h2 class="cta-title">지금 바로 여행을<br>계획해보세요</h2>
       <p class="cta-sub">설치 불필요 · 로그인 불필요 · 완전 무료</p>
-      <a class="btn-primary" href="app.html" style="font-size:15px;padding:16px 36px">여행 마인드맵 시작하기 →</a>
+      <a class="cta-btn" href="app.html">여행 마인드맵 시작하기 →</a>
       <p class="cta-note">데이터는 브라우저에만 저장됩니다 · 외부 서버 전송 없음</p>
     </div>
   </div>
@@ -634,15 +533,14 @@ footer{
     <a class="ft-link" href="app.html">앱 열기</a>
     <a class="ft-link" href="privacy.html">개인정보처리방침</a>
   </div>
+  <span class="ft-note">데이터는 브라우저에만 저장됩니다</span>
 </footer>
 
 <script>
-// Scroll reveal
-const els = document.querySelectorAll('.reveal');
 const io = new IntersectionObserver(entries => {
-  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-}, {threshold: 0.12});
-els.forEach(el => io.observe(el));
+  entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)} });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 </script>
 </body>
 </html>
