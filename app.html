@@ -1245,6 +1245,125 @@ function zoomBy(f){zoomAt(window.innerWidth/2,window.innerHeight/2,f)}
 function resetView(){panX=0;panY=0;sc=1;applyT()}
 
 // ══════════════════════════════════════════
+// 해외 도시 감지 맵 (한국어 검색 편향 제거용)
+// ══════════════════════════════════════════
+const OVERSEAS_CITY_MAP={
+  // 일본
+  '도쿄':{lat:35.6762,lng:139.6503,en:'Tokyo'},
+  '오사카':{lat:34.6937,lng:135.5023,en:'Osaka'},
+  '교토':{lat:35.0116,lng:135.7681,en:'Kyoto'},
+  '나라':{lat:34.6851,lng:135.8049,en:'Nara'},
+  '후쿠오카':{lat:33.5904,lng:130.4017,en:'Fukuoka'},
+  '삿포로':{lat:43.0618,lng:141.3545,en:'Sapporo'},
+  '나고야':{lat:35.1815,lng:136.9066,en:'Nagoya'},
+  '오키나와':{lat:26.2124,lng:127.6809,en:'Okinawa'},
+  '나하':{lat:26.2123,lng:127.6791,en:'Naha'},
+  '나리타':{lat:35.7647,lng:140.3864,en:'Narita'},
+  '가마쿠라':{lat:35.3192,lng:139.5467,en:'Kamakura'},
+  '하코네':{lat:35.2320,lng:139.1069,en:'Hakone'},
+  '아사쿠사':{lat:35.7148,lng:139.7967,en:'Asakusa Tokyo'},
+  '신주쿠':{lat:35.6938,lng:139.7034,en:'Shinjuku Tokyo'},
+  '시부야':{lat:35.6580,lng:139.7016,en:'Shibuya Tokyo'},
+  '하라주쿠':{lat:35.6702,lng:139.7027,en:'Harajuku Tokyo'},
+  '우에노':{lat:35.7148,lng:139.7754,en:'Ueno Tokyo'},
+  '아키하바라':{lat:35.7022,lng:139.7743,en:'Akihabara Tokyo'},
+  '롯폰기':{lat:35.6627,lng:139.7310,en:'Roppongi Tokyo'},
+  '긴자':{lat:35.6721,lng:139.7649,en:'Ginza Tokyo'},
+  // 중국·홍콩·대만
+  '베이징':{lat:39.9042,lng:116.4074,en:'Beijing'},
+  '상하이':{lat:31.2304,lng:121.4737,en:'Shanghai'},
+  '홍콩':{lat:22.3193,lng:114.1694,en:'Hong Kong'},
+  '타이베이':{lat:25.0330,lng:121.5654,en:'Taipei'},
+  '마카오':{lat:22.1987,lng:113.5439,en:'Macau'},
+  // 동남아
+  '방콕':{lat:13.7563,lng:100.5018,en:'Bangkok'},
+  '치앙마이':{lat:18.7883,lng:98.9853,en:'Chiang Mai'},
+  '푸껫':{lat:7.8804,lng:98.3923,en:'Phuket'},
+  '파타야':{lat:12.9236,lng:100.8824,en:'Pattaya'},
+  '하노이':{lat:21.0285,lng:105.8542,en:'Hanoi'},
+  '호치민':{lat:10.8231,lng:106.6297,en:'Ho Chi Minh City'},
+  '다낭':{lat:16.0544,lng:108.2022,en:'Da Nang'},
+  '호이안':{lat:15.8800,lng:108.3380,en:'Hoi An'},
+  '발리':{lat:-8.4095,lng:115.1889,en:'Bali'},
+  '자카르타':{lat:-6.2088,lng:106.8456,en:'Jakarta'},
+  '싱가포르':{lat:1.3521,lng:103.8198,en:'Singapore'},
+  '쿠알라룸푸르':{lat:3.1390,lng:101.6869,en:'Kuala Lumpur'},
+  '마닐라':{lat:14.5995,lng:120.9842,en:'Manila'},
+  '세부':{lat:10.3157,lng:123.8854,en:'Cebu'},
+  '보라카이':{lat:11.9674,lng:121.9248,en:'Boracay'},
+  '씨엠립':{lat:13.3633,lng:103.8564,en:'Siem Reap'},
+  '앙코르':{lat:13.4125,lng:103.8670,en:'Angkor Wat'},
+  '프놈펜':{lat:11.5564,lng:104.9282,en:'Phnom Penh'},
+  '양곤':{lat:16.8661,lng:96.1951,en:'Yangon'},
+  // 미국
+  '뉴욕':{lat:40.7128,lng:-74.0060,en:'New York'},
+  '로스앤젤레스':{lat:34.0522,lng:-118.2437,en:'Los Angeles'},
+  '하와이':{lat:21.3069,lng:-157.8583,en:'Honolulu Hawaii'},
+  '호놀룰루':{lat:21.3069,lng:-157.8583,en:'Honolulu'},
+  '샌프란시스코':{lat:37.7749,lng:-122.4194,en:'San Francisco'},
+  '라스베가스':{lat:36.1699,lng:-115.1398,en:'Las Vegas'},
+  '시카고':{lat:41.8781,lng:-87.6298,en:'Chicago'},
+  '마이애미':{lat:25.7617,lng:-80.1918,en:'Miami'},
+  '시애틀':{lat:47.6062,lng:-122.3321,en:'Seattle'},
+  '보스턴':{lat:42.3601,lng:-71.0589,en:'Boston'},
+  '워싱턴':{lat:38.9072,lng:-77.0369,en:'Washington DC'},
+  // 유럽
+  '파리':{lat:48.8566,lng:2.3522,en:'Paris'},
+  '런던':{lat:51.5074,lng:-0.1278,en:'London'},
+  '로마':{lat:41.9028,lng:12.4964,en:'Rome'},
+  '베니스':{lat:45.4408,lng:12.3155,en:'Venice'},
+  '밀라노':{lat:45.4642,lng:9.1900,en:'Milan'},
+  '피렌체':{lat:43.7696,lng:11.2558,en:'Florence'},
+  '나폴리':{lat:40.8518,lng:14.2681,en:'Naples'},
+  '바르셀로나':{lat:41.3851,lng:2.1734,en:'Barcelona'},
+  '마드리드':{lat:40.4168,lng:-3.7038,en:'Madrid'},
+  '베를린':{lat:52.5200,lng:13.4050,en:'Berlin'},
+  '뮌헨':{lat:48.1351,lng:11.5820,en:'Munich'},
+  '함부르크':{lat:53.5753,lng:10.0153,en:'Hamburg'},
+  '프라하':{lat:50.0755,lng:14.4378,en:'Prague'},
+  '비엔나':{lat:48.2082,lng:16.3738,en:'Vienna'},
+  '부다페스트':{lat:47.4979,lng:19.0402,en:'Budapest'},
+  '암스테르담':{lat:52.3676,lng:4.9041,en:'Amsterdam'},
+  '브뤼셀':{lat:50.8503,lng:4.3517,en:'Brussels'},
+  '취리히':{lat:47.3769,lng:8.5417,en:'Zurich'},
+  '제네바':{lat:46.2044,lng:6.1432,en:'Geneva'},
+  '리스본':{lat:38.7223,lng:-9.1393,en:'Lisbon'},
+  '포르투':{lat:41.1579,lng:-8.6291,en:'Porto'},
+  '아테네':{lat:37.9838,lng:23.7275,en:'Athens'},
+  '산토리니':{lat:36.4072,lng:25.4568,en:'Santorini'},
+  '두브로브니크':{lat:42.6507,lng:18.0944,en:'Dubrovnik'},
+  '스톡홀름':{lat:59.3293,lng:18.0686,en:'Stockholm'},
+  '코펜하겐':{lat:55.6761,lng:12.5683,en:'Copenhagen'},
+  '오슬로':{lat:59.9139,lng:10.7522,en:'Oslo'},
+  '헬싱키':{lat:60.1699,lng:24.9384,en:'Helsinki'},
+  '에든버러':{lat:55.9533,lng:-3.1883,en:'Edinburgh'},
+  // 중동·아프리카
+  '두바이':{lat:25.2048,lng:55.2708,en:'Dubai'},
+  '아부다비':{lat:24.4539,lng:54.3773,en:'Abu Dhabi'},
+  '이스탄불':{lat:41.0082,lng:28.9784,en:'Istanbul'},
+  '카이로':{lat:30.0444,lng:31.2357,en:'Cairo'},
+  // 오세아니아
+  '시드니':{lat:-33.8688,lng:151.2093,en:'Sydney'},
+  '멜버른':{lat:-37.8136,lng:144.9631,en:'Melbourne'},
+  '브리즈번':{lat:-27.4698,lng:153.0251,en:'Brisbane'},
+  '오클랜드':{lat:-36.8485,lng:174.7633,en:'Auckland'},
+  // 인도
+  '뭄바이':{lat:19.0760,lng:72.8777,en:'Mumbai'},
+  '델리':{lat:28.7041,lng:77.1025,en:'New Delhi'},
+  '뉴델리':{lat:28.6139,lng:77.2090,en:'New Delhi'},
+};
+let currentOverseas=null; // doSearch에서 설정, norm 함수에서 참조
+
+function detectOverseas(q){
+  // 긴 키워드 우선 매칭 (바르셀로나 > 나 등)
+  const keys=Object.keys(OVERSEAS_CITY_MAP).sort((a,b)=>b.length-a.length);
+  for(const city of keys){
+    if(q.includes(city))return{city,...OVERSEAS_CITY_MAP[city]};
+  }
+  return null;
+}
+
+// ══════════════════════════════════════════
 // 검색
 // ══════════════════════════════════════════
 const inp=document.getElementById('search-input');
@@ -1286,9 +1405,9 @@ function norm_nomi(d,q){
     if(/city|town|village/.test(cls))score+=0.8;
     // amenity(식당, 카페 등) 가중치
     if(/amenity|shop|leisure|office/.test(it.class||''))score+=0.6;
-    // 한국어 쿼리 + 한국 결과 보너스
+    // 한국어 쿼리 + 한국 결과 보너스 (해외 도시 검색 시 제외)
     const isKrResult=it.address?.country_code==='kr';
-    if(isKo&&isKrResult)score+=1.5;
+    if(isKo&&isKrResult&&!currentOverseas)score+=1.5;
     // 한국어 주소 포맷: 시/구/동 조합
     let addrStr=it.display_name||'';
     if(isKrResult&&it.address){
@@ -1324,8 +1443,8 @@ function norm_photon(d,q){
     if(/city|town|village/.test(osm))score+=0.8;
     // 식당/카페/상점 등 amenity 가중치
     if(/restaurant|cafe|coffee|shop|mall|market|hotel|hospital|pharmacy/.test(osm))score+=0.8;
-    // 한국어 쿼리에 한국 결과 가중치
-    if(/[ㄱ-ㅎ가-힣]/.test(ql)&&(p.country==='South Korea'||p.country==='대한민국'||p.countrycode==='KR'))score+=2;
+    // 한국어 쿼리에 한국 결과 가중치 (해외 도시 검색 시 제외)
+    if(!currentOverseas&&/[ㄱ-ㅎ가-힣]/.test(ql)&&(p.country==='South Korea'||p.country==='대한민국'||p.countrycode==='KR'))score+=2;
     return {name,addr:addrParts.join(', '),lat:f.geometry.coordinates[1],lng:f.geometry.coordinates[0],score};
   }).filter(Boolean).sort((a,b)=>b.score-a.score);
 }
@@ -1353,29 +1472,53 @@ function mergeDedup(lists){
 async function doSearch(q){
   spinner.style.display='block';acEl.style.display='none';
   const isKo=/[ㄱ-ㅎ가-힣]/.test(q);
-  // 한국어 쿼리면 한반도 중심(36.5,127.5)으로 위치 바이어스 적용
-  const krBias=isKo?'&lat=36.5&lon=127.5&location_bias_scale=0.5':'';
+  currentOverseas=detectOverseas(q); // 해외 도시 감지
+
+  // 위치 바이어스: 해외 도시 → 해당 도시 중심 / 국내 한국어 → 한반도 중심 / 영어 → 없음
+  const locBias=currentOverseas
+    ?`&lat=${currentOverseas.lat}&lon=${currentOverseas.lng}&location_bias_scale=0.3`
+    :(isKo?'&lat=36.5&lon=127.5&location_bias_scale=0.5':'');
+
   const qEnc=encodeURIComponent(q);
-  // 5개 병렬: Photon(ko바이어스/en/기본) + Nominatim(전체/한국한정)
-  const [ph_ko,ph_en,ph_raw,nm,nm_kr]=await Promise.allSettled([
-    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=15&lang=ko${krBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
-    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=12&lang=en`).then(r=>r.json()).then(d=>norm_photon(d,q)),
-    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=12${krBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
+  // 해외 도시 감지 시: 영어 쿼리 병렬 추가 (OSM 커버리지 보완)
+  const enQ=currentOverseas
+    ?encodeURIComponent((q.replace(currentOverseas.city,'').trim()||currentOverseas.en)+' '+currentOverseas.en)
+    :null;
+
+  const [ph_ko,ph_en,ph_raw,nm,nm_kr,ph_enQ,nm_enQ]=await Promise.allSettled([
+    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=15&lang=ko${locBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
+    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=12&lang=en${locBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
+    fetch(`https://photon.komoot.io/api/?q=${qEnc}&limit=12${locBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)),
     fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=12&addressdetails=1&namedetails=1`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)),
-    isKo?fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=15&addressdetails=1&namedetails=1&countrycodes=kr`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)):Promise.resolve([]),
+    // 한국 한정: 해외 아닌 한국어 쿼리만
+    (isKo&&!currentOverseas)?fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=15&addressdetails=1&namedetails=1&countrycodes=kr`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)):Promise.resolve([]),
+    // 해외 도시 영어 쿼리 (Photon)
+    enQ?fetch(`https://photon.komoot.io/api/?q=${enQ}&limit=15&lang=en${locBias}`).then(r=>r.json()).then(d=>norm_photon(d,q)):Promise.resolve([]),
+    // 해외 도시 영어 쿼리 (Nominatim)
+    enQ?fetch(`https://nominatim.openstreetmap.org/search?q=${enQ}&format=json&limit=12&addressdetails=1&namedetails=1`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q)):Promise.resolve([]),
   ]);
   const pkoL=ph_ko.status==='fulfilled'?ph_ko.value:[];
   const penL=ph_en.status==='fulfilled'?ph_en.value:[];
   const prwL=ph_raw.status==='fulfilled'?ph_raw.value:[];
   const nL=nm.status==='fulfilled'?nm.value:[];
   const nkrL=nm_kr.status==='fulfilled'?nm_kr.value:[];
-  // 한국어 검색 시 한국 결과 점수 추가 부여
-  if(isKo)[pkoL,prwL,nkrL].flat().forEach(it=>{if(it)it.score=(it.score||0)+1.2;});
-  let res=mergeDedup([pkoL,prwL,nkrL,penL,nL]);
+  const penQL=ph_enQ.status==='fulfilled'?ph_enQ.value:[];
+  const nmEnQL=nm_enQ.status==='fulfilled'?nm_enQ.value:[];
+
+  // 국내 한국어 검색 시 한국 결과 점수 추가 부여
+  if(isKo&&!currentOverseas)[pkoL,prwL,nkrL].flat().forEach(it=>{if(it)it.score=(it.score||0)+1.2;});
+  // 해외 검색 시 해당 도시 반경 내 결과 보너스
+  if(currentOverseas){
+    [pkoL,penL,prwL,penQL,nmEnQL,nL].flat().forEach(it=>{
+      if(!it)return;
+      if(haversine(it.lat,it.lng,currentOverseas.lat,currentOverseas.lng)<80000)it.score=(it.score||0)+2.5;
+    });
+  }
+
+  let res=mergeDedup([pkoL,prwL,nkrL,penL,nL,penQL,nmEnQL]);
   if(!res.length){
-    // 한국 한정 재시도
     try{
-      const fb=isKo
+      const fb=(isKo&&!currentOverseas)
         ?await fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=12&addressdetails=1&countrycodes=kr`,{headers:{'Accept-Language':'ko,en;q=0.9'}}).then(r=>r.json()).then(d=>norm_nomi(d,q))
         :await fetch(`https://nominatim.openstreetmap.org/search?q=${qEnc}&format=json&limit=12&addressdetails=1`,{headers:{'Accept-Language':'en'}}).then(r=>r.json()).then(d=>norm_nomi(d,q));
       res=mergeDedup([fb]);
