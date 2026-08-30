@@ -1021,168 +1021,22 @@
     #rec-fab:hover{box-shadow:0 6px 22px rgba(232,0,61,.5)}
     .rec-fab-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:recblink 2s ease-in-out infinite}
 
-    /* ══════════════════════════════════════
-       프로젝트 갤러리
-    ══════════════════════════════════════ */
-    #project-gallery{
-      position:fixed;inset:0;z-index:9500;
-      background:#f2f5fb;
-      display:flex;flex-direction:column;
-      overflow:hidden;
-    }
-    #project-gallery.pg-hidden{display:none}
+    /* 프로젝트 뒤로가기 버튼 */
 
-    /* 헤더 */
-    #pg-header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:0 clamp(20px,5vw,60px);height:62px;
-      background:#fff;border-bottom:1px solid #e5eaf5;
-      flex-shrink:0;
-    }
-    .pg-logo{
-      font-family:'Segoe UI',system-ui,sans-serif;
-      font-weight:800;font-size:20px;letter-spacing:-.5px;
-      color:#0b1526;
-    }
-    .pg-logo em{color:#4F6EF7;font-style:normal}
-    #pg-auth-btn{
-      display:flex;align-items:center;gap:7px;
-      background:none;border:1.5px solid #dde3f0;
-      border-radius:20px;padding:6px 14px;
-      font-size:13px;font-weight:600;color:#3a4a6a;cursor:pointer;
-      transition:border-color .15s,background .15s;
-    }
-    #pg-auth-btn:hover{border-color:#4F6EF7;background:#f0f3ff}
-    .pg-avatar{font-size:15px}
-
-    /* 바디 */
-    #pg-body{
-      flex:1;overflow-y:auto;
-      padding:36px clamp(20px,5vw,60px) 60px;
-    }
-    .pg-section-title{
-      font-size:20px;font-weight:800;color:#0b1526;
-      margin-bottom:22px;letter-spacing:-.3px;
-    }
-    .pg-section-sub{
-      font-size:13px;color:#7a8aaa;margin-bottom:22px;margin-top:-14px;
-    }
-
-    /* 그리드 */
-    #pg-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-      gap:18px;
-    }
-
-    /* 새 프로젝트 카드 */
-    .pg-new-card{
-      aspect-ratio:4/3;
-      border:2.5px dashed #c5cfe8;border-radius:16px;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
-      cursor:pointer;transition:border-color .15s,background .15s;
-      background:#fff;
-    }
-    .pg-new-card:hover{border-color:#4F6EF7;background:#f5f7ff}
-    .pg-new-icon{
-      width:48px;height:48px;border-radius:14px;
-      background:linear-gradient(135deg,#4F6EF7,#20c997);
-      display:flex;align-items:center;justify-content:center;
-      font-size:26px;color:#fff;font-weight:300;line-height:1;
-    }
-    .pg-new-label{font-size:14px;font-weight:700;color:#4F6EF7}
-
-    /* 프로젝트 카드 */
-    .pg-card{
-      border-radius:16px;overflow:hidden;
-      background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.06);
-      cursor:pointer;transition:box-shadow .15s,transform .15s;
-      position:relative;
-    }
-    .pg-card:hover{box-shadow:0 6px 24px rgba(79,110,247,.15);transform:translateY(-2px)}
-    .pg-card-thumb{
-      aspect-ratio:4/3;
-      display:flex;align-items:center;justify-content:center;
-      font-size:36px;position:relative;
-    }
-    .pg-card-places{
-      position:absolute;bottom:8px;left:10px;right:10px;
-      font-size:11px;font-weight:600;color:rgba(255,255,255,.85);
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-    }
-    .pg-card-info{padding:12px 14px 14px;position:relative}
-    .pg-card-title{font-size:14px;font-weight:700;color:#0b1526;margin-bottom:3px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .pg-card-date{font-size:11px;color:#9aa3bb}
-    .pg-card-menu{
-      position:absolute;top:10px;right:10px;
-      width:26px;height:26px;border-radius:8px;
-      border:none;background:transparent;cursor:pointer;
-      font-size:14px;color:#9aa3bb;display:flex;align-items:center;justify-content:center;
-      transition:background .12s;
-    }
-    .pg-card-menu:hover{background:#f2f4fb;color:#3a4a6a}
-
-    /* 드롭다운 메뉴 */
-    .pg-dropdown{
-      position:fixed;z-index:9999;
-      background:#fff;border:1px solid #e5eaf5;
-      border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.12);
-      padding:6px;min-width:140px;
-    }
-    .pg-dropdown button{
-      display:block;width:100%;text-align:left;
-      padding:8px 12px;border:none;background:none;
-      font-size:13px;color:#2a3a5a;border-radius:8px;cursor:pointer;
-      transition:background .12s;
-    }
-    .pg-dropdown button:hover{background:#f2f4fb}
-    .pg-dropdown button.danger{color:#ef4444}
-    .pg-dropdown button.danger:hover{background:#fff5f5}
-
-    /* 로그인 유도 배너 */
-    .pg-login-banner{
-      background:linear-gradient(135deg,#eef2ff,#f0fdf9);
-      border:1px solid #c7d7fe;border-radius:14px;
-      padding:16px 20px;margin-bottom:28px;
-      display:flex;align-items:center;gap:14px;
-    }
-    .pg-login-banner-icon{font-size:24px}
-    .pg-login-banner-text{flex:1;font-size:13px;color:#3a4a6a;line-height:1.6}
-    .pg-login-banner-btn{
-      background:linear-gradient(135deg,#4F6EF7,#4a7aee);
-      border:none;border-radius:10px;padding:8px 16px;
-      color:#fff;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
-    }
-
-    /* 빈 상태 */
-    .pg-empty{
-      grid-column:1/-1;text-align:center;
-      padding:60px 20px;color:#9aa3bb;font-size:14px;
-    }
-    .pg-empty-icon{font-size:48px;margin-bottom:12px}
-
-    /* 현재 프로젝트 제목 (툴바용) */
+    /* 현재 프로젝트 제목 (툴바) */
     #pg-current-title{
       font-size:13px;font-weight:700;color:#3a4a6a;
       max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-      cursor:pointer;padding:4px 8px;border-radius:8px;
-      transition:background .12s;
+      padding:4px 8px;border-radius:8px;
     }
-    #pg-current-title:hover{background:#f0f3ff}
     #pg-back-btn{
       display:flex;align-items:center;gap:5px;
       font-size:12px;font-weight:700;color:#6a7aaa;
-      background:none;border:none;cursor:pointer;padding:5px 8px;
+      background:none;border:1.5px solid #dde3f0;cursor:pointer;padding:5px 10px;
       border-radius:8px;transition:background .12s,color .12s;white-space:nowrap;
+      text-decoration:none;
     }
-    #pg-back-btn:hover{background:#f0f3ff;color:#4F6EF7}
-
-    @media(max-width:640px){
-      #pg-grid{grid-template-columns:repeat(2,1fr);gap:12px}
-      #pg-body{padding:24px 16px 40px}
-      .pg-login-banner{flex-direction:column;text-align:center}
-    }
+    #pg-back-btn:hover{background:#f0f3ff;color:#4F6EF7;border-color:#4F6EF7}
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
@@ -1192,36 +1046,10 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════
-     프로젝트 갤러리
-═══════════════════════════════════════ -->
-<div id="project-gallery">
-  <div id="pg-header">
-    <span class="pg-logo">choi<em>ble</em></span>
-    <button id="pg-auth-btn" onclick="pgToggleAuth()">
-      <span class="pg-avatar" id="pg-avatar">👤</span>
-      <span id="pg-auth-label">로그인</span>
-    </button>
-  </div>
-  <div id="pg-body">
-    <div id="pg-login-banner-wrap"></div>
-    <div class="pg-section-title">내 여행 ✈️</div>
-    <div id="pg-grid">
-      <div class="pg-new-card" onclick="pgNewProject()">
-        <div class="pg-new-icon">+</div>
-        <div class="pg-new-label">새 프로젝트</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- 드롭다운 (카드 메뉴) -->
-<div id="pg-dropdown" class="pg-dropdown" style="display:none"></div>
-
 <div id="toolbar">
   <a href="index.html" class="t-home-btn" title="홈으로"><img src="/choible-icon.svg" alt="choible" width="22" height="22" style="border-radius:5px;vertical-align:middle;display:block"></a>
-  <button id="pg-back-btn" onclick="showGallery()" title="프로젝트 목록">← 프로젝트</button>
-  <span id="pg-current-title" onclick="showGallery()" title="프로젝트 목록으로"></span>
+  <a id="pg-back-btn" href="projects.html" title="프로젝트 목록">← 프로젝트</a>
+  <span id="pg-current-title"></span>
   <span class="t-logo">✈️ 여행 마인드맵</span>
   <div class="t-div"></div>
   <div class="search-wrap">
@@ -3843,29 +3671,8 @@ setInterval(doAutoSave,30000);
 setInterval(updateAutoSaveBadge,60000);
 
 // ══════════════════════════════════════════════════════
-// 프로젝트 갤러리
+// 프로젝트 유틸리티 (로컬 저장)
 // ══════════════════════════════════════════════════════
-const PG_COLORS=[
-  ['#4F6EF7','#20c997'],['#f97316','#f59e0b'],
-  ['#ec4899','#f43f5e'],['#8b5cf6','#6366f1'],
-  ['#10b981','#14b8a6'],['#3b82f6','#06b6d4'],
-  ['#f43f5e','#fb923c'],['#a855f7','#ec4899'],
-];
-function pgColor(str){
-  let h=0;for(let c of(str||'?'))h=(h*31+c.charCodeAt(0))&0xffffffff;
-  return PG_COLORS[Math.abs(h)%PG_COLORS.length];
-}
-function pgFormatDate(iso){
-  if(!iso)return '';
-  const d=new Date(iso), now=new Date();
-  const diff=Math.floor((now-d)/60000);
-  if(diff<1)return '방금 전';if(diff<60)return `${diff}분 전`;
-  if(diff<1440)return `${Math.floor(diff/60)}시간 전`;
-  if(diff<2880)return '어제';
-  return d.toLocaleDateString('ko-KR',{month:'short',day:'numeric'});
-}
-
-// ── 로컬 프로젝트 (비로그인) ──
 function pgGetLocalProjects(){
   try{return JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{return[];}
 }
@@ -3886,154 +3693,6 @@ function pgPreviewText(data){
   const places=(data.places||[]);
   if(!places.length)return '장소 없음';
   return places[0].name+(places.length>1?` 외 ${places.length-1}곳`:'');
-}
-
-// ── 갤러리 표시 ──
-async function showGallery(){
-  // 현재 작업 중이면 먼저 저장
-  if(currentProjectId) doAutoSave();
-
-  const gallery=document.getElementById('project-gallery');
-  gallery.classList.remove('pg-hidden');
-
-  // 툴바 숨기기
-  document.getElementById('toolbar').style.display='none';
-
-  await pgRenderGallery();
-}
-
-function hideGallery(){
-  document.getElementById('project-gallery').classList.add('pg-hidden');
-  document.getElementById('toolbar').style.display='';
-}
-
-async function pgRenderGallery(){
-  const grid=document.getElementById('pg-grid');
-  // 로그인 배너 갱신
-  const bannerWrap=document.getElementById('pg-login-banner-wrap');
-  if(!currentUser){
-    bannerWrap.innerHTML=`<div class="pg-login-banner">
-      <div class="pg-login-banner-icon">☁️</div>
-      <div class="pg-login-banner-text"><strong>로그인하면 어디서든 여행을 불러올 수 있어요.</strong><br>지금은 이 기기에만 저장됩니다.</div>
-      <button class="pg-login-banner-btn" onclick="openAuthModal()">로그인 / 가입</button>
-    </div>`;
-    pgUpdateAuthBtn(null);
-  } else {
-    bannerWrap.innerHTML='';
-    pgUpdateAuthBtn(currentUser);
-  }
-
-  // 카드 기존 제거 (새 프로젝트 카드 제외)
-  Array.from(grid.querySelectorAll('.pg-card')).forEach(c=>c.remove());
-
-  let projects=[];
-  if(currentUser){
-    const {data}=await sb.from('mindmaps')
-      .select('id,title,updated_at,data')
-      .eq('user_id',currentUser.id)
-      .order('updated_at',{ascending:false});
-    projects=(data||[]).map(p=>({
-      id:p.id, cloud:true,
-      title:p.title||'새 여행',
-      updatedAt:p.updated_at,
-      preview:pgPreviewText(p.data||{}),
-    }));
-  } else {
-    projects=pgGetLocalProjects().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
-  }
-
-  if(!projects.length){
-    grid.insertAdjacentHTML('beforeend',`<div class="pg-empty"><div class="pg-empty-icon">🗺️</div>아직 저장된 여행이 없습니다.<br>새 프로젝트를 만들어보세요!</div>`);
-    return;
-  }
-
-  projects.forEach(p=>{
-    const [c1,c2]=pgColor(p.title);
-    const card=document.createElement('div');
-    card.className='pg-card';
-    card.dataset.id=p.id;
-    card.innerHTML=`
-      <div class="pg-card-thumb" style="background:linear-gradient(135deg,${c1},${c2})">
-        <span style="font-size:40px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.2))">${[...p.title][0]||'✈'}</span>
-        <div class="pg-card-places">${p.preview||''}</div>
-      </div>
-      <div class="pg-card-info">
-        <div class="pg-card-title">${p.title}</div>
-        <div class="pg-card-date">${pgFormatDate(p.updatedAt)}</div>
-        <button class="pg-card-menu" onclick="pgShowMenu(event,'${p.id}',${p.cloud?'true':'false'})">⋯</button>
-      </div>`;
-    card.addEventListener('click', e=>{
-      if(e.target.closest('.pg-card-menu'))return;
-      pgOpenProject(p.id, p.cloud);
-    });
-    grid.appendChild(card);
-  });
-}
-
-function pgUpdateAuthBtn(user){
-  const btn=document.getElementById('pg-auth-btn');
-  const lbl=document.getElementById('pg-auth-label');
-  const av=document.getElementById('pg-avatar');
-  if(!btn)return;
-  if(user){
-    lbl.textContent=user.email.split('@')[0];
-    av.textContent='😊';
-  } else {
-    lbl.textContent='로그인';
-    av.textContent='👤';
-  }
-}
-
-function pgToggleAuth(){
-  if(currentUser){
-    // 로그아웃 확인
-    if(confirm('로그아웃 하시겠습니까?')) sb.auth.signOut().then(()=>location.reload());
-  } else {
-    openAuthModal();
-  }
-}
-
-// ── 새 프로젝트 ──
-function pgNewProject(){
-  const id='local_'+Date.now();
-  clearAll();
-  currentProjectId=id;
-  currentMapId=null;
-
-  if(!currentUser){
-    // 로컬 프로젝트 목록에 추가
-    const list=pgGetLocalProjects();
-    list.unshift({id,title:'새 여행',updatedAt:new Date().toISOString(),preview:'장소 없음'});
-    pgSetLocalProjects(list);
-  }
-
-  pgSetCurrentTitle('새 여행');
-  hideGallery();
-
-  // 온보딩이 처음이면 표시
-  try{if(!localStorage.getItem('tmv2_onboard_done'))showOnboard();}catch(_){}
-}
-
-// ── 프로젝트 열기 ──
-async function pgOpenProject(id, isCloud){
-  clearAll();
-  if(isCloud){
-    const {data,error}=await sb.from('mindmaps').select('*').eq('id',id).single();
-    if(error||!data){showHint('❌ 불러오기 실패');return;}
-    currentMapId=data.id;
-    currentProjectId=data.id;
-    pgSetCurrentTitle(data.title||'새 여행');
-    pgLoadMapData(data.data);
-  } else {
-    currentProjectId=id;
-    currentMapId=null;
-    const raw=localStorage.getItem('choible_proj_'+id);
-    const meta=pgGetLocalProjects().find(p=>p.id===id);
-    pgSetCurrentTitle(meta?.title||'새 여행');
-    if(raw) pgLoadMapData(JSON.parse(raw));
-  }
-  hideGallery();
-  doAutoSave();
 }
 
 function pgLoadMapData(d){
@@ -4061,91 +3720,51 @@ function pgSetCurrentTitle(title){
   if(el) el.textContent=title;
 }
 
-// ── 카드 메뉴 ──
-let _pgMenuId=null, _pgMenuCloud=false;
-function pgShowMenu(e, id, isCloud){
-  e.stopPropagation();
-  _pgMenuId=id; _pgMenuCloud=isCloud;
-  const dd=document.getElementById('pg-dropdown');
-  dd.innerHTML=`
-    <button onclick="pgRename('${id}',${isCloud})">✏️ 이름 변경</button>
-    ${isCloud?`<button onclick="pgShareProject('${id}')">🔗 공유 링크</button>`:''}
-    <button class="danger" onclick="pgDelete('${id}',${isCloud})">🗑️ 삭제</button>`;
-  const rect=e.currentTarget.getBoundingClientRect();
-  dd.style.display='block';
-  dd.style.top=(rect.bottom+6)+'px';
-  dd.style.left=Math.min(rect.left, window.innerWidth-160)+'px';
-  setTimeout(()=>document.addEventListener('click',pgCloseMenu,{once:true}),10);
-}
-function pgCloseMenu(){
-  document.getElementById('pg-dropdown').style.display='none';
-}
-
-async function pgRename(id, isCloud){
-  pgCloseMenu();
-  const meta=isCloud
-    ? (await sb.from('mindmaps').select('title').eq('id',id).single()).data
-    : pgGetLocalProjects().find(p=>p.id===id);
-  const newTitle=prompt('새 이름:', meta?.title||'새 여행');
-  if(!newTitle)return;
-  if(isCloud){
-    await sb.from('mindmaps').update({title:newTitle}).eq('id',id).eq('user_id',currentUser.id);
+// ── 프로젝트 열기 (URL 파라미터에서) ──
+async function pgOpenProjectFromURL(id){
+  clearAll();
+  if(!id.startsWith('local_')){
+    // 클라우드 프로젝트 (UUID)
+    const {data,error}=await sb.from('mindmaps').select('*').eq('id',id).single();
+    if(error||!data){showHint('❌ 불러오기 실패');window.location.href='projects.html';return;}
+    currentMapId=data.id;
+    currentProjectId=data.id;
+    pgSetCurrentTitle(data.title||'새 여행');
+    pgLoadMapData(data.data);
   } else {
-    const list=pgGetLocalProjects();
-    const p=list.find(p=>p.id===id);if(p)p.title=newTitle;
-    pgSetLocalProjects(list);
+    // 로컬 프로젝트
+    currentProjectId=id;
+    currentMapId=null;
+    const raw=localStorage.getItem('choible_proj_'+id);
+    const meta=pgGetLocalProjects().find(p=>p.id===id);
+    pgSetCurrentTitle(meta?.title||'새 여행');
+    if(raw) pgLoadMapData(JSON.parse(raw));
   }
-  if(currentProjectId===id) pgSetCurrentTitle(newTitle);
-  pgRenderGallery();
+  doAutoSave();
 }
 
-async function pgDelete(id, isCloud){
-  pgCloseMenu();
-  if(!confirm('이 여행을 삭제하시겠습니까?'))return;
-  if(isCloud){
-    await sb.from('mindmaps').delete().eq('id',id).eq('user_id',currentUser.id);
-  } else {
-    pgSetLocalProjects(pgGetLocalProjects().filter(p=>p.id!==id));
-    localStorage.removeItem('choible_proj_'+id);
-  }
-  if(currentProjectId===id){ currentProjectId=null; currentMapId=null; }
-  pgRenderGallery();
-}
-
-async function pgShareProject(id){
-  pgCloseMenu();
-  const token='share_'+Math.random().toString(36).slice(2);
-  await sb.from('mindmaps').update({share_token:token,is_public:true}).eq('id',id);
-  const url=location.origin+'/app.html?share='+token;
-  await navigator.clipboard.writeText(url).catch(()=>{});
-  showHint('🔗 공유 링크가 복사되었습니다!');
-}
-
-// ── 로그인 후 클라우드 프로젝트로 전환 ──
-async function pgSyncAfterLogin(){
-  // 로컬 프로젝트가 있으면 클라우드에 마이그레이션 제안
-  const local=pgGetLocalProjects();
-  if(local.length>0 && currentUser){
-    if(confirm(`로컬에 저장된 여행 ${local.length}개를 클라우드로 옮기시겠습니까?`)){
-      for(const p of local){
-        const raw=localStorage.getItem('choible_proj_'+p.id);
-        const data=raw?JSON.parse(raw):{};
-        await sb.from('mindmaps').insert({user_id:currentUser.id,title:p.title,data});
-        localStorage.removeItem('choible_proj_'+p.id);
-      }
-      pgSetLocalProjects([]);
-      showHint('☁️ 클라우드로 이전 완료!');
-    }
-  }
-}
-
-// ── 시작 시 갤러리 표시 ──
+// ── 시작 시 URL 파라미터 라우팅 ──
 (function pgInit(){
-  // 공유 링크면 갤러리 건너뜀
-  if(new URLSearchParams(location.search).has('share')) return;
-  // 갤러리 표시 (툴바 숨김)
-  document.getElementById('toolbar').style.display='none';
-  // auth 상태 반영은 Supabase onAuthStateChange에서 처리
+  const params=new URLSearchParams(location.search);
+  if(params.has('share')) return; // 공유 링크는 checkShareParam에서 처리
+  const projId=params.get('project');
+  const isNew=params.has('newproject');
+  if(projId){
+    pgOpenProjectFromURL(projId);
+  } else if(isNew){
+    currentProjectId='local_'+Date.now();
+    currentMapId=null;
+    pgSetCurrentTitle('새 여행');
+    const list=pgGetLocalProjects();
+    if(!list.find(p=>p.id===currentProjectId)){
+      list.unshift({id:currentProjectId,title:'새 여행',updatedAt:new Date().toISOString(),preview:'장소 없음'});
+      pgSetLocalProjects(list);
+    }
+    try{if(!localStorage.getItem('tmv2_onboard_done'))showOnboard();}catch(_){}
+  } else {
+    // 프로젝트 파라미터 없이 접근 → 프로젝트 갤러리로 이동
+    window.location.href='projects.html';
+  }
 })();
 
 // 자동저장 데이터 복원

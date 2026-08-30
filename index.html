@@ -342,7 +342,7 @@ footer{
   <a class="nav-logo" href="app.html"><img src="/choible-icon.svg" alt="choible" width="24" height="24" style="border-radius:6px;flex-shrink:0"> choible <span class="nav-logo-badge">FREE</span></a>
   <div class="nav-right">
     <button class="nav-login" id="nav-login-btn" onclick="openIndexAuth()">👤 <span id="nav-login-label">로그인</span></button>
-    <a class="nav-cta" href="app.html">지금 시작하기 →</a>
+    <a class="nav-cta" href="projects.html">지금 시작하기 →</a>
   </div>
 </nav>
 
@@ -395,7 +395,7 @@ footer{
       <div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#4F6EF7,#10b981);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;margin:0 auto 8px"><span id="idx-avatar-letter">?</span></div>
       <div style="font-size:14px;font-weight:700;color:#1a1a2e" id="idx-user-email">—</div>
     </div>
-    <a href="app.html" style="display:block;width:100%;background:linear-gradient(135deg,#4F6EF7,#10b981);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:8px;box-sizing:border-box">✈️ 내 여행 시작하기</a>
+    <a href="projects.html" style="display:block;width:100%;background:linear-gradient(135deg,#4F6EF7,#10b981);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:8px;box-sizing:border-box">✈️ 내 여행 시작하기</a>
     <button onclick="idxLogout()" style="width:100%;background:none;border:1.5px solid #eee;border-radius:11px;padding:10px;font-size:13px;color:#aaa;cursor:pointer">로그아웃</button>
   </div>
 </div>
@@ -459,7 +459,7 @@ footer{
       return;
     }
     closeIndexAuth();
-    window.location.href='app.html';
+    window.location.href='projects.html';
   };
   window.idxSignup = async function(){
     const email=document.getElementById('idx-su-email').value.trim();
@@ -487,7 +487,7 @@ footer{
     const {error}=await sb.auth.verifyOtp({email:idxSuEmail,token:code,type:'signup'});
     if(error){err.textContent='코드가 틀렸거나 만료되었습니다.';return;}
     closeIndexAuth();
-    window.location.href='app.html';
+    window.location.href='projects.html';
   };
   window.idxResetOtp = function(){
     document.getElementById('idx-su-form').style.display='block';
@@ -527,7 +527,7 @@ footer{
       <span class="hero-chip">🔄 자동 저장</span>
     </div>
     <div class="hero-btns">
-      <a class="btn-primary" href="app.html">무료로 시작하기 →</a>
+      <a class="btn-primary" href="projects.html">무료로 시작하기 →</a>
       <a class="btn-secondary" href="#features">기능 둘러보기</a>
     </div>
   </div>
@@ -850,7 +850,7 @@ footer{
       <div class="cta-glow"></div>
       <h2 class="cta-title">지금 바로 여행을<br>계획해보세요</h2>
       <p class="cta-sub">설치 불필요 · 로그인 불필요 · 완전 무료</p>
-      <a class="cta-btn" href="app.html">여행 마인드맵 시작하기 →</a>
+      <a class="cta-btn" href="projects.html">여행 마인드맵 시작하기 →</a>
       <p class="cta-note">데이터는 브라우저에만 저장됩니다 · 외부 서버 전송 없음</p>
     </div>
   </div>
@@ -860,7 +860,7 @@ footer{
 <footer>
   <span class="ft-logo"><img src="/choible-icon.svg" alt="choible" width="20" height="20" style="border-radius:5px;vertical-align:middle;margin-right:5px"> choible</span>
   <div class="ft-links">
-    <a class="ft-link" href="app.html">앱 열기</a>
+    <a class="ft-link" href="projects.html">앱 열기</a>
     <a class="ft-link" href="privacy.html">개인정보처리방침</a>
   </div>
   <span class="ft-note">데이터는 브라우저에만 저장됩니다</span>
