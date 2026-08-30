@@ -234,6 +234,108 @@
 
     #hint{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(26,26,46,.82);color:#fff;padding:10px 22px;border-radius:22px;font-size:13px;font-weight:600;z-index:2000;backdrop-filter:blur(10px);pointer-events:none;white-space:nowrap}
 
+    /* ── 로그인/회원가입 Auth UI ── */
+    #auth-btn{
+      display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;
+      color:#5b8af5;background:none;border:1.5px solid #d0ddff;border-radius:10px;
+      padding:6px 11px;cursor:pointer;white-space:nowrap;transition:all .15s;
+    }
+    #auth-btn:hover{background:#f0f5ff;border-color:#5b8af5}
+    #auth-btn.logged-in{color:#10b981;border-color:#a7f3d0}
+    #auth-btn.logged-in:hover{background:#ecfdf5;border-color:#10b981}
+    #auth-btn .auth-avatar{
+      width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#5b8af5,#10b981);
+      display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;
+      flex-shrink:0;
+    }
+
+    #auth-modal{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);
+      z-index:7000;background:#fff;border-radius:24px;padding:0;
+      box-shadow:0 24px 80px rgba(0,0,0,.22);width:380px;max-width:92vw;
+      display:none;overflow:hidden;
+    }
+    #auth-modal.open{display:block;animation:authIn .18s ease forwards}
+    @keyframes authIn{from{opacity:0;transform:translate(-50%,-50%) scale(.95)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+    .am-header{
+      background:linear-gradient(135deg,#5b8af5 0%,#10b981 100%);
+      padding:22px 24px 18px;display:flex;align-items:center;justify-content:space-between;
+    }
+    .am-title{font-size:16px;font-weight:800;color:#fff}
+    .am-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .am-close:hover{background:rgba(255,255,255,.35)}
+    .am-tabs{display:flex;border-bottom:2px solid #f0f0f0}
+    .am-tab{flex:1;padding:12px;font-size:13px;font-weight:700;color:#aaa;background:none;border:none;cursor:pointer;transition:all .15s;border-bottom:2px solid transparent;margin-bottom:-2px}
+    .am-tab.active{color:#5b8af5;border-bottom-color:#5b8af5}
+    .am-body{padding:20px 24px 24px}
+    .am-section{display:none}
+    .am-section.active{display:block}
+    .am-field{margin-bottom:13px}
+    .am-label{font-size:11px;font-weight:700;color:#666;margin-bottom:5px}
+    .am-input{
+      width:100%;border:1.5px solid #eee;border-radius:11px;padding:10px 13px;
+      font-size:13px;outline:none;color:#1a1a2e;transition:border-color .15s;font-family:inherit;box-sizing:border-box;
+    }
+    .am-input:focus{border-color:#5b8af5;box-shadow:0 0 0 3px rgba(91,138,245,.1)}
+    .am-btn{
+      width:100%;background:linear-gradient(135deg,#5b8af5,#4a7aee);border:none;border-radius:12px;
+      padding:12px;font-size:14px;font-weight:800;color:#fff;cursor:pointer;transition:opacity .15s;margin-top:4px;
+    }
+    .am-btn:hover{opacity:.9}
+    .am-btn:disabled{opacity:.5;cursor:default}
+    .am-btn.green{background:linear-gradient(135deg,#10b981,#059669)}
+    .am-divider{text-align:center;color:#ccc;font-size:12px;margin:14px 0;position:relative}
+    .am-divider::before,.am-divider::after{content:'';position:absolute;top:50%;width:38%;height:1px;background:#eee}
+    .am-divider::before{left:0}.am-divider::after{right:0}
+    .am-google{
+      width:100%;display:flex;align-items:center;justify-content:center;gap:9px;
+      background:#fff;border:1.5px solid #eee;border-radius:12px;padding:11px;
+      font-size:13px;font-weight:700;color:#444;cursor:pointer;transition:all .15s;
+    }
+    .am-google:hover{border-color:#5b8af5;background:#f8f9ff}
+    .am-err{font-size:12px;color:#ef4444;margin-top:8px;min-height:16px;text-align:center}
+    .am-ok{font-size:12px;color:#10b981;margin-top:8px;min-height:16px;text-align:center}
+
+    /* 내 여행 목록 패널 */
+    #my-maps-panel{
+      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(.96);
+      z-index:7000;background:#fff;border-radius:24px;padding:0;
+      box-shadow:0 24px 80px rgba(0,0,0,.22);width:420px;max-width:93vw;
+      display:none;overflow:hidden;max-height:85vh;
+    }
+    #my-maps-panel.open{display:flex;flex-direction:column;animation:authIn .18s ease forwards}
+    .mmp-header{background:linear-gradient(135deg,#5b8af5 0%,#10b981 100%);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+    .mmp-title{font-size:15px;font-weight:800;color:#fff}
+    .mmp-close{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .mmp-actions{display:flex;gap:8px;padding:14px 18px;border-bottom:1px solid #f0f0f0;flex-shrink:0}
+    .mmp-act-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;font-weight:700;padding:9px;border-radius:10px;cursor:pointer;transition:all .15s;border:1.5px solid #eee;background:#fafafa;color:#555}
+    .mmp-act-btn:hover{border-color:#5b8af5;color:#5b8af5;background:#f0f5ff}
+    .mmp-act-btn.green:hover{border-color:#10b981;color:#10b981;background:#ecfdf5}
+    .mmp-list{flex:1;overflow-y:auto;padding:12px 18px 18px}
+    .mmp-empty{text-align:center;padding:32px 0;color:#ccc;font-size:13px}
+    .mmp-item{display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid #eee;border-radius:12px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+    .mmp-item:hover{border-color:#5b8af5;background:#f8f9ff}
+    .mmp-item-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0}
+    .mmp-item-info{flex:1;min-width:0}
+    .mmp-item-title{font-size:13px;font-weight:700;color:#1a1a2e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .mmp-item-meta{font-size:11px;color:#bbb;margin-top:2px}
+    .mmp-item-actions{display:flex;gap:4px;flex-shrink:0}
+    .mmp-item-btn{background:none;border:1.5px solid #eee;border-radius:8px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;color:#888;transition:all .15s}
+    .mmp-item-btn:hover{border-color:#5b8af5;color:#5b8af5;background:#f0f5ff}
+    .mmp-item-btn.share-btn:hover{border-color:#10b981;color:#10b981;background:#ecfdf5}
+    .mmp-item-btn.del-btn:hover{border-color:#ef4444;color:#ef4444;background:#fff5f5}
+
+    /* 공유 열람 배너 (읽기 전용) */
+    #share-banner{
+      position:fixed;top:0;left:0;right:0;z-index:8000;
+      background:linear-gradient(135deg,#5b8af5,#10b981);
+      padding:10px 20px;display:none;align-items:center;justify-content:space-between;
+    }
+    #share-banner.show{display:flex}
+    .sb-text{font-size:13px;font-weight:700;color:#fff}
+    .sb-copy{background:rgba(255,255,255,.25);border:none;border-radius:8px;padding:6px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:background .15s}
+    .sb-copy:hover{background:rgba(255,255,255,.4)}
+
     /* 하단 푸터 */
     #footer{
       position:fixed;bottom:0;left:0;right:0;height:36px;z-index:1500;
@@ -916,6 +1018,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -954,6 +1058,11 @@
   <div class="t-div"></div>
   <button class="t-btn" onclick="showOnboard()" title="사용법 보기">❓</button>
   <button class="t-btn del-btn" onclick="clearAll()">전체 삭제</button>
+  <div class="t-div"></div>
+  <button id="auth-btn" onclick="openAuthModal()" title="로그인 / 내 여행">
+    <span class="auth-avatar" id="auth-avatar">👤</span>
+    <span id="auth-label">로그인</span>
+  </button>
   <div class="t-div"></div>
   <div id="autosave-badge" title="자동 저장">
     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -1128,6 +1237,96 @@
   <button class="ft-link" onclick="openPP()">개인정보처리방침</button>
   <span style="opacity:.4">|</span>
   <button class="ft-link" onclick="openBugModal()">문의·버그 신고</button>
+</div>
+
+<!-- 공유 열람 배너 -->
+<div id="share-banner">
+  <div class="sb-text">👀 <span id="share-banner-author">누군가</span>의 여행 일정을 보고 있습니다 (읽기 전용)</div>
+  <button class="sb-copy" onclick="copyCurrentShareLink()">🔗 이 링크 복사</button>
+</div>
+
+<!-- 로그인/회원가입 모달 -->
+<div id="auth-modal">
+  <div class="am-header">
+    <div class="am-title" id="am-header-title">✈️ choible 계정</div>
+    <button class="am-close" onclick="closeAuthModal()">✕</button>
+  </div>
+  <!-- 비로그인: 탭 -->
+  <div id="am-unauth">
+    <div class="am-tabs">
+      <button class="am-tab active" id="tab-login" onclick="switchAuthTab('login')">로그인</button>
+      <button class="am-tab" id="tab-signup" onclick="switchAuthTab('signup')">회원가입</button>
+    </div>
+    <div class="am-body">
+      <!-- 로그인 섹션 -->
+      <div class="am-section active" id="sec-login">
+        <div class="am-field">
+          <div class="am-label">이메일</div>
+          <input class="am-input" id="li-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="am-field">
+          <div class="am-label">비밀번호</div>
+          <input class="am-input" id="li-pw" type="password" placeholder="비밀번호 입력">
+        </div>
+        <button class="am-btn" id="li-btn" onclick="doLogin()">로그인</button>
+        <div class="am-err" id="li-err"></div>
+        <div class="am-divider">또는</div>
+        <button class="am-google" onclick="doGoogleLogin()">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          Google로 계속하기
+        </button>
+      </div>
+      <!-- 회원가입 섹션 -->
+      <div class="am-section" id="sec-signup">
+        <div class="am-field">
+          <div class="am-label">이메일</div>
+          <input class="am-input" id="su-email" type="email" placeholder="you@example.com">
+        </div>
+        <div class="am-field">
+          <div class="am-label">비밀번호 (6자 이상)</div>
+          <input class="am-input" id="su-pw" type="password" placeholder="비밀번호 설정">
+        </div>
+        <button class="am-btn green" id="su-btn" onclick="doSignup()">회원가입</button>
+        <div class="am-err" id="su-err"></div>
+        <div class="am-ok" id="su-ok"></div>
+        <div class="am-divider">또는</div>
+        <button class="am-google" onclick="doGoogleLogin()">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          Google로 계속하기
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- 로그인 후: 내 계정 -->
+  <div id="am-auth" style="display:none">
+    <div class="am-body">
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#5b8af5,#10b981);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 8px">
+          <span id="am-avatar-letter">?</span>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:#1a1a2e" id="am-user-email">—</div>
+        <div style="font-size:11px;color:#aaa;margin-top:2px">로그인됨</div>
+      </div>
+      <button class="am-btn" onclick="openMyMaps()" style="margin-bottom:8px">🗂️ 내 여행 목록</button>
+      <button class="am-btn" onclick="cloudSaveMap()" style="margin-bottom:8px;background:linear-gradient(135deg,#10b981,#059669)">☁️ 현재 여행 클라우드 저장</button>
+      <button class="am-btn" onclick="doLogout()" style="background:none;border:1.5px solid #eee;color:#aaa;font-size:13px;margin-top:2px">로그아웃</button>
+    </div>
+  </div>
+</div>
+
+<!-- 내 여행 목록 패널 -->
+<div id="my-maps-panel">
+  <div class="mmp-header">
+    <div class="mmp-title">🗂️ 내 저장된 여행</div>
+    <button class="mmp-close" onclick="closeMyMaps()">✕</button>
+  </div>
+  <div class="mmp-actions">
+    <button class="mmp-act-btn" onclick="cloudSaveMap()">☁️ 현재 여행 저장</button>
+    <button class="mmp-act-btn green" onclick="cloudSaveMap(true)">➕ 새 여행으로 저장</button>
+  </div>
+  <div class="mmp-list" id="mmp-list">
+    <div class="mmp-empty">저장된 여행이 없습니다</div>
+  </div>
 </div>
 
 <!-- 개인정보처리방침 모달 -->
@@ -4017,6 +4216,399 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
       }, 800);
     };
   }
+})();
+
+// ══════════════════════════════════════════
+// Supabase Auth + 클라우드 저장/공유
+// ══════════════════════════════════════════
+(function(){
+  // ▼▼▼ Supabase 프로젝트 설정값 — 아래 두 값을 교체하세요 ▼▼▼
+  const SUPABASE_URL  = 'https://rrssuofmyvfxzbliocmn.supabase.co';
+  const SUPABASE_ANON = 'sb_publishable_Bv7Ta8pBlrn8jyjKGoyNNQ_PjGWjCkH';
+  // ▲▲▲ 교체 필요 ▲▲▲
+
+  // SDK 로드 실패 시 조용히 종료
+  if(!window.supabase || SUPABASE_URL.startsWith('YOUR_')) return;
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  let currentUser = null;
+  let currentMapId = null; // 현재 열려 있는 클라우드 맵 ID
+  let isShareView = false;  // 공유 링크로 열린 읽기 전용 모드
+
+  // ── 인증 상태 변화 감지 ──
+  sb.auth.onAuthStateChange((_evt, session) => {
+    currentUser = session?.user || null;
+    updateAuthUI();
+  });
+
+  // 페이지 로드 시 auth 확인
+  sb.auth.getSession().then(({ data }) => {
+    currentUser = data?.session?.user || null;
+    updateAuthUI();
+    checkShareParam(); // URL ?share=TOKEN 확인
+  });
+
+  // ── UI 업데이트 ──
+  function updateAuthUI(){
+    const btn = document.getElementById('auth-btn');
+    const label = document.getElementById('auth-label');
+    const avatar = document.getElementById('auth-avatar');
+    if(!btn) return;
+    if(currentUser){
+      const email = currentUser.email || '';
+      const letter = email[0]?.toUpperCase() || '?';
+      avatar.textContent = letter;
+      label.textContent = email.split('@')[0].slice(0,8);
+      btn.classList.add('logged-in');
+      // auth modal 로그인 상태 표시
+      const amUnauth = document.getElementById('am-unauth');
+      const amAuth = document.getElementById('am-auth');
+      if(amUnauth) amUnauth.style.display = 'none';
+      if(amAuth) amAuth.style.display = 'block';
+      const amEmail = document.getElementById('am-user-email');
+      const amLetter = document.getElementById('am-avatar-letter');
+      if(amEmail) amEmail.textContent = email;
+      if(amLetter) amLetter.textContent = letter;
+    } else {
+      avatar.textContent = '👤';
+      label.textContent = '로그인';
+      btn.classList.remove('logged-in');
+      const amUnauth = document.getElementById('am-unauth');
+      const amAuth = document.getElementById('am-auth');
+      if(amUnauth) amUnauth.style.display = 'block';
+      if(amAuth) amAuth.style.display = 'none';
+    }
+  }
+
+  // ── 모달 열기/닫기 ──
+  window.openAuthModal = function(){
+    const modal = document.getElementById('auth-modal');
+    if(!modal) return;
+    if(currentUser){
+      // 로그인 상태: 바로 내 계정 화면
+      document.getElementById('am-unauth').style.display = 'none';
+      document.getElementById('am-auth').style.display = 'block';
+    }
+    modal.classList.add('open');
+    document.getElementById('modal-overlay').style.display = 'block';
+  };
+  window.closeAuthModal = function(){
+    const modal = document.getElementById('auth-modal');
+    if(modal) modal.classList.remove('open');
+    document.getElementById('modal-overlay').style.display = 'none';
+  };
+  window.switchAuthTab = function(tab){
+    document.getElementById('tab-login').classList.toggle('active', tab==='login');
+    document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+    document.getElementById('sec-login').classList.toggle('active', tab==='login');
+    document.getElementById('sec-signup').classList.toggle('active', tab==='signup');
+  };
+
+  // overlay 클릭 시 모달도 닫기 (기존 handleOverlayClick 확장)
+  const _origOverlay = window.handleOverlayClick;
+  window.handleOverlayClick = function(){
+    closeAuthModal();
+    closeMyMaps();
+    if(_origOverlay) _origOverlay();
+  };
+
+  // ── 로그인 ──
+  window.doLogin = async function(){
+    const email = document.getElementById('li-email').value.trim();
+    const pw    = document.getElementById('li-pw').value;
+    const errEl = document.getElementById('li-err');
+    const btn   = document.getElementById('li-btn');
+    errEl.textContent = '';
+    if(!email||!pw){ errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
+    btn.disabled = true; btn.textContent = '로그인 중…';
+    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+    btn.disabled = false; btn.textContent = '로그인';
+    if(error){ errEl.textContent = error.message==='Invalid login credentials'?'이메일 또는 비밀번호가 틀렸습니다.':error.message; }
+    else { closeAuthModal(); showHint('✅ 로그인되었습니다!'); }
+  };
+
+  // ── 회원가입 ──
+  window.doSignup = async function(){
+    const email = document.getElementById('su-email').value.trim();
+    const pw    = document.getElementById('su-pw').value;
+    const errEl = document.getElementById('su-err');
+    const okEl  = document.getElementById('su-ok');
+    const btn   = document.getElementById('su-btn');
+    errEl.textContent = ''; okEl.textContent = '';
+    if(!email||!pw){ errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
+    if(pw.length<6){ errEl.textContent = '비밀번호는 6자 이상이어야 합니다.'; return; }
+    btn.disabled = true; btn.textContent = '가입 중…';
+    const { error } = await sb.auth.signUp({ email, password: pw });
+    btn.disabled = false; btn.textContent = '회원가입';
+    if(error){ errEl.textContent = error.message; }
+    else { okEl.textContent = '✅ 인증 이메일을 보냈습니다. 이메일을 확인해주세요!'; }
+  };
+
+  // ── Google OAuth ──
+  window.doGoogleLogin = async function(){
+    await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href }
+    });
+  };
+
+  // ── 로그아웃 ──
+  window.doLogout = async function(){
+    await sb.auth.signOut();
+    currentUser = null;
+    currentMapId = null;
+    closeAuthModal();
+    showHint('👋 로그아웃되었습니다.');
+  };
+
+  // ── 현재 맵 데이터 가져오기 (로컬 변수에서) ──
+  function getMapData(){
+    // 전역 변수에서 직접 참조
+    return {
+      v: 2,
+      places: window.places||[],
+      extras: window.extras||[],
+      connections: window.connections||[],
+      idCtr: window.idCtr||0,
+      costItemCtr: window.costItemCtr||0,
+      panX: window.panX||0,
+      panY: window.panY||0,
+      sc: window.sc||1,
+      drawings: window.drawings||[],
+      dayZones: window.dayZones||[],
+      dzCtr: window.dzCtr||0
+    };
+  }
+
+  // ── 클라우드 저장 ──
+  window.cloudSaveMap = async function(forceNew=false){
+    if(!currentUser){ openAuthModal(); return; }
+    const data = getMapData();
+    const places = data.places||[];
+    // 제목 자동 생성
+    const firstPlace = places[0];
+    const defaultTitle = firstPlace
+      ? (firstPlace.name||'새 여행') + (places.length>1?` 외 ${places.length-1}곳`:'')
+      : '새 여행';
+    const title = prompt('여행 제목을 입력하세요:', defaultTitle);
+    if(title===null) return; // 취소
+
+    let result;
+    if(!forceNew && currentMapId){
+      // 기존 맵 업데이트
+      result = await sb.from('mindmaps').update({
+        title: title||defaultTitle,
+        data,
+        updated_at: new Date().toISOString()
+      }).eq('id', currentMapId).eq('user_id', currentUser.id).select().single();
+    } else {
+      // 새 맵 생성
+      result = await sb.from('mindmaps').insert({
+        user_id: currentUser.id,
+        title: title||defaultTitle,
+        data
+      }).select().single();
+    }
+    if(result.error){ showHint('❌ 저장 실패: ' + result.error.message); return; }
+    currentMapId = result.data.id;
+    showHint('☁️ 클라우드에 저장되었습니다!');
+    // 내 여행 목록이 열려있으면 새로고침
+    if(document.getElementById('my-maps-panel').classList.contains('open')) loadMyMaps();
+  };
+
+  // ── 내 여행 목록 열기 ──
+  window.openMyMaps = async function(){
+    closeAuthModal();
+    if(!currentUser){ openAuthModal(); return; }
+    const panel = document.getElementById('my-maps-panel');
+    panel.classList.add('open');
+    document.getElementById('modal-overlay').style.display = 'block';
+    await loadMyMaps();
+  };
+  window.closeMyMaps = function(){
+    const panel = document.getElementById('my-maps-panel');
+    if(panel) panel.classList.remove('open');
+    if(!document.getElementById('auth-modal')?.classList.contains('open'))
+      document.getElementById('modal-overlay').style.display = 'none';
+  };
+
+  async function loadMyMaps(){
+    const listEl = document.getElementById('mmp-list');
+    listEl.innerHTML = '<div class="mmp-empty">불러오는 중…</div>';
+    const { data, error } = await sb.from('mindmaps')
+      .select('id,title,is_public,share_token,created_at,updated_at,data')
+      .eq('user_id', currentUser.id)
+      .order('updated_at', { ascending: false });
+    if(error){ listEl.innerHTML = '<div class="mmp-empty">오류: '+error.message+'</div>'; return; }
+    if(!data||!data.length){ listEl.innerHTML = '<div class="mmp-empty">저장된 여행이 없습니다</div>'; return; }
+    listEl.innerHTML = '';
+    data.forEach(map => {
+      const places = map.data?.places||[];
+      const upd = new Date(map.updated_at).toLocaleDateString('ko-KR');
+      const div = document.createElement('div');
+      div.className = 'mmp-item';
+      div.innerHTML = `
+        <div class="mmp-item-icon">✈️</div>
+        <div class="mmp-item-info">
+          <div class="mmp-item-title">${escHtml(map.title)}</div>
+          <div class="mmp-item-meta">${places.length}곳 · 수정 ${upd}${map.is_public?'  🔗 공유중':''}</div>
+        </div>
+        <div class="mmp-item-actions">
+          <button class="mmp-item-btn share-btn" onclick="shareMapById('${map.id}','${map.share_token}',${map.is_public})">
+            ${map.is_public?'🔗 링크':'공유'}
+          </button>
+          <button class="mmp-item-btn del-btn" onclick="deleteMapById('${map.id}')">삭제</button>
+        </div>`;
+      div.querySelector('.mmp-item-info').addEventListener('click', () => loadMapById(map));
+      listEl.appendChild(div);
+    });
+  }
+
+  // ── 저장된 여행 불러오기 ──
+  async function loadMapById(map){
+    if(!confirm(`"${map.title}"를 불러올까요? 현재 작업이 지워집니다.`)) return;
+    closeMyMaps();
+    // 내부 저장 상태 복원
+    const d = map.data;
+    if(!d) return;
+    if(typeof window.clearAll === 'function') window.clearAll();
+    if(d.panX!=null) window.panX=d.panX;
+    if(d.panY!=null) window.panY=d.panY;
+    if(d.sc!=null){ window.sc=d.sc; if(window.applyT) window.applyT(); }
+    if(d.idCtr!=null) window.idCtr=d.idCtr;
+    if(d.costItemCtr!=null) window.costItemCtr=d.costItemCtr;
+    (d.places||[]).forEach(p=>{ window.places.push(p); if(window.buildPlaceNode) window.buildPlaceNode(p.id); });
+    (d.extras||[]).forEach(e=>{ window.extras.push(e); e.type==='memo'?(window.buildMemoNode&&window.buildMemoNode(e)):(window.buildCostNode&&window.buildCostNode(e)); });
+    window.connections = d.connections||[];
+    if(d.drawings) window.drawings=d.drawings;
+    if(d.dayZones){ d.dayZones.forEach(z=>{window.dayZones.push(z);if(window.buildDayZone)window.buildDayZone(z);}); if(d.dzCtr)window.dzCtr=d.dzCtr; }
+    if(window.redrawSVG) window.redrawSVG();
+    if(window.redrawDrawLayer) window.redrawDrawLayer();
+    if(window.updateTotalCost) window.updateTotalCost();
+    if(window.updateStats) window.updateStats();
+    if(window.renumberAll) window.renumberAll();
+    if(window.updateDateConstraints) window.updateDateConstraints();
+    if(window.updateTimeline) window.updateTimeline();
+    if(window.updateMinimap) window.updateMinimap();
+    if((d.places||[]).length||(d.extras||[]).length) document.getElementById('empty').style.display='none';
+    currentMapId = map.id;
+    showHint('✅ "'+map.title+'" 불러왔습니다!');
+  }
+
+  // ── 공유 링크 생성/토글 ──
+  window.shareMapById = async function(mapId, shareToken, isPublic){
+    const newPublic = !isPublic;
+    const { error } = await sb.from('mindmaps')
+      .update({ is_public: newPublic })
+      .eq('id', mapId).eq('user_id', currentUser.id);
+    if(error){ showHint('❌ 공유 설정 실패: '+error.message); return; }
+    if(newPublic){
+      const shareUrl = `${location.origin}${location.pathname}?share=${shareToken}`;
+      await navigator.clipboard.writeText(shareUrl).catch(()=>{});
+      showHint('🔗 공유 링크 복사됨! 누구나 이 여행을 볼 수 있습니다.');
+    } else {
+      showHint('🔒 공유가 해제되었습니다.');
+    }
+    loadMyMaps();
+  };
+
+  // ── 맵 삭제 ──
+  window.deleteMapById = async function(mapId){
+    if(!confirm('이 여행을 삭제할까요? 복구할 수 없습니다.')) return;
+    const { error } = await sb.from('mindmaps').delete().eq('id', mapId).eq('user_id', currentUser.id);
+    if(error){ showHint('❌ 삭제 실패'); return; }
+    if(currentMapId===mapId) currentMapId=null;
+    showHint('🗑️ 삭제되었습니다.');
+    loadMyMaps();
+  };
+
+  // ── 공유 링크 URL 처리 (?share=TOKEN) ──
+  async function checkShareParam(){
+    const params = new URLSearchParams(location.search);
+    const token = params.get('share');
+    if(!token) return;
+    const { data, error } = await sb.from('mindmaps')
+      .select('id,title,data,user_id')
+      .eq('share_token', token)
+      .eq('is_public', true)
+      .single();
+    if(error||!data){ showHint('⚠️ 공유 링크가 유효하지 않거나 비공개로 변경되었습니다.'); return; }
+    // 읽기 전용으로 로드
+    isShareView = true;
+    const d = data.data;
+    if(!d) return;
+    if(typeof window.clearAll==='function') window.clearAll();
+    if(d.panX!=null) window.panX=d.panX;
+    if(d.panY!=null) window.panY=d.panY;
+    if(d.sc!=null){ window.sc=d.sc; if(window.applyT) window.applyT(); }
+    (d.places||[]).forEach(p=>{ window.places.push(p); if(window.buildPlaceNode) window.buildPlaceNode(p.id); });
+    (d.extras||[]).forEach(e=>{ window.extras.push(e); e.type==='memo'?(window.buildMemoNode&&window.buildMemoNode(e)):(window.buildCostNode&&window.buildCostNode(e)); });
+    window.connections = d.connections||[];
+    if(d.drawings) window.drawings=d.drawings;
+    if(d.dayZones){ d.dayZones.forEach(z=>{window.dayZones.push(z);if(window.buildDayZone)window.buildDayZone(z);}); if(d.dzCtr)window.dzCtr=d.dzCtr; }
+    if(window.redrawSVG) window.redrawSVG();
+    if(window.redrawDrawLayer) window.redrawDrawLayer();
+    if(window.updateTotalCost) window.updateTotalCost();
+    if(window.updateStats) window.updateStats();
+    if(window.renumberAll) window.renumberAll();
+    if(window.updateDateConstraints) window.updateDateConstraints();
+    if(window.updateTimeline) window.updateTimeline();
+    if(window.updateMinimap) window.updateMinimap();
+    if((d.places||[]).length) document.getElementById('empty').style.display='none';
+
+    // 공유 배너 표시
+    const banner = document.getElementById('share-banner');
+    const authorEl = document.getElementById('share-banner-author');
+    if(banner){ banner.classList.add('show'); if(authorEl) authorEl.textContent = data.title||'이 여행'; }
+    // 읽기 전용: 편집 기능 숨기기
+    ['#draw-toggle-btn','#dz-btn','.memo-btn','.cost-btn','.del-btn',
+     'button[onclick="clearAll()"]','button[onclick="saveData()"]','button[onclick="optimizeRoute()"]']
+      .forEach(sel=>{ try{ document.querySelectorAll(sel).forEach(el=>el.style.display='none'); }catch(_){} });
+  }
+
+  window.copyCurrentShareLink = function(){
+    const params = new URLSearchParams(location.search);
+    const token = params.get('share');
+    if(token){
+      navigator.clipboard.writeText(location.href).catch(()=>{});
+      showHint('🔗 링크 복사됨!');
+    }
+  };
+
+  // ── 자동저장 시 클라우드도 동기화 (5분마다, 로그인 시) ──
+  let cloudSyncTimer = null;
+  const _origAutoSave = window.doAutoSave;
+  if(_origAutoSave){
+    window.doAutoSave = function(){
+      _origAutoSave();
+      if(currentUser && currentMapId && !isShareView){
+        // 5분 디바운스로 클라우드 동기
+        clearTimeout(cloudSyncTimer);
+        cloudSyncTimer = setTimeout(async ()=>{
+          const data = getMapData();
+          await sb.from('mindmaps').update({ data, updated_at: new Date().toISOString() })
+            .eq('id', currentMapId).eq('user_id', currentUser.id);
+        }, 5*60*1000);
+      }
+    };
+  }
+
+  // ── XSS 방어용 escape ──
+  function escHtml(str){
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // 엔터키로 로그인/가입
+  document.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){
+      const modal = document.getElementById('auth-modal');
+      if(!modal?.classList.contains('open')) return;
+      if(document.getElementById('sec-login').classList.contains('active')) doLogin();
+      else doSignup();
+    }
+  });
+
 })();
 
 </script>
