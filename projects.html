@@ -94,16 +94,15 @@ header{
 }
 .avatar-btn:hover{transform:scale(1.08);box-shadow:0 0 0 3px rgba(79,110,247,.25);}
 
-/* ── Auth loading state ── */
-#page-loader{
-  position:fixed;inset:0;background:var(--bg);
-  display:grid;place-items:center;z-index:999;
-  transition:opacity .3s;
+/* ── Grid loading spinner (row) ── */
+.grid-loading{
+  grid-column:1/-1;
+  display:flex;align-items:center;gap:10px;
+  padding:40px 0;color:var(--text3);font-size:14px;
 }
-#page-loader.hidden{opacity:0;pointer-events:none;}
 .spinner{
-  width:36px;height:36px;border:3px solid var(--border);
-  border-top-color:var(--accent);border-radius:50%;
+  width:20px;height:20px;border:2.5px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;flex-shrink:0;
   animation:spin .7s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -408,15 +407,7 @@ footer{
 </head>
 <body>
 
-<!-- Page loading overlay (hides until auth is resolved) -->
-<div id="page-loader">
-  <div style="text-align:center;">
-    <div class="spinner" style="margin:0 auto 12px;"></div>
-    <p style="font-size:13px;color:var(--text3);font-family:var(--font)">불러오는 중...</p>
-  </div>
-</div>
-
-<div class="page" id="page-body" style="visibility:hidden">
+<div class="page" id="page-body">
 
   <!-- Header -->
   <header>
@@ -602,12 +593,7 @@ function setLocal(l){localStorage.setItem('choible_projects',JSON.stringify(l));
 function previewText(d){const pl=(d?.places||[]);if(!pl.length)return '장소 없음';return pl[0].name+(pl.length>1?` 외 ${pl.length-1}곳`:'');}
 
 /* ── UI helpers ── */
-function showLoader(){document.getElementById('page-loader').classList.remove('hidden');}
-function hideLoader(){
-  const l=document.getElementById('page-loader');
-  l.classList.add('hidden');
-  document.getElementById('page-body').style.visibility='visible';
-}
+function hideLoader(){/* no-op: full-page loader removed */}
 
 let toastT=null;
 function showToast(m){
@@ -636,9 +622,17 @@ function updateHeader(user){
 /* ── Load and render projects ── */
 async function loadProjects(){
   const grid=document.getElementById('grid');
-  // show skeleton
-  grid.innerHTML='<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div>';
   allProjects=[];
+
+  // 비로그인: 로컬 즉시 렌더, 스켈레톤 없이
+  if(!currentUser){
+    allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+    renderGrid();
+    return;
+  }
+
+  // 로그인: 작은 로딩 표시 후 쿼리
+  grid.innerHTML='<div class="grid-loading"><div class="spinner"></div><span>프로젝트 불러오는 중...</span></div>';
 
   if(currentUser){
     try{
@@ -661,8 +655,6 @@ async function loadProjects(){
       // 타임아웃이나 에러 시 로컬 프로젝트로 폴백
       allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
     }
-  } else {
-    allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
   }
   renderGrid();
 }
@@ -854,31 +846,29 @@ async function offerMigration(user){
   showToast('☁️ 클라우드로 이전 완료!');
 }
 
-/* ── Bootstrap: getSession()으로 즉시 시작 ── */
-let _booted=false;
-async function boot(){
-  try{
-    // getSession()은 로컬 캐시에서 즉시 반환 — 네트워크 대기 없음
-    const {data:{session}}=await sb.auth.getSession();
-    currentUser=session?.user||null;
-  }catch(e){
-    currentUser=null;
-  }
-  updateHeader(currentUser);
-  hideLoader();
-  _booted=true;
-  await loadProjects();
-}
-boot();
+/* ── Bootstrap ── */
+// 1) 비로그인 상태 기본값으로 즉시 렌더 (스피너 없음)
+updateHeader(null);
+loadProjects();  // 로컬 프로젝트 즉시 표시
 
-// 이후 상태 변경(로그인/로그아웃) 감지
+// 2) 백그라운드에서 실제 세션 확인 후 필요하면 UI 갱신
+sb.auth.getSession().then(({data:{session}})=>{
+  const user=session?.user||null;
+  if(user){
+    currentUser=user;
+    updateHeader(user);
+    loadProjects(); // 클라우드 프로젝트 로드
+  }
+}).catch(()=>{/* 세션 조회 실패 시 비로그인 상태 유지 */});
+
+// 3) 로그인/로그아웃 이벤트 감지
 sb.auth.onAuthStateChange(async(event,session)=>{
-  if(!_booted) return; // boot()가 아직 처리 중이면 skip
   const user=session?.user||null;
   const prevId=currentUser?.id;
+  if(user?.id===prevId && event!=='SIGNED_OUT') return; // 중복 처리 방지
   currentUser=user;
   updateHeader(user);
-  if(event==='SIGNED_IN' && user?.id!==prevId){
+  if(event==='SIGNED_IN'){
     await offerMigration(user);
     await loadProjects();
   } else if(event==='SIGNED_OUT'){
