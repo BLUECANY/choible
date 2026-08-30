@@ -280,6 +280,18 @@ section{padding:clamp(48px,8vw,96px) clamp(16px,5vw,80px)}
 .nf-title{font-size:12px;font-weight:800;margin-bottom:4px;color:#0B1526}
 .nf-desc{font-size:11px;color:#7A8AA8;line-height:1.6}
 
+/* ── COUPANG PARTNERS ── */
+.cp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:10px;margin-top:36px;margin-bottom:16px}
+.cp-card{display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fff;border:1.5px solid #EDF0FA;border-radius:14px;text-decoration:none;color:#0B1526;transition:border-color .18s,transform .18s,box-shadow .18s}
+.cp-card:hover{border-color:#4F6EF7;transform:translateY(-2px);box-shadow:0 6px 20px rgba(79,110,247,.1)}
+.cp-em{font-size:26px;flex-shrink:0}
+.cp-info{flex:1;min-width:0}
+.cp-name{font-size:12px;font-weight:800;line-height:1.35;margin-bottom:3px}
+.cp-price{font-size:11px;color:#7A8AA8}
+.cp-price strong{color:#E8003D;font-weight:800}
+.cp-arrow{font-size:14px;color:#4F6EF7;flex-shrink:0;opacity:.7}
+.cp-disclaimer{font-size:10px;color:#A0AABB;text-align:center;margin-top:4px}
+
 /* ── CTA ── */
 .cta-wrap{
   background:linear-gradient(135deg,#3855F2 0%,#6B8BF8 100%);
@@ -586,6 +598,68 @@ footer{
       <div class="nf-card reveal d1"><div class="nf-icon">🌡️</div><div><div class="nf-title">날씨 연동</div><div class="nf-desc">Open-Meteo API 실시간 날씨 조회</div></div></div>
       <div class="nf-card reveal d2"><div class="nf-icon">📱</div><div><div class="nf-title">PWA 오프라인 지원</div><div class="nf-desc">홈 화면 설치 · 오프라인 사용 가능</div></div></div>
     </div>
+  </div>
+</section>
+
+<!-- COUPANG PARTNERS -->
+<section style="background:#fff;border-top:1px solid #EDF0FA">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="sect-tag">여행 준비물</div>
+      <h2 class="sect-title">떠나기 전에<br>챙겨야 할 것들</h2>
+      <p class="sect-sub" style="margin:0 auto">choible에서 여행 일정을 짰다면, 이제 짐을 챙겨보세요.</p>
+    </div>
+    <div class="cp-grid">
+      <a class="cp-card reveal" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <span class="cp-em">🎒</span>
+        <div class="cp-info">
+          <div class="cp-name">여행용 기내 캐리어 20인치</div>
+          <div class="cp-price">최저 <strong>₩55,000~</strong></div>
+        </div>
+        <span class="cp-arrow">→</span>
+      </a>
+      <a class="cp-card reveal d1" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <span class="cp-em">🔌</span>
+        <div class="cp-info">
+          <div class="cp-name">멀티 충전기 GaN 65W USB-C</div>
+          <div class="cp-price">최저 <strong>₩18,000~</strong></div>
+        </div>
+        <span class="cp-arrow">→</span>
+      </a>
+      <a class="cp-card reveal d2" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <span class="cp-em">💳</span>
+        <div class="cp-info">
+          <div class="cp-name">여행용 목지갑 RFID 차단</div>
+          <div class="cp-price">최저 <strong>₩13,000~</strong></div>
+        </div>
+        <span class="cp-arrow">→</span>
+      </a>
+      <a class="cp-card reveal" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <span class="cp-em">🧴</span>
+        <div class="cp-info">
+          <div class="cp-name">기내 반입 파우치 세트 100ml</div>
+          <div class="cp-price">최저 <strong>₩9,000~</strong></div>
+        </div>
+        <span class="cp-arrow">→</span>
+      </a>
+      <a class="cp-card reveal d1" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <span class="cp-em">📷</span>
+        <div class="cp-info">
+          <div class="cp-name">경량 여행용 삼각대</div>
+          <div class="cp-price">최저 <strong>₩22,000~</strong></div>
+        </div>
+        <span class="cp-arrow">→</span>
+      </a>
+      <a class="cp-card reveal d2" href="https://link.coupang.com/a/gBW9NbVBNQ" target="_blank" rel="noopener sponsored">
+        <span class="cp-em">🌐</span>
+        <div class="cp-info">
+          <div class="cp-name">해외 여행용 와이파이 도시락</div>
+          <div class="cp-price">최저 <strong>₩3,300~/일</strong></div>
+        </div>
+        <span class="cp-arrow">→</span>
+      </a>
+    </div>
+    <p class="cp-disclaimer reveal">이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
   </div>
 </section>
 

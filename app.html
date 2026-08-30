@@ -905,9 +905,9 @@
       display:flex;align-items:center;gap:6px;cursor:pointer;
       box-shadow:0 4px 16px rgba(232,0,61,.4);z-index:2499;
       transform:translateX(0);transition:transform .35s cubic-bezier(.22,1,.36,1),opacity .2s;
-      opacity:0;pointer-events:none;
+      opacity:1;pointer-events:auto;
     }
-    #rec-fab.rec-fab-visible{opacity:1;pointer-events:auto}
+    #rec-fab.rec-fab-hidden{opacity:0;pointer-events:none}
     #rec-fab:hover{box-shadow:0 6px 22px rgba(232,0,61,.5)}
     .rec-fab-dot{width:6px;height:6px;background:#fff;border-radius:50%;animation:recblink 2s ease-in-out infinite}
   </style>
@@ -3857,6 +3857,18 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
         {em:'🌐',name:'해외 여행용 와이파이 도시락',price:'₩매일+3,300~',url:'https://link.coupang.com/a/gBW9NbVBNQ'},
       ]
     },
+    {
+      keys:['__default__'],
+      label:'🌏 여행 필수템',
+      search:'https://link.coupang.com/a/gBW9NbVBNQ',
+      products:[
+        {em:'🎒',name:'여행용 기내 캐리어 20인치',price:'₩55,000~',url:'https://link.coupang.com/a/gBW9NbVBNQ'},
+        {em:'🔌',name:'멀티 충전기 GaN 65W USB-C',price:'₩18,000~',url:'https://link.coupang.com/a/gBW9NbVBNQ'},
+        {em:'💳',name:'여행용 목지갑 RFID 차단',price:'₩13,000~',url:'https://link.coupang.com/a/gBW9NbVBNQ'},
+        {em:'🧴',name:'기내 반입 파우치 세트 100ml',price:'₩9,000~',url:'https://link.coupang.com/a/gBW9NbVBNQ'},
+        {em:'📷',name:'경량 여행용 삼각대',price:'₩22,000~',url:'https://link.coupang.com/a/gBW9NbVBNQ'},
+      ]
+    },
   ];
 
   /* 패널 HTML 삽입 */
@@ -3891,16 +3903,19 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   let currentDest = null;
   let minimized = false;
 
+  const DEFAULT_DEST = DEST_MAP[DEST_MAP.length - 1]; // 마지막 항목 = 기본 여행 필수템
+
   function detectDest(){
     const names = places.map(p => p.name + ' ' + (p.addr||'')).join(' ');
     for(const d of DEST_MAP){
+      if(d.keys[0] === '__default__') continue;
       if(d.keys.some(k => names.includes(k))) return d;
     }
-    return null;
+    return DEFAULT_DEST; // 목적지 미감지 시 기본 추천
   }
 
   function renderPanel(dest){
-    document.getElementById('rec-ctx-bar').textContent = dest.label + ' 맞춤 추천';
+    document.getElementById('rec-ctx-bar').textContent = dest.label;
     const list = document.getElementById('rec-items');
     list.innerHTML = dest.products.map(p => `
       <a class="rec-item" href="${p.url}" target="_blank" rel="noopener sponsored">
@@ -3916,15 +3931,18 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   }
 
   function recOpen(){
+    /* 패널 열기 전에 기본 콘텐츠 렌더 */
+    const dest = detectDest();
+    if(dest !== currentDest){ currentDest = dest; renderPanel(dest); }
     panel.classList.add('rec-open');
     panel.classList.remove('rec-minimized');
-    fab.classList.remove('rec-fab-visible');
+    fab.classList.add('rec-fab-hidden');
     minimized = false;
   }
 
   function recClose(){
     panel.classList.remove('rec-open','rec-minimized');
-    fab.classList.add('rec-fab-visible');
+    fab.classList.remove('rec-fab-hidden');
     minimized = false;
   }
 
@@ -3943,18 +3961,23 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   window.recClose = recClose;
   window.recToggleMin = recToggleMin;
 
-  /* addPlace 후킹: 원본 함수 래핑 */
+  /* 페이지 로드 시 기본 콘텐츠 초기화 */
+  currentDest = DEFAULT_DEST;
+  renderPanel(DEFAULT_DEST);
+
+  /* addPlace 후킹: 목적지 감지 시 맞춤 추천으로 전환 */
   const _origAddPlace = window.addPlace;
   window.addPlace = function(i){
     _origAddPlace(i);
     setTimeout(() => {
       const dest = detectDest();
-      if(!dest) return;
-      if(dest !== currentDest){
+      if(dest && dest !== currentDest){
         currentDest = dest;
         renderPanel(dest);
-        recOpen();
-        showHint('🛒 ' + dest.label + ' 준비물을 우측 패널에서 확인하세요!');
+        if(dest !== DEFAULT_DEST){
+          recOpen();
+          showHint('🛒 ' + dest.label + ' 맞춤 추천이 우측 패널에 있어요!');
+        }
       }
     }, 400);
   };
