@@ -882,6 +882,7 @@
     [data-theme="dark"] .tm-btn:hover{background:#2e2e58!important}
     [data-theme="dark"] .tm-label{color:#c9d1f5!important}
     [data-theme="dark"] .tm-cancel{background:#2a2a50;color:#a0a8c8;border-color:#383860}
+    [data-theme="dark"] #tm-manual-min{background:#1e1e3c;border-color:#383860;color:#c9d1f5}
     [data-theme="dark"] #reorder-pop{background:#252540;border-color:#383860;color:#c9d1f5}
     [data-theme="dark"] .reorder-item{border-color:#383860;color:#c9d1f5}
     [data-theme="dark"] .reorder-item:hover{background:#2e2e58}
@@ -1148,7 +1149,7 @@
   <div class="tm-ctx" id="tm-ctx" style="display:none"></div>
   <div id="tm-no-coord-banner" style="display:none;align-items:center;gap:7px;background:#fff8e1;border:1.5px solid #ffe082;border-radius:10px;padding:9px 12px;margin-bottom:8px;font-size:12px;color:#8a6000;">
     <span style="font-size:14px">📍</span>
-    <span>위치 정보 없음 — 이동 시간 계산 불가<br><span style="font-size:11px;opacity:.8">이동수단 종류만 선택할 수 있습니다</span></span>
+    <span>위치 정보 없음 — 자동 계산 불가<br><span style="font-size:11px;opacity:.8">아래에서 이동 시간을 직접 입력할 수 있어요</span></span>
   </div>
   <div class="tm-grid">
     <button class="tm-btn" id="tmb-driving" style="--c:#5b8af5" onclick="confirmConnect('driving')">
@@ -1169,6 +1170,11 @@
     <button class="tm-btn" id="tmb-plane" style="--c:#e84393" onclick="confirmConnect('plane')">
       <span class="tm-rec-badge" id="tmr-plane"></span><span class="tm-icon">✈️</span><span class="tm-label">비행기</span><span class="tm-time" id="tm-t-plane">–</span>
     </button>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;padding:8px 10px;background:#f8f9ff;border-radius:12px;border:1.5px solid #e8ecff">
+    <span style="font-size:13px;white-space:nowrap;color:#555;font-weight:600">⏱️ 소모 시간</span>
+    <input id="tm-manual-min" type="number" min="0" placeholder="자동" style="flex:1;border:1.5px solid #dde2ff;border-radius:8px;padding:5px 8px;font-size:13px;outline:none;color:#333;background:#fff;min-width:0" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+    <span style="font-size:12px;color:#999;white-space:nowrap">분 (직접 입력)</span>
   </div>
   <button class="tm-cancel" onclick="cancelConnect()">취소</button>
 </div>
@@ -2623,6 +2629,8 @@ function onNodeClick(id){
         setMT('driving',d/13.9);setMT('foot',d/1.3);setMT('bike',d/4.2);
         setMT('transit',d/13.9*1.3);setMT('ferry',d/7.8+1800);setMT('plane',d/222+5400);
       }
+      const manualMinInput=document.getElementById('tm-manual-min');
+      if(manualMinInput)manualMinInput.value=''; // 열릴 때마다 초기화
       document.getElementById('transport-modal').style.display='block';
       document.getElementById('modal-overlay').style.display='block';
       // Bug1 fix: null 좌표 장소는 OSRM 호출 생략
@@ -2645,14 +2653,21 @@ function deselect(){
 function confirmConnect(mode){
   if(!pendingConn)return;
   const {fromId,toId}=pendingConn;
+  // 수동 시간 입력값 읽기
+  const manualMinEl=document.getElementById('tm-manual-min');
+  const manualMin=parseFloat(manualMinEl?.value||'');
+  const manualDur=(!isNaN(manualMin)&&manualMin>0)?manualMin*60:null;
+  if(manualMinEl)manualMinEl.value=''; // 초기화
   document.getElementById('transport-modal').style.display='none';
   document.getElementById('modal-overlay').style.display='none';
   pendingConn=null;
   if(connections.find(c=>(c.a===fromId&&c.b===toId)||(c.a===toId&&c.b===fromId))){showHint('⚠️ 이미 연결된 노드입니다!');return}
   const cid=++idCtr;
-  connections.push({id:cid,a:fromId,b:toId,mode,dur:null,loading:(mode!=='transit'&&mode!=='ferry'&&mode!=='plane'&&mode!=='link')});
+  const needsCalc=(mode!=='link')&&!manualDur;
+  connections.push({id:cid,a:fromId,b:toId,mode,dur:manualDur??null,loading:needsCalc&&(mode!=='transit'&&mode!=='ferry'&&mode!=='plane')});
   redrawSVG();updateStats();updateDateConstraints();updateTimeline();
   if(mode==='link')showHint('📌 연결됐어요!');
+  else if(manualDur){showHint(`${MODE[mode].icon} 연결됐어요! (${Math.round(manualDur/60)}분)`);}
   else{showHint(`${MODE[mode].icon} 이동 시간 계산 중…`);calcRoute(cid,fromId,toId,mode)}
 }
 function cancelConnect(){
@@ -3379,6 +3394,11 @@ function manualAddHTML(){
       <button class="mf-btn" onclick="submitManualPlace()">추가</button>
       <button class="mf-cancel" onclick="hideManualForm()">취소</button>
     </div>
+    <div class="mf-row" style="gap:4px;margin-top:2px">
+      <input class="mf-input" id="mf-lat" placeholder="위도 (예: 37.5665)" type="number" step="any" style="flex:1;font-size:11px" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+      <input class="mf-input" id="mf-lng" placeholder="경도 (예: 126.9780)" type="number" step="any" style="flex:1;font-size:11px" onclick="event.stopPropagation()" onmousedown="event.stopPropagation()">
+    </div>
+    <div id="mf-geo-status" style="font-size:10px;color:#aaa;padding:2px 4px 0;min-height:14px"></div>
   </div>`;
 }
 function showManualForm(){
@@ -3391,16 +3411,33 @@ function hideManualForm(){
 }
 async function submitManualPlace(){
   const nameEl=document.getElementById('mf-name'),addrEl=document.getElementById('mf-addr');
+  const latEl=document.getElementById('mf-lat'),lngEl=document.getElementById('mf-lng');
+  const geoStatus=document.getElementById('mf-geo-status');
   const name=(nameEl?.value||'').trim();
   if(!name){nameEl?.focus();showHint('⚠️ 장소 이름을 입력해주세요');return}
-  snapshot(); // undo 지원
+  snapshot();
   const addr=(addrEl?.value||'').trim();
+  // 위도/경도 직접 입력값 먼저 확인
   let lat=null,lng=null;
-  if(addr){
+  const directLat=parseFloat(latEl?.value||'');
+  const directLng=parseFloat(lngEl?.value||'');
+  if(!isNaN(directLat)&&!isNaN(directLng)&&directLat>=-90&&directLat<=90&&directLng>=-180&&directLng<=180){
+    lat=directLat;lng=directLng;
+    if(geoStatus)geoStatus.textContent='';
+  } else if(addr){
+    if(geoStatus){geoStatus.style.color='#aaa';geoStatus.textContent='🔍 주소 좌표 검색 중…';}
     try{
       const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(addr)}&format=json&limit=1`,{headers:{'Accept-Language':'ko,en;q=0.9'}});
-      const d=await r.json();if(d[0]){lat=parseFloat(d[0].lat);lng=parseFloat(d[0].lon)}
-    }catch(_){}
+      const d=await r.json();
+      if(d[0]){
+        lat=parseFloat(d[0].lat);lng=parseFloat(d[0].lon);
+        if(geoStatus){geoStatus.style.color='#10b981';geoStatus.textContent=`✅ 좌표 확인: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;}
+      }else{
+        if(geoStatus){geoStatus.style.color='#f43f5e';geoStatus.textContent='⚠️ 주소 좌표를 찾지 못했어요. 위도/경도를 직접 입력해보세요.';}
+      }
+    }catch(_){
+      if(geoStatus){geoStatus.style.color='#f43f5e';geoStatus.textContent='⚠️ 좌표 검색 실패. 위도/경도를 직접 입력해보세요.';}
+    }
   }
   const {cx,cy}=worldCenter();
   const id=++idCtr,ci=places.length%COLORS.length;
@@ -3412,7 +3449,7 @@ async function submitManualPlace(){
   document.getElementById('empty').style.display='none';
   if(addr&&lat)fetchPhoto(id,name);
   updateStats();updateTimeline();updateMinimap();
-  showHint(`✚ "${name}" 추가됐어요!${!lat?' (위치 정보 없음 — 주소 입력 시 경로 계산 가능)':''}`);
+  showHint(`✚ "${name}" 추가됐어요!${!lat?' (위치 정보 없음 — 주소 또는 좌표 입력 시 경로 계산 가능)':''}`);
 }
 
 // ══════════════════════════════════════════
@@ -4062,7 +4099,7 @@ function exportICS(){
 // ══════════════════════════════════════════
 const CHART_COLORS=['#5b8af5','#ff6b6b','#f7c948','#48c78e','#9f7aea','#ed8936','#38b2ac','#e84393','#64748b'];
 function showExpenseChart(){
-  // 경비 항목 수집
+  // 항목명으로 그룹핑 (category 필드 없으므로 name 기준)
   const buckets={};
   let total=0;
   extras.filter(e=>e.type==='cost').forEach(e=>{
@@ -4070,12 +4107,11 @@ function showExpenseChart(){
       const raw=parseFloat(item.amount)||0;
       const krw=raw*(FX[item.currency||'KRW']||1);
       if(!krw)return;
-      const cat=item.category||'기타';
-      buckets[cat]=(buckets[cat]||0)+krw;
+      const key=(item.name||'기타').trim()||'기타';
+      buckets[key]=(buckets[key]||0)+krw;
       total+=krw;
     });
   });
-  // Also check extras with direct cost
   const entries=Object.entries(buckets).sort((a,b)=>b[1]-a[1]);
   const modal=document.getElementById('chart-modal');
   const svg=document.getElementById('chart-svg');
@@ -4083,26 +4119,34 @@ function showExpenseChart(){
   const sub=document.getElementById('chart-sub');
   if(!entries.length){
     sub.textContent='경비 항목이 없습니다. 💰 비용 카드를 추가해보세요!';
-    svg.innerHTML='<text x="100" y="105" text-anchor="middle" fill="#aaa" font-size="13">데이터 없음</text>';
+    svg.innerHTML='<text x="100" y="105" text-anchor="middle" fill="#ccc" font-size="13">데이터 없음</text>';
     legend.innerHTML='';
   } else {
-    sub.textContent=`총 ${entries.length}개 카테고리 · 합계 ${(total/1).toLocaleString()}원`;
-    // Draw pie chart
-    let startAngle=-Math.PI/2;
+    sub.textContent=`총 ${entries.length}개 항목 · 합계 ₩${Math.round(total).toLocaleString()}`;
     const R=80,cx=100,cy=100;
     let paths='';
-    entries.forEach(([cat,amt],i)=>{
-      const slice=(amt/total)*Math.PI*2;
-      const endAngle=startAngle+slice;
-      const x1=cx+R*Math.cos(startAngle),y1=cy+R*Math.sin(startAngle);
-      const x2=cx+R*Math.cos(endAngle),y2=cy+R*Math.sin(endAngle);
-      const large=slice>Math.PI?1:0;
-      const color=CHART_COLORS[i%CHART_COLORS.length];
-      paths+=`<path d="M${cx},${cy} L${x1},${y1} A${R},${R} 0 ${large} 1 ${x2},${y2} Z" fill="${color}" stroke="#fff" stroke-width="2"/>`;
-      startAngle=endAngle;
-    });
+    if(entries.length===1){
+      // 슬라이스 1개 = 전체원 → SVG arc로 완전한 원 못 그리므로 circle 사용
+      const color=CHART_COLORS[0];
+      paths=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="${color}" stroke="#fff" stroke-width="2"/>`;
+    } else {
+      let startAngle=-Math.PI/2;
+      entries.forEach(([,amt],i)=>{
+        const slice=(amt/total)*Math.PI*2;
+        // 부동소수점 오차로 마지막 슬라이스가 살짝 벗어나는 것 방지
+        const endAngle=startAngle+slice-0.0001;
+        const x1=cx+R*Math.cos(startAngle),y1=cy+R*Math.sin(startAngle);
+        const x2=cx+R*Math.cos(endAngle),y2=cy+R*Math.sin(endAngle);
+        const large=slice>Math.PI?1:0;
+        const color=CHART_COLORS[i%CHART_COLORS.length];
+        paths+=`<path d="M${cx},${cy} L${x1.toFixed(3)},${y1.toFixed(3)} A${R},${R} 0 ${large} 1 ${x2.toFixed(3)},${y2.toFixed(3)} Z" fill="${color}" stroke="#fff" stroke-width="2"/>`;
+        startAngle=endAngle+0.0001;
+      });
+    }
     svg.innerHTML=paths;
-    legend.innerHTML=entries.map(([cat,amt],i)=>`<div class="cl-item"><div class="cl-dot" style="background:${CHART_COLORS[i%CHART_COLORS.length]}"></div>${escHtml(cat)}: ${Math.round(amt/total*100)}%</div>`).join('');
+    legend.innerHTML=entries.map(([name,amt],i)=>
+      `<div class="cl-item"><div class="cl-dot" style="background:${CHART_COLORS[i%CHART_COLORS.length]}"></div><span>${escHtml(name)}</span><span style="margin-left:4px;color:#aaa">${Math.round(amt/total*100)}% · ₩${Math.round(amt).toLocaleString()}</span></div>`
+    ).join('');
   }
   modal.classList.add('open');
 }
