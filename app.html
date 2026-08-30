@@ -1245,48 +1245,50 @@
   <button class="sb-copy" onclick="copyCurrentShareLink()">🔗 이 링크 복사</button>
 </div>
 
-<!-- 로그인/회원가입 모달 -->
+<!-- 로그인 모달 (OTP 방식) -->
 <div id="auth-modal">
   <div class="am-header">
-    <div class="am-title" id="am-header-title">✈️ choible 계정</div>
+    <div class="am-title">✈️ choible 계정</div>
     <button class="am-close" onclick="closeAuthModal()">✕</button>
   </div>
-  <!-- 비로그인: 탭 -->
+
+  <!-- 비로그인: OTP 흐름 -->
   <div id="am-unauth">
-    <div class="am-tabs">
-      <button class="am-tab active" id="tab-login" onclick="switchAuthTab('login')">로그인</button>
-      <button class="am-tab" id="tab-signup" onclick="switchAuthTab('signup')">회원가입</button>
-    </div>
     <div class="am-body">
-      <!-- 로그인 섹션 -->
-      <div class="am-section active" id="sec-login">
+      <!-- Step 1: 이메일 입력 -->
+      <div id="otp-step1">
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:32px;margin-bottom:6px">✉️</div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e">이메일로 로그인</div>
+          <div style="font-size:12px;color:#aaa;margin-top:4px">6자리 인증 코드를 보내드립니다<br>계정이 없으면 자동으로 가입됩니다</div>
+        </div>
         <div class="am-field">
           <div class="am-label">이메일</div>
-          <input class="am-input" id="li-email" type="email" placeholder="you@example.com">
+          <input class="am-input" id="otp-email" type="email" placeholder="you@example.com">
         </div>
-        <div class="am-field">
-          <div class="am-label">비밀번호</div>
-          <input class="am-input" id="li-pw" type="password" placeholder="비밀번호 입력">
-        </div>
-        <button class="am-btn" id="li-btn" onclick="doLogin()">로그인</button>
-        <div class="am-err" id="li-err"></div>
+        <button class="am-btn" id="otp-send-btn" onclick="sendOtp()">인증 코드 받기</button>
+        <div class="am-err" id="otp-send-err"></div>
       </div>
-      <!-- 회원가입 섹션 -->
-      <div class="am-section" id="sec-signup">
-        <div class="am-field">
-          <div class="am-label">이메일</div>
-          <input class="am-input" id="su-email" type="email" placeholder="you@example.com">
+      <!-- Step 2: 코드 입력 -->
+      <div id="otp-step2" style="display:none">
+        <div style="text-align:center;margin-bottom:16px">
+          <div style="font-size:32px;margin-bottom:6px">🔢</div>
+          <div style="font-size:14px;font-weight:700;color:#1a1a2e">인증 코드 입력</div>
+          <div style="font-size:12px;color:#aaa;margin-top:4px"><span id="otp-sent-to"></span>로<br>발송된 6자리 코드를 입력하세요</div>
         </div>
         <div class="am-field">
-          <div class="am-label">비밀번호 (6자 이상)</div>
-          <input class="am-input" id="su-pw" type="password" placeholder="비밀번호 설정">
+          <input class="am-input" id="otp-code" type="text" inputmode="numeric" maxlength="6"
+            placeholder="123456" style="text-align:center;font-size:22px;font-weight:800;letter-spacing:8px">
         </div>
-        <button class="am-btn green" id="su-btn" onclick="doSignup()">회원가입</button>
-        <div class="am-err" id="su-err"></div>
-        <div class="am-ok" id="su-ok"></div>
+        <button class="am-btn" id="otp-verify-btn" onclick="verifyOtp()">확인</button>
+        <div class="am-err" id="otp-verify-err"></div>
+        <div style="text-align:center;margin-top:10px">
+          <button onclick="resetOtp()" style="background:none;border:none;font-size:12px;color:#aaa;cursor:pointer">← 이메일 다시 입력</button>
+        </div>
       </div>
     </div>
   </div>
+
   <!-- 로그인 후: 내 계정 -->
   <div id="am-auth" style="display:none">
     <div class="am-body">
@@ -4303,44 +4305,46 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     if(_origOverlay) _origOverlay();
   };
 
-  // ── 로그인 ──
-  window.doLogin = async function(){
-    const email = document.getElementById('li-email').value.trim();
-    const pw    = document.getElementById('li-pw').value;
-    const errEl = document.getElementById('li-err');
-    const btn   = document.getElementById('li-btn');
+  // ── OTP 전송 ──
+  let otpEmail = '';
+  window.sendOtp = async function(){
+    const email = document.getElementById('otp-email').value.trim();
+    const errEl = document.getElementById('otp-send-err');
+    const btn   = document.getElementById('otp-send-btn');
     errEl.textContent = '';
-    if(!email||!pw){ errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
-    btn.disabled = true; btn.textContent = '로그인 중…';
-    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
-    btn.disabled = false; btn.textContent = '로그인';
-    if(error){ errEl.textContent = error.message==='Invalid login credentials'?'이메일 또는 비밀번호가 틀렸습니다.':error.message; }
-    else { closeAuthModal(); showHint('✅ 로그인되었습니다!'); }
+    if(!email){ errEl.textContent = '이메일을 입력해주세요.'; return; }
+    btn.disabled = true; btn.textContent = '전송 중…';
+    const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+    btn.disabled = false; btn.textContent = '인증 코드 받기';
+    if(error){ errEl.textContent = error.message; return; }
+    otpEmail = email;
+    document.getElementById('otp-step1').style.display = 'none';
+    document.getElementById('otp-step2').style.display = 'block';
+    document.getElementById('otp-sent-to').textContent = email;
+    setTimeout(()=>document.getElementById('otp-code').focus(), 100);
   };
 
-  // ── 회원가입 ──
-  window.doSignup = async function(){
-    const email = document.getElementById('su-email').value.trim();
-    const pw    = document.getElementById('su-pw').value;
-    const errEl = document.getElementById('su-err');
-    const okEl  = document.getElementById('su-ok');
-    const btn   = document.getElementById('su-btn');
-    errEl.textContent = ''; okEl.textContent = '';
-    if(!email||!pw){ errEl.textContent = '이메일과 비밀번호를 입력해주세요.'; return; }
-    if(pw.length<6){ errEl.textContent = '비밀번호는 6자 이상이어야 합니다.'; return; }
-    btn.disabled = true; btn.textContent = '가입 중…';
-    const { error } = await sb.auth.signUp({ email, password: pw });
-    btn.disabled = false; btn.textContent = '회원가입';
-    if(error){ errEl.textContent = error.message; }
-    else { okEl.textContent = '✅ 인증 이메일을 보냈습니다. 이메일을 확인해주세요!'; }
+  // ── OTP 검증 ──
+  window.verifyOtp = async function(){
+    const code  = document.getElementById('otp-code').value.trim();
+    const errEl = document.getElementById('otp-verify-err');
+    const btn   = document.getElementById('otp-verify-btn');
+    errEl.textContent = '';
+    if(code.length !== 6){ errEl.textContent = '6자리 코드를 입력해주세요.'; return; }
+    btn.disabled = true; btn.textContent = '확인 중…';
+    const { error } = await sb.auth.verifyOtp({ email: otpEmail, token: code, type: 'email' });
+    btn.disabled = false; btn.textContent = '확인';
+    if(error){ errEl.textContent = '코드가 틀렸거나 만료되었습니다.'; return; }
+    closeAuthModal();
+    showHint('✅ 로그인되었습니다!');
   };
 
-  // ── Google OAuth ──
-  window.doGoogleLogin = async function(){
-    await sb.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.href }
-    });
+  // ── OTP 초기화 (이메일 다시 입력) ──
+  window.resetOtp = function(){
+    document.getElementById('otp-step1').style.display = 'block';
+    document.getElementById('otp-step2').style.display = 'none';
+    document.getElementById('otp-code').value = '';
+    document.getElementById('otp-verify-err').textContent = '';
   };
 
   // ── 로그아웃 ──
@@ -4589,13 +4593,14 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // 엔터키로 로그인/가입
+  // 엔터키로 OTP 처리
   document.addEventListener('keydown', e=>{
     if(e.key==='Enter'){
       const modal = document.getElementById('auth-modal');
       if(!modal?.classList.contains('open')) return;
-      if(document.getElementById('sec-login').classList.contains('active')) doLogin();
-      else doSignup();
+      const step2 = document.getElementById('otp-step2');
+      if(step2 && step2.style.display !== 'none') verifyOtp();
+      else sendOtp();
     }
   });
 

@@ -353,25 +353,29 @@ footer{
     <div style="font-size:15px;font-weight:800;color:#fff" id="idx-modal-title">✈️ choible 계정</div>
     <button onclick="closeIndexAuth()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:13px;cursor:pointer">✕</button>
   </div>
-  <!-- 비로그인 -->
+  <!-- 비로그인: OTP -->
   <div id="idx-unauth">
-    <div style="display:flex;border-bottom:2px solid #f0f0f0">
-      <button id="idx-tab-li" onclick="idxTab('li')" style="flex:1;padding:12px;font-size:13px;font-weight:700;color:#4F6EF7;background:none;border:none;border-bottom:2px solid #4F6EF7;margin-bottom:-2px;cursor:pointer">로그인</button>
-      <button id="idx-tab-su" onclick="idxTab('su')" style="flex:1;padding:12px;font-size:13px;font-weight:700;color:#aaa;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-2px;cursor:pointer">회원가입</button>
-    </div>
     <div style="padding:18px 22px 22px">
-      <div id="idx-sec-li">
-        <div style="margin-bottom:11px"><div style="font-size:11px;font-weight:700;color:#666;margin-bottom:4px">이메일</div><input id="idx-li-email" type="email" placeholder="you@example.com" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box"></div>
-        <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#666;margin-bottom:4px">비밀번호</div><input id="idx-li-pw" type="password" placeholder="비밀번호" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box"></div>
-        <button onclick="idxLogin()" style="width:100%;background:linear-gradient(135deg,#4F6EF7,#4a7aee);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer">로그인</button>
-        <div id="idx-li-err" style="font-size:12px;color:#ef4444;margin-top:8px;text-align:center;min-height:16px"></div>
+      <div id="idx-otp-step1">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="font-size:28px;margin-bottom:4px">✉️</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1a2e">이메일로 로그인</div>
+          <div style="font-size:11px;color:#aaa;margin-top:3px">6자리 코드를 보내드립니다. 계정이 없으면 자동 가입됩니다.</div>
+        </div>
+        <div style="margin-bottom:12px"><input id="idx-otp-email" type="email" placeholder="you@example.com" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box"></div>
+        <button onclick="idxSendOtp()" id="idx-otp-send-btn" style="width:100%;background:linear-gradient(135deg,#4F6EF7,#4a7aee);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer">인증 코드 받기</button>
+        <div id="idx-otp-send-err" style="font-size:12px;color:#ef4444;margin-top:8px;text-align:center;min-height:14px"></div>
       </div>
-      <div id="idx-sec-su" style="display:none">
-        <div style="margin-bottom:11px"><div style="font-size:11px;font-weight:700;color:#666;margin-bottom:4px">이메일</div><input id="idx-su-email" type="email" placeholder="you@example.com" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box"></div>
-        <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:#666;margin-bottom:4px">비밀번호 (6자 이상)</div><input id="idx-su-pw" type="password" placeholder="비밀번호" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:13px;outline:none;box-sizing:border-box"></div>
-        <button onclick="idxSignup()" style="width:100%;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer">회원가입</button>
-        <div id="idx-su-err" style="font-size:12px;color:#ef4444;margin-top:8px;text-align:center;min-height:16px"></div>
-        <div id="idx-su-ok" style="font-size:12px;color:#10b981;margin-top:8px;text-align:center;min-height:16px"></div>
+      <div id="idx-otp-step2" style="display:none">
+        <div style="text-align:center;margin-bottom:14px">
+          <div style="font-size:28px;margin-bottom:4px">🔢</div>
+          <div style="font-size:13px;font-weight:700;color:#1a1a2e">인증 코드 입력</div>
+          <div style="font-size:11px;color:#aaa;margin-top:3px">이메일로 발송된 6자리 코드를 입력하세요</div>
+        </div>
+        <div style="margin-bottom:12px"><input id="idx-otp-code" type="text" inputmode="numeric" maxlength="6" placeholder="123456" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:22px;font-weight:800;letter-spacing:8px;text-align:center;outline:none;box-sizing:border-box"></div>
+        <button onclick="idxVerifyOtp()" style="width:100%;background:linear-gradient(135deg,#4F6EF7,#4a7aee);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer">확인</button>
+        <div id="idx-otp-verify-err" style="font-size:12px;color:#ef4444;margin-top:8px;text-align:center;min-height:14px"></div>
+        <div style="text-align:center;margin-top:8px"><button onclick="idxResetOtp()" style="background:none;border:none;font-size:12px;color:#aaa;cursor:pointer">← 이메일 다시 입력</button></div>
       </div>
     </div>
   </div>
@@ -427,37 +431,40 @@ footer{
     document.getElementById('idx-tab-su').style.color = t==='su'?'#4F6EF7':'#aaa';
     document.getElementById('idx-tab-su').style.borderBottomColor = t==='su'?'#4F6EF7':'transparent';
   };
-  window.idxLogin = async function(){
-    const email=document.getElementById('idx-li-email').value.trim();
-    const pw=document.getElementById('idx-li-pw').value;
-    const err=document.getElementById('idx-li-err');
+  let idxOtpEmail='';
+  window.idxSendOtp = async function(){
+    const email=document.getElementById('idx-otp-email').value.trim();
+    const err=document.getElementById('idx-otp-send-err');
+    const btn=document.getElementById('idx-otp-send-btn');
     err.textContent='';
-    if(!email||!pw){err.textContent='이메일과 비밀번호를 입력해주세요.';return;}
-    const {error}=await sb.auth.signInWithPassword({email,password:pw});
-    if(error){err.textContent=error.message==='Invalid login credentials'?'이메일 또는 비밀번호가 틀렸습니다.':error.message;}
-    else{closeIndexAuth();window.location.href='app.html';}
+    if(!email){err.textContent='이메일을 입력해주세요.';return;}
+    btn.disabled=true;btn.textContent='전송 중…';
+    const {error}=await sb.auth.signInWithOtp({email,options:{shouldCreateUser:true}});
+    btn.disabled=false;btn.textContent='인증 코드 받기';
+    if(error){err.textContent=error.message;return;}
+    idxOtpEmail=email;
+    document.getElementById('idx-otp-step1').style.display='none';
+    document.getElementById('idx-otp-step2').style.display='block';
+    setTimeout(()=>document.getElementById('idx-otp-code').focus(),100);
   };
-  window.idxSignup = async function(){
-    const email=document.getElementById('idx-su-email').value.trim();
-    const pw=document.getElementById('idx-su-pw').value;
-    const err=document.getElementById('idx-su-err');
-    const ok=document.getElementById('idx-su-ok');
-    err.textContent='';ok.textContent='';
-    if(!email||!pw){err.textContent='이메일과 비밀번호를 입력해주세요.';return;}
-    if(pw.length<6){err.textContent='비밀번호는 6자 이상이어야 합니다.';return;}
-    const {error}=await sb.auth.signUp({email,password:pw});
-    if(error){err.textContent=error.message;}
-    else{ok.textContent='✅ 인증 이메일을 확인해주세요!';}
+  window.idxVerifyOtp = async function(){
+    const code=document.getElementById('idx-otp-code').value.trim();
+    const err=document.getElementById('idx-otp-verify-err');
+    err.textContent='';
+    if(code.length!==6){err.textContent='6자리 코드를 입력해주세요.';return;}
+    const {error}=await sb.auth.verifyOtp({email:idxOtpEmail,token:code,type:'email'});
+    if(error){err.textContent='코드가 틀렸거나 만료되었습니다.';return;}
+    closeIndexAuth();
+    window.location.href='app.html';
+  };
+  window.idxResetOtp = function(){
+    document.getElementById('idx-otp-step1').style.display='block';
+    document.getElementById('idx-otp-step2').style.display='none';
+    document.getElementById('idx-otp-code').value='';
   };
   window.idxLogout = async function(){
     await sb.auth.signOut();
     closeIndexAuth();
-  };
-  window.idxGoogleLogin = async function(){
-    await sb.auth.signInWithOAuth({
-      provider:'google',
-      options:{ redirectTo: window.location.origin + '/app.html' }
-    });
   };
 })();
 </script>
