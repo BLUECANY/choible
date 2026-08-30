@@ -1,3 +1,14 @@
 User-agent: *
 Allow: /
+Disallow: /choible-site-final.zip
+Disallow: /choible-site.zip
+Disallow: /choible-update.zip
+Disallow: /design-compare.html
+Disallow: /preview.html
+Disallow: /preview_new.html
+Disallow: /travel-mindmap-v2.html
+Disallow: /travel-mindmap.html
+Disallow: /travel-planner.html
+Disallow: /deploy-guide.html
+
 Sitemap: https://choible.com/sitemap.xml

@@ -3,8 +3,84 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>여행 마인드맵</title>
-<meta name="description" content="장소 검색, 경로 연결, 경비 관리, 캘린더 내보내기까지 — 여행 일정을 한 캔버스에서 시각적으로 계획하는 무료 인터랙티브 마인드맵 도구입니다.">
+<title>choible — 무료 여행 마인드맵 플래너</title>
+<meta name="description" content="장소 검색·경로 연결·경비 관리·캘린더 내보내기까지 — choible에서 여행 일정을 한 캔버스에서 시각적으로 계획하세요. 국내외 장소 검색, 자동 저장, PWA 지원. 완전 무료.">
+<meta name="keywords" content="여행 계획, 여행 마인드맵, 여행 일정, 여행 플래너, 여행 경로, choible, 무료 여행 앱, 인터랙티브 지도, 여행 경비, 해외여행 계획">
+<meta name="author" content="choible">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://choible.com/">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:url" content="https://choible.com/">
+<meta property="og:site_name" content="choible">
+<meta property="og:title" content="choible — 무료 여행 마인드맵 플래너">
+<meta property="og:description" content="장소 검색·경로 연결·경비 관리·캘린더 내보내기를 한 화면에서. 국내외 장소 검색, 자동 저장, PWA 지원. 완전 무료.">
+<meta property="og:image" content="https://choible.com/choible-icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:image:alt" content="choible 여행 마인드맵 앱 아이콘">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="choible — 무료 여행 마인드맵 플래너">
+<meta name="twitter:description" content="장소 검색·경로 연결·경비 관리·캘린더 내보내기를 한 화면에서. 완전 무료.">
+<meta name="twitter:image" content="https://choible.com/choible-icon-512.png">
+
+<!-- Favicon & Icons -->
+<link rel="icon" type="image/svg+xml" href="/choible-icon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="/choible-icon-512.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/choible-icon-192.png">
+<meta name="theme-color" content="#5B8DEE">
+
+<!-- PWA Manifest -->
+<link rel="manifest" href="/manifest.json">
+
+<!-- Sitemap -->
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2293239362569484" crossorigin="anonymous"></script>
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://choible.com/#website",
+      "url": "https://choible.com/",
+      "name": "choible",
+      "description": "무료 여행 마인드맵 플래너",
+      "inLanguage": "ko",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://choible.com/app.html?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://choible.com/app.html",
+      "name": "choible 여행 마인드맵",
+      "description": "장소 검색, 경로 연결, 메모·경비 관리, 캘린더 내보내기까지 여행 일정을 시각적으로 계획하는 인터랙티브 마인드맵 도구. 국내외 장소 검색 지원, 30초 자동 저장.",
+      "applicationCategory": "TravelApplication",
+      "operatingSystem": "Web",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      },
+      "url": "https://choible.com/app.html",
+      "inLanguage": "ko",
+      "image": "https://choible.com/choible-icon-512.png"
+    }
+  ]
+}
+</script>
+
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -235,58 +311,13 @@ footer{
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s,transform .6s}
 .reveal.in{opacity:1;transform:translateY(0)}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}
-
-/* ── COUPANG PARTNERS ── */
-.cp-filter{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px;justify-content:center}
-.cp-chip{
-  padding:7px 16px;border-radius:999px;border:1.5px solid #DDE6F8;
-  background:transparent;font-size:12px;font-weight:700;color:#6A7894;
-  cursor:pointer;transition:all .18s;font-family:inherit;white-space:nowrap;
-}
-.cp-chip:hover,.cp-chip.cp-active{background:#4F6EF7;border-color:#4F6EF7;color:#fff}
-.cp-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));
-  gap:14px;margin-top:28px;
-}
-.cp-card{
-  background:#F7FAFF;border:1.5px solid #DDE6F8;border-radius:16px;
-  padding:20px 18px 16px;display:flex;flex-direction:column;gap:10px;
-  text-decoration:none;color:inherit;
-  transition:transform .18s,box-shadow .18s,border-color .18s;
-}
-.cp-card:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(79,110,247,.13);border-color:rgba(79,110,247,.3)}
-.cp-card[hidden]{display:none}
-.cp-emoji{font-size:30px;line-height:1}
-.cp-badge{
-  display:inline-flex;align-items:center;padding:3px 8px;border-radius:6px;
-  font-size:10px;font-weight:700;width:fit-content;
-  text-transform:uppercase;letter-spacing:.04em;
-}
-.cp-badge.gear{background:#DBEAFE;color:#1D4ED8}
-.cp-badge.tech{background:#FEF3C7;color:#D97706}
-.cp-badge.outdoor{background:#DCFCE7;color:#16A34A}
-.cp-badge.health{background:#FCE7F3;color:#BE185D}
-.cp-name{font-size:14px;font-weight:800;color:#0B1526;line-height:1.35}
-.cp-desc{font-size:11px;color:#7A8AA8;line-height:1.6;flex:1}
-.cp-price{font-size:12px;color:#6A7894;font-weight:600}
-.cp-price strong{color:#4F6EF7;font-size:14px;font-weight:800}
-.cp-cta{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 13px;background:#E8003D;border-radius:9px;
-  color:#fff;font-size:12px;font-weight:700;margin-top:4px;
-}
-.cp-disclaimer{
-  font-size:11px;color:#9AAAC8;text-align:center;margin-top:28px;
-  padding-top:18px;border-top:1px solid #EDF0FA;line-height:1.7;
-}
 </style>
 </head>
 <body>
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="app.html">✈️ 여행 마인드맵 <span class="nav-logo-badge">FREE</span></a>
+  <a class="nav-logo" href="app.html"><img src="/choible-icon.svg" alt="choible" width="24" height="24" style="border-radius:6px;flex-shrink:0"> choible <span class="nav-logo-badge">FREE</span></a>
   <a class="nav-cta" href="app.html">지금 시작하기 →</a>
 </nav>
 
@@ -558,69 +589,6 @@ footer{
   </div>
 </section>
 
-<!-- TRAVEL PRODUCT RECOMMENDATIONS (쿠팡파트너스) -->
-<section id="travel-items" style="background:#F7FAFF;border-top:1px solid #EDF0FA">
-  <div class="container">
-    <div class="reveal" style="text-align:center">
-      <div class="sect-tag" style="background:#FFF0F3;color:#E8003D;border:1px solid rgba(232,0,61,.15)">쿠팡파트너스 추천</div>
-      <h2 class="sect-title">여행 준비물 추천 🧳</h2>
-      <p class="sect-sub" style="margin:0 auto">여행 마인드맵 사용자들이 많이 찾는 필수 여행 아이템만 모았어요</p>
-    </div>
-    <div class="cp-filter reveal">
-      <button class="cp-chip cp-active" onclick="filterCP('all',this)">전체</button>
-      <button class="cp-chip" onclick="filterCP('gear',this)">🎒 여행 가방</button>
-      <button class="cp-chip" onclick="filterCP('tech',this)">🔌 여행 기기</button>
-      <button class="cp-chip" onclick="filterCP('health',this)">💊 건강·위생</button>
-    </div>
-    <div class="cp-grid reveal">
-      <a class="cp-card" data-cat="tech" href="https://link.coupang.com/a/gBZGXDMaPs" target="_blank" rel="noopener sponsored">
-        <div class="cp-emoji">🔌</div>
-        <span class="cp-badge tech">여행 기기</span>
-        <div class="cp-name">코드웨이 돼지코 220V 변환 110V 플러그</div>
-        <div class="cp-desc">미국·일본 등 110V 국가 여행 필수 · 소형 경량 · 간편 연결</div>
-        <div class="cp-price">쿠팡 최저가 확인 →</div>
-        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
-      </a>
-      <a class="cp-card" data-cat="tech" href="https://link.coupang.com/a/gBZA5L6iJg" target="_blank" rel="noopener sponsored">
-        <div class="cp-emoji">🔋</div>
-        <span class="cp-badge tech">여행 기기</span>
-        <div class="cp-name">바우아토 포켓쉴 보조배터리 20000mAh</div>
-        <div class="cp-desc">C타입·애플8핀 일체형 케이블 · PD 22.5W 고속충전 · 기내반입 가능</div>
-        <div class="cp-price">쿠팡 최저가 확인 →</div>
-        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
-      </a>
-      <a class="cp-card" data-cat="health" href="https://link.coupang.com/a/gBY7eLhTK8" target="_blank" rel="noopener sponsored">
-        <div class="cp-emoji">💊</div>
-        <span class="cp-badge health">건강·위생</span>
-        <div class="cp-name">티플 휴대용 상비약 여행용 파우치 구급함</div>
-        <div class="cp-desc">여행 필수 상비약 구성 · 파우치 포함 · 래드 컬러</div>
-        <div class="cp-price">쿠팡 최저가 확인 →</div>
-        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
-      </a>
-      <a class="cp-card" data-cat="health" href="https://link.coupang.com/a/gBZxlasWqq" target="_blank" rel="noopener sponsored">
-        <div class="cp-emoji">🧴</div>
-        <span class="cp-badge health">건강·위생</span>
-        <div class="cp-name">디오셀 여행용 소분 파우치 100ml 20개</div>
-        <div class="cp-desc">기내 반입 가능 용량 · 샴푸·로션 소분 · 누수 방지 뚜껑</div>
-        <div class="cp-price">쿠팡 최저가 확인 →</div>
-        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
-      </a>
-      <a class="cp-card" data-cat="gear" href="https://link.coupang.com/a/gBZrgoeyOW" target="_blank" rel="noopener sponsored">
-        <div class="cp-emoji">🔒</div>
-        <span class="cp-badge gear">여행 가방</span>
-        <div class="cp-name">베이루 TSA 와이어 자물쇠</div>
-        <div class="cp-desc">미국 TSA 공인 인증 · 와이어 타입 · 캐리어·백팩 겸용</div>
-        <div class="cp-price">쿠팡 최저가 확인 →</div>
-        <div class="cp-cta"><span>쿠팡에서 보기</span><span>→</span></div>
-      </a>
-    </div>
-    <p class="cp-disclaimer reveal">
-      이 포스팅은 쿠팡파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.<br>
-      구매 비용은 소비자에게 추가로 발생하지 않습니다.
-    </p>
-  </div>
-</section>
-
 <!-- CTA -->
 <section style="background:#F7FAFF">
   <div class="container">
@@ -636,7 +604,7 @@ footer{
 
 <!-- FOOTER -->
 <footer>
-  <span class="ft-logo">✈️ 여행 마인드맵</span>
+  <span class="ft-logo"><img src="/choible-icon.svg" alt="choible" width="20" height="20" style="border-radius:5px;vertical-align:middle;margin-right:5px"> choible</span>
   <div class="ft-links">
     <a class="ft-link" href="app.html">앱 열기</a>
     <a class="ft-link" href="privacy.html">개인정보처리방침</a>
@@ -649,14 +617,6 @@ const io = new IntersectionObserver(entries => {
   entries.forEach(e => { if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)} });
 },{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-
-function filterCP(cat, btn){
-  document.querySelectorAll('.cp-chip').forEach(c => c.classList.remove('cp-active'));
-  btn.classList.add('cp-active');
-  document.querySelectorAll('.cp-card').forEach(card => {
-    card.hidden = cat !== 'all' && card.dataset.cat !== cat;
-  });
-}
 </script>
 </body>
 </html>
