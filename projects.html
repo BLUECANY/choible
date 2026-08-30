@@ -633,35 +633,38 @@ async function loadProjects(){
     return;
   }
 
-  // 로그인: 클라우드 쿼리
-  if(!sb){ renderGrid(); return; } // SDK 없으면 로컬만 표시
+  // 로그인: 로컬 우선 즉시 표시 후 클라우드 병합
+  const localList = getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+  allProjects = localList;
+  renderGrid(); // 로컬 먼저 즉시 표시
 
-  grid.innerHTML='<div class="grid-loading"><div class="spinner"></div><span>프로젝트 불러오는 중...</span></div>';
+  if(!sb){ return; } // SDK 없으면 로컬만
 
   try{
-    // 6초 타임아웃
-    const queryPromise=sb.from('mindmaps')
+    // 6초 타임아웃으로 클라우드 쿼리
+    const queryPromise = sb.from('mindmaps')
       .select('id,title,updated_at,data')
-      .eq('user_id',currentUser.id)
-      .order('updated_at',{ascending:false});
-    const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000));
-    const {data,error}=await Promise.race([queryPromise,timeoutPromise]);
-    if(!error && data){
-      allProjects=(data).map(p=>({
-        id:p.id,cloud:true,
-        title:p.title||'새 여행',
-        updatedAt:p.updated_at,
-        preview:previewText(p.data||{}),
+      .eq('user_id', currentUser.id)
+      .order('updated_at', {ascending:false});
+    const timeoutPromise = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000));
+    const {data, error} = await Promise.race([queryPromise, timeoutPromise]);
+    if(!error && data && data.length){
+      const cloudProjects = data.map(p=>({
+        id: p.id, cloud: true,
+        title: p.title || '새 여행',
+        updatedAt: p.updated_at,
+        preview: previewText(p.data||{}),
       }));
-    } else {
-      // 쿼리 오류 시 로컬 폴백
-      allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+      // 로컬 + 클라우드 병합 (중복 ID 제거, 최신순)
+      const cloudIds = new Set(cloudProjects.map(p=>p.id));
+      const mergedLocal = localList.filter(p=>!cloudIds.has(p.id));
+      allProjects = [...cloudProjects, ...mergedLocal]
+        .sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+      renderGrid(); // 병합 결과 다시 렌더
     }
   }catch(e){
-    // 타임아웃이나 에러 시 로컬 프로젝트로 폴백
-    allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+    // 타임아웃이나 오류: 이미 로컬이 표시됨, 유지
   }
-  renderGrid();
 }
 
 function renderGrid(){

@@ -1296,6 +1296,20 @@
   </div>
 </div>
 
+<!-- 클라우드 저장 이름 입력 모달 -->
+<div id="cloud-save-modal" style="display:none;position:fixed;inset:0;z-index:9000;align-items:center;justify-content:center;background:rgba(0,0,0,.45);backdrop-filter:blur(4px)">
+  <div style="background:#fff;border-radius:20px;padding:28px 28px 22px;width:min(90vw,360px);box-shadow:0 16px 48px rgba(0,0,0,.22)">
+    <div style="font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:6px">☁️ 클라우드에 저장</div>
+    <div style="font-size:13px;color:#6a6878;margin-bottom:18px">프로젝트 이름을 입력하면 클라우드에 저장되어<br>모든 기기에서 접근할 수 있어요.</div>
+    <input id="csm-title-input" type="text" maxlength="50" placeholder="여행 이름 입력..." style="width:100%;padding:10px 14px;border:1.5px solid #dde2f0;border-radius:10px;font-size:14px;outline:none;margin-bottom:16px" oninput="this.style.borderColor='#5b8af5'" onkeydown="if(event.key==='Enter')cloudSaveConfirm()">
+    <div id="csm-err" style="color:#e53e3e;font-size:12px;min-height:16px;margin-bottom:10px"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="cloudSaveCancel()" style="padding:9px 18px;border:1.5px solid #dde2f0;border-radius:10px;background:#fff;font-size:13px;font-weight:600;color:#6a6878;cursor:pointer">취소</button>
+      <button onclick="cloudSaveConfirm()" style="padding:9px 20px;border:none;border-radius:10px;background:linear-gradient(135deg,#5b8af5,#7c6be0);color:#fff;font-size:13px;font-weight:700;cursor:pointer">☁️ 저장</button>
+    </div>
+  </div>
+</div>
+
 <!-- 로그인/회원가입 모달 -->
 <div id="auth-modal">
   <div class="am-header">
@@ -3672,17 +3686,8 @@ function doAutoSave(){
       badge.classList.add('saved');
       setTimeout(()=>{badge.classList.remove('saved');updateAutoSaveBadge();},2000);
     }
-    // 클라우드 저장 (로그인 + cloud 프로젝트)
-    if(currentUser && currentMapId){
-      clearTimeout(_cloudSaveTimer);
-      _cloudSaveTimer=setTimeout(()=>pgCloudAutoSave(data),15000);
-    }
+    // 클라우드 저장은 Supabase IIFE의 window.doAutoSave 래퍼에서 처리
   }catch(_){}
-}
-async function pgCloudAutoSave(data){
-  if(!currentUser||!currentMapId) return;
-  await sb.from('mindmaps').update({data,updated_at:new Date().toISOString()})
-    .eq('id',currentMapId).eq('user_id',currentUser.id);
 }
 function updateAutoSaveBadge(){
   const txt=document.getElementById('autosave-txt');
@@ -3708,10 +3713,12 @@ function closeOverflow(){
 
 // 즉시 저장 + 토스트 (💾 저장 버튼용)
 function saveToProject(){
-  doAutoSave();
-  // 클라우드 프로젝트면 즉시 동기화 요청
-  if(typeof window.saveCloudNow === 'function') window.saveCloudNow();
-  showHint('✅ 저장 완료!');
+  doAutoSave(); // 로컬 저장
+  if(typeof window.saveCloudNow === 'function'){
+    window.saveCloudNow(); // 로그인 시 클라우드 저장 (다이얼로그 또는 즉시)
+  } else {
+    showHint('✅ 저장 완료!'); // 비로그인 시 로컬 저장 완료 메시지
+  }
 }
 
 // 페이지 이탈 시 저장
@@ -4339,6 +4346,52 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
 })();
 
 // ══════════════════════════════════════════
+// 로컬 프로젝트 라우팅 (Supabase 없이 즉시 실행)
+// ══════════════════════════════════════════
+(function pgLocalRouting(){
+  const params = new URLSearchParams(location.search);
+  if(params.has('share')) return; // 공유 링크는 Supabase IIFE에서 처리
+
+  const projId = params.get('project');
+  const isNew  = params.has('newproject');
+
+  if(!projId && !isNew){
+    // 파라미터 없이 직접 접근 → 갤러리로
+    window.location.href = 'projects.html';
+    return;
+  }
+
+  if(isNew){
+    // 새 프로젝트 즉시 초기화
+    currentProjectId = 'local_' + Date.now();
+    pgSetCurrentTitle('새 여행');
+    const list = pgGetLocalProjects();
+    list.unshift({id: currentProjectId, title:'새 여행', updatedAt: new Date().toISOString(), preview:'장소 없음'});
+    pgSetLocalProjects(list);
+    // 빈 데이터 즉시 기록 (복원 기준점)
+    localStorage.setItem('choible_proj_' + currentProjectId, JSON.stringify({v:2,places:[],extras:[],connections:[],idCtr:0,costItemCtr:0,panX:0,panY:0,sc:1,drawings:[],dayZones:[],dzCtr:0}));
+    try{ if(!localStorage.getItem('tmv2_onboard_done')) showOnboard(); }catch(_){}
+    return;
+  }
+
+  if(projId && projId.startsWith('local_')){
+    // 로컬 프로젝트 즉시 로드
+    clearAll();
+    currentProjectId = projId;
+    const raw = localStorage.getItem('choible_proj_' + projId);
+    const meta = pgGetLocalProjects().find(p => p.id === projId);
+    pgSetCurrentTitle(meta?.title || '새 여행');
+    if(raw){
+      try{ pgLoadMapData(JSON.parse(raw)); }catch(_){}
+    }
+    return;
+  }
+
+  // 클라우드 프로젝트(local_ 아닌 UUID) → Supabase IIFE에서 처리
+  showHint('📡 클라우드 프로젝트 불러오는 중...');
+})();
+
+// ══════════════════════════════════════════
 // Supabase Auth + 클라우드 저장/공유
 // ══════════════════════════════════════════
 (function(){
@@ -4375,48 +4428,24 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
       return;
     }
 
+    // 로컬 프로젝트 / 새 프로젝트 / 파라미터 없음 → pgLocalRouting IIFE에서 이미 처리됨
+    // 클라우드 프로젝트만 여기서 처리
     const projId = params.get('project');
-    const isNew  = params.has('newproject');
-
-    if(projId){
-      // 프로젝트 열기
+    if(projId && !projId.startsWith('local_')){
+      clearTimeout(window._cloudLoadTimeout);
       clearAll();
-      if(!projId.startsWith('local_')){
-        // 클라우드 프로젝트
+      try{
         const {data: mapData, error} = await sb.from('mindmaps').select('*').eq('id', projId).single();
-        if(error || !mapData){ showHint('❌ 불러오기 실패'); window.location.href='projects.html'; return; }
+        if(error || !mapData){ showHint('❌ 클라우드 프로젝트 불러오기 실패'); setTimeout(()=>window.location.href='projects.html',1500); return; }
         currentMapId = mapData.id;
         currentProjectId = mapData.id;
         pgSetCurrentTitle(mapData.title || '새 여행');
-        pgLoadMapData(mapData.data);
-      } else {
-        // 로컬 프로젝트
-        currentProjectId = projId;
-        currentMapId = null;
-        const raw = localStorage.getItem('choible_proj_' + projId);
-        const meta = pgGetLocalProjects().find(p => p.id === projId);
-        pgSetCurrentTitle(meta?.title || '새 여행');
-        if(raw) pgLoadMapData(JSON.parse(raw));
+        if(mapData.data) pgLoadMapData(mapData.data);
+        else showHint('ℹ️ 비어있는 프로젝트입니다.');
+      }catch(e){
+        showHint('❌ 불러오기 오류: '+e.message);
+        setTimeout(()=>window.location.href='projects.html',1500);
       }
-      doAutoSave();
-
-    } else if(isNew){
-      // 새 프로젝트
-      currentProjectId = 'local_' + Date.now();
-      currentMapId = null;
-      pgSetCurrentTitle('새 여행');
-      const list = pgGetLocalProjects();
-      if(!list.find(p => p.id === currentProjectId)){
-        list.unshift({id: currentProjectId, title:'새 여행', updatedAt: new Date().toISOString(), preview:'장소 없음'});
-        pgSetLocalProjects(list);
-      }
-      // 초기 빈 데이터 즉시 저장 (새 프로젝트가 반드시 복원 가능하도록)
-      doAutoSave();
-      try{ if(!localStorage.getItem('tmv2_onboard_done')) showOnboard(); }catch(_){}
-
-    } else {
-      // 파라미터 없이 직접 접근 → 갤러리로
-      window.location.href = 'projects.html';
     }
   });
 
@@ -4816,15 +4845,67 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     };
   }
 
-  // 즉시 클라우드 저장 (💾 저장 버튼 → saveToProject() 에서 호출)
-  window.saveCloudNow = async function(){
-    if(!currentUser || !currentMapId || isShareView) return;
-    clearTimeout(cloudSyncTimer);
+  // ── 클라우드 저장 다이얼로그 ──
+  window.cloudSaveCancel = function(){
+    document.getElementById('cloud-save-modal').style.display = 'none';
+    document.getElementById('csm-err').textContent = '';
+  };
+
+  window.cloudSaveConfirm = async function(){
+    const titleInput = document.getElementById('csm-title-input');
+    const errEl = document.getElementById('csm-err');
+    const title = (titleInput?.value || '').trim();
+    if(!title){ errEl.textContent = '이름을 입력해 주세요.'; titleInput?.focus(); return; }
+    errEl.textContent = '';
+    document.getElementById('cloud-save-modal').style.display = 'none';
+    showHint('☁️ 클라우드에 저장 중...');
     try{
       const data = getMapData();
-      await sb.from('mindmaps').update({ data, updated_at: new Date().toISOString() })
+      const { data: newMap, error } = await sb.from('mindmaps')
+        .insert({ user_id: currentUser.id, title, data })
+        .select('id,title').single();
+      if(error){ showHint('❌ 저장 실패: ' + error.message); return; }
+      const oldLocalId = currentProjectId;
+      currentMapId = newMap.id;
+      currentProjectId = newMap.id;
+      pgSetCurrentTitle(title);
+      // 로컬 목록에서 이전 항목 제거
+      if(oldLocalId && oldLocalId.startsWith('local_')){
+        pgSetLocalProjects(pgGetLocalProjects().filter(p => p.id !== oldLocalId));
+        localStorage.removeItem('choible_proj_' + oldLocalId);
+      }
+      // URL 업데이트 (리로드 없이)
+      history.replaceState({}, '', '?project=' + newMap.id);
+      showHint('✅ "' + title + '" 클라우드에 저장됐습니다!');
+    }catch(e){
+      showHint('❌ 저장 오류: ' + e.message);
+    }
+  };
+
+  // 즉시 클라우드 저장 (💾 저장 버튼 → saveToProject() 에서 호출)
+  window.saveCloudNow = async function(){
+    if(!currentUser || isShareView) return;
+    clearTimeout(cloudSyncTimer);
+
+    if(!currentMapId){
+      // 클라우드에 없는 프로젝트 → 이름 입력 다이얼로그
+      const titleEl = document.getElementById('pg-current-title');
+      const titleInput = document.getElementById('csm-title-input');
+      if(titleInput) titleInput.value = titleEl?.textContent || '새 여행';
+      document.getElementById('cloud-save-modal').style.display = 'flex';
+      return;
+    }
+
+    // 기존 클라우드 프로젝트 업데이트 (upsert로 안전하게)
+    try{
+      const data = getMapData();
+      const { error } = await sb.from('mindmaps')
+        .update({ data, updated_at: new Date().toISOString() })
         .eq('id', currentMapId).eq('user_id', currentUser.id);
-    }catch(_){}
+      if(error) showHint('❌ 클라우드 저장 실패: ' + error.message);
+    }catch(e){
+      showHint('❌ 클라우드 저장 오류');
+    }
   };
 
   // ── XSS 방어용 escape ──
