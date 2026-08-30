@@ -549,14 +549,16 @@ footer{
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.7/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 </style>
 <script>
 const SUPABASE_URL='https://rrssuofmyvfxzbliocmn.supabase.co';
 const SUPABASE_ANON='sb_publishable_Bv7Ta8pBlrn8jyjKGoyNNQ_PjGWjCkH';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+// SDK 로드 실패 시 null — 이 경우 로컬 전용 모드로 동작
+let sb=null;
+try{ if(window.supabase) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON); }catch(_){}
 
 let currentUser=null;
 let allProjects=[];
@@ -631,30 +633,33 @@ async function loadProjects(){
     return;
   }
 
-  // 로그인: 작은 로딩 표시 후 쿼리
+  // 로그인: 클라우드 쿼리
+  if(!sb){ renderGrid(); return; } // SDK 없으면 로컬만 표시
+
   grid.innerHTML='<div class="grid-loading"><div class="spinner"></div><span>프로젝트 불러오는 중...</span></div>';
 
-  if(currentUser){
-    try{
-      // 8초 타임아웃: Promise.race로 Supabase 쿼리가 너무 오래 걸리면 빈 결과로 처리
-      const queryPromise=sb.from('mindmaps')
-        .select('id,title,updated_at,data')
-        .eq('user_id',currentUser.id)
-        .order('updated_at',{ascending:false});
-      const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000));
-      const {data,error}=await Promise.race([queryPromise,timeoutPromise]);
-      if(!error){
-        allProjects=(data||[]).map(p=>({
-          id:p.id,cloud:true,
-          title:p.title||'새 여행',
-          updatedAt:p.updated_at,
-          preview:previewText(p.data||{}),
-        }));
-      }
-    }catch(e){
-      // 타임아웃이나 에러 시 로컬 프로젝트로 폴백
+  try{
+    // 6초 타임아웃
+    const queryPromise=sb.from('mindmaps')
+      .select('id,title,updated_at,data')
+      .eq('user_id',currentUser.id)
+      .order('updated_at',{ascending:false});
+    const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),6000));
+    const {data,error}=await Promise.race([queryPromise,timeoutPromise]);
+    if(!error && data){
+      allProjects=(data).map(p=>({
+        id:p.id,cloud:true,
+        title:p.title||'새 여행',
+        updatedAt:p.updated_at,
+        preview:previewText(p.data||{}),
+      }));
+    } else {
+      // 쿼리 오류 시 로컬 폴백
       allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
     }
+  }catch(e){
+    // 타임아웃이나 에러 시 로컬 프로젝트로 폴백
+    allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
   }
   renderGrid();
 }
@@ -762,7 +767,7 @@ function toggleAcctMenu(){
     },{once:true}),10);
   }
 }
-async function doSignOut(){await sb.auth.signOut();location.reload();}
+async function doSignOut(){if(sb)await sb.auth.signOut();currentUser=null;updateHeader(null);loadProjects();}
 
 /* ── Auth modal ── */
 function openAuthModal(){
@@ -798,6 +803,7 @@ async function submitForm(){
   if(isSignupMode){
     const pw2=document.getElementById('f-pw2').value;
     if(pw!==pw2){errEl.textContent='비밀번호가 일치하지 않습니다.';errEl.style.display='block';btn.disabled=false;btn.textContent='가입하기';return;}
+    if(!sb){errEl.textContent='인증 서비스를 사용할 수 없습니다.';errEl.style.display='block';btn.disabled=false;btn.textContent='가입하기';return;}
     const {error}=await sb.auth.signUp({email,password:pw});
     btn.disabled=false;btn.textContent='가입하기';
     if(error){errEl.textContent=error.message;errEl.style.display='block';return;}
@@ -808,6 +814,7 @@ async function submitForm(){
     document.getElementById('auth-err').style.display='none';
     setTimeout(()=>document.getElementById('f-otp').focus(),100);
   } else {
+    if(!sb){errEl.textContent='인증 서비스를 사용할 수 없습니다.';errEl.style.display='block';btn.disabled=false;btn.textContent='로그인';return;}
     const {error}=await sb.auth.signInWithPassword({email,password:pw});
     btn.disabled=false;btn.textContent='로그인';
     if(error){errEl.textContent='이메일 또는 비밀번호가 올바르지 않습니다.';errEl.style.display='block';return;}
@@ -820,6 +827,7 @@ async function verifyOtp(){
   const errEl=document.getElementById('auth-err');
   errEl.style.display='none';
   if(code.length<6){errEl.textContent='인증 코드를 확인해주세요.';errEl.style.display='block';return;}
+  if(!sb){errEl.textContent='인증 서비스를 사용할 수 없습니다.';errEl.style.display='block';return;}
   const {error}=await sb.auth.verifyOtp({email:pendingEmail,token:code,type:'signup'});
   if(error){errEl.textContent='코드가 틀렸거나 만료되었습니다.';errEl.style.display='block';return;}
   closeAuthModal();showToast('🎉 가입 완료! 환영합니다');
@@ -847,34 +855,37 @@ async function offerMigration(user){
 }
 
 /* ── Bootstrap ── */
-// 1) 비로그인 상태 기본값으로 즉시 렌더 (스피너 없음)
+// 1) 항상 즉시 렌더 (스피너 없음, 스켈레톤 즉시 교체)
 updateHeader(null);
 loadProjects();  // 로컬 프로젝트 즉시 표시
 
-// 2) 백그라운드에서 실제 세션 확인 후 필요하면 UI 갱신
-sb.auth.getSession().then(({data:{session}})=>{
-  const user=session?.user||null;
-  if(user){
+// 2) SDK 없으면 여기서 종료 (로컬 전용 모드)
+if(sb){
+  // 세션 확인 후 클라우드 로드
+  sb.auth.getSession().then(({data:{session}})=>{
+    const user=session?.user||null;
+    if(user){
+      currentUser=user;
+      updateHeader(user);
+      loadProjects(); // 클라우드 프로젝트 로드
+    }
+  }).catch(()=>{/* 세션 조회 실패 시 비로그인 상태 유지 */});
+
+  // 로그인/로그아웃 이벤트 감지
+  sb.auth.onAuthStateChange(async(event,session)=>{
+    const user=session?.user||null;
+    const prevId=currentUser?.id;
+    if(user?.id===prevId && event!=='SIGNED_OUT') return;
     currentUser=user;
     updateHeader(user);
-    loadProjects(); // 클라우드 프로젝트 로드
-  }
-}).catch(()=>{/* 세션 조회 실패 시 비로그인 상태 유지 */});
-
-// 3) 로그인/로그아웃 이벤트 감지
-sb.auth.onAuthStateChange(async(event,session)=>{
-  const user=session?.user||null;
-  const prevId=currentUser?.id;
-  if(user?.id===prevId && event!=='SIGNED_OUT') return; // 중복 처리 방지
-  currentUser=user;
-  updateHeader(user);
-  if(event==='SIGNED_IN'){
-    await offerMigration(user);
-    await loadProjects();
-  } else if(event==='SIGNED_OUT'){
-    await loadProjects();
-  }
-});
+    if(event==='SIGNED_IN'){
+      await offerMigration(user);
+      await loadProjects();
+    } else if(event==='SIGNED_OUT'){
+      await loadProjects();
+    }
+  });
+}
 </script>
 </body>
 </html>
