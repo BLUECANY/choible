@@ -1,0 +1,719 @@
+<title>배포 & AdSense 가이드</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+
+<style>
+  :root {
+    --bg: #f4f3ef;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --text: #1a1a2e;
+    --text2: #6a6878;
+    --accent: #4a7cf7;
+    --accent-dim: #eef2ff;
+    --green: #16a34a;
+    --green-dim: #dcfce7;
+    --amber: #d97706;
+    --amber-dim: #fef3c7;
+    --red: #dc2626;
+    --num-bg: #1a1a2e;
+    --num-fg: #ffffff;
+    --step-line: #d8d6ce;
+    --tag-bg: #e8ecfd;
+    --tag-fg: #3b62d4;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171d;
+      --surface: #1f2029;
+      --surface2: #252730;
+      --border: #32343f;
+      --text: #e8e9f0;
+      --text2: #8e8fa3;
+      --accent: #6b95fa;
+      --accent-dim: #1d2444;
+      --green: #4ade80;
+      --green-dim: #0f2d1a;
+      --amber: #fbbf24;
+      --amber-dim: #2d2008;
+      --red: #f87171;
+      --num-bg: #e8e9f0;
+      --num-fg: #16171d;
+      --step-line: #32343f;
+      --tag-bg: #1d2444;
+      --tag-fg: #8caeff;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #16171d;
+    --surface: #1f2029;
+    --surface2: #252730;
+    --border: #32343f;
+    --text: #e8e9f0;
+    --text2: #8e8fa3;
+    --accent: #6b95fa;
+    --accent-dim: #1d2444;
+    --green: #4ade80;
+    --green-dim: #0f2d1a;
+    --amber: #fbbf24;
+    --amber-dim: #2d2008;
+    --red: #f87171;
+    --num-bg: #e8e9f0;
+    --num-fg: #16171d;
+    --step-line: #32343f;
+    --tag-bg: #1d2444;
+    --tag-fg: #8caeff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 40px 20px 80px;
+  }
+
+  .page {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  /* Header */
+  .header {
+    margin-bottom: 48px;
+  }
+
+  .header-eyebrow {
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 800;
+    line-height: 1.15;
+    text-wrap: balance;
+    color: var(--text);
+    margin-bottom: 14px;
+  }
+
+  .header p {
+    color: var(--text2);
+    font-size: 15px;
+    max-width: 560px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: var(--border);
+    border-radius: 999px;
+    height: 6px;
+    margin-bottom: 48px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width .4s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Steps */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 0 20px;
+    position: relative;
+  }
+
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 52px;
+    bottom: -8px;
+    width: 2px;
+    background: var(--step-line);
+  }
+
+  .step.done::before {
+    background: var(--green);
+    opacity: .4;
+  }
+
+  .step-num-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .step-num {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--num-bg);
+    color: var(--num-fg);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .2s, color .2s;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step.done .step-num {
+    background: var(--green);
+    color: #fff;
+  }
+
+  .step-body {
+    padding-bottom: 36px;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .step-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .badge {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+
+  .badge-easy { background: var(--green-dim); color: var(--green); }
+  .badge-key  { background: var(--tag-bg); color: var(--tag-fg); }
+  .badge-later { background: var(--amber-dim); color: var(--amber); }
+
+  .step-desc {
+    color: var(--text2);
+    font-size: 14px;
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  /* Checklist */
+  .checklist { display: flex; flex-direction: column; gap: 8px; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    transition: border-color .15s, background .15s;
+  }
+
+  .check-item:hover { border-color: var(--accent); }
+  .check-item.checked {
+    background: var(--surface2);
+    border-color: var(--border);
+    opacity: .6;
+  }
+
+  .check-box {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    transition: all .15s;
+  }
+  .check-item:hover .check-box { border-color: var(--accent); }
+  .check-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .check-box svg { display: none; }
+  .check-item.checked .check-box svg { display: block; }
+
+  .check-text { flex: 1; }
+  .check-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .check-item.checked .check-label {
+    text-decoration: line-through;
+    color: var(--text2);
+  }
+  .check-sub {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+
+  /* Callout */
+  .callout {
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .callout-info { background: var(--accent-dim); color: var(--text); border-left: 3px solid var(--accent); }
+  .callout-warn { background: var(--amber-dim); color: var(--text); border-left: 3px solid var(--amber); }
+  .callout-ok   { background: var(--green-dim);  color: var(--text); border-left: 3px solid var(--green); }
+  .callout-icon { font-size: 16px; line-height: 1.5; flex-shrink: 0; }
+
+  /* Code */
+  .code {
+    font-family: 'Outfit', 'Courier New', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 2px 7px;
+    font-size: 12.5px;
+    color: var(--accent);
+    white-space: nowrap;
+  }
+
+  .code-block {
+    font-family: 'Outfit', 'Courier New', monospace;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--accent);
+    margin-top: 12px;
+    overflow-x: auto;
+    line-height: 1.7;
+    white-space: pre;
+  }
+
+  /* Divider */
+  .step-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+    display: none;
+  }
+
+  /* Reset button */
+  .reset-btn {
+    margin-top: 40px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: var(--text2);
+    background: none;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+  }
+  .reset-btn:hover { color: var(--text); border-color: var(--text2); }
+
+  @media (max-width: 520px) {
+    .step { grid-template-columns: 40px 1fr; gap: 0 14px; }
+    .step-num { width: 38px; height: 38px; font-size: 15px; }
+    .step:not(:last-child)::before { left: 18px; top: 42px; }
+  }
+</style>
+
+<div class="page">
+
+  <header class="header">
+    <div class="header-eyebrow">여행 마인드맵 출시 가이드</div>
+    <h1>사이트 배포부터 AdSense까지<br>처음부터 끝까지</h1>
+    <p>파일 3개(HTML, sitemap, robots.txt)가 준비됐습니다. 아래 단계를 순서대로 따라가세요. 체크박스를 누르면 진행 상황이 저장됩니다.</p>
+  </header>
+
+  <div class="progress-label">
+    <span>진행률</span>
+    <span id="progress-pct">0 / 18 완료</span>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
+
+  <div class="steps" id="steps">
+
+    <!-- STEP 1 -->
+    <div class="step" id="s1">
+      <div class="step-num-wrap">
+        <div class="step-num">1</div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <span class="step-title">파일 이름 정리</span>
+          <span class="badge badge-easy">5분</span>
+        </div>
+        <p class="step-desc">서버에 올리기 전에 파일 이름과 URL을 맞춰야 합니다. 브라우저는 주소 뒤에 아무것도 없으면 자동으로 <span class="code">index.html</span>을 찾습니다.</p>
+        <div class="checklist">
+          <label class="check-item" data-id="1-1">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><span class="code">travel-mindmap-v2.html</span> → <span class="code">index.html</span> 로 이름 변경</div>
+              <div class="check-sub">폴더 하나를 만들고 그 안에 넣어두세요 (예: travel-mindmap 폴더)</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="1-2">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><span class="code">sitemap.xml</span> 같은 폴더에 넣기</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="1-3">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><span class="code">robots.txt</span> 같은 폴더에 넣기</div>
+              <div class="check-sub">폴더 안에 index.html / sitemap.xml / robots.txt 세 파일이 있으면 됩니다</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step" id="s2">
+      <div class="step-num-wrap">
+        <div class="step-num">2</div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <span class="step-title">Netlify로 배포 (가장 쉬운 방법)</span>
+          <span class="badge badge-easy">10분</span>
+        </div>
+        <p class="step-desc">코딩 없이 폴더를 드래그&드롭하면 바로 인터넷에 올라갑니다. 무료이고 HTTPS도 자동으로 적용됩니다.</p>
+        <div class="checklist">
+          <label class="check-item" data-id="2-1">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><a href="https://netlify.com" target="_blank" style="color:var(--accent)">netlify.com</a> 에서 무료 회원가입 (Google 계정으로 가능)</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="2-2">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">로그인 후 대시보드 하단의 "Deploy manually" 영역으로 폴더 드래그&드롭</div>
+              <div class="check-sub">파일 하나씩이 아니라 폴더 전체를 끌어다 놓아야 합니다</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="2-3">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">배포 완료 후 주소 확인 — <span class="code">xxxx-xxxx-xxxx.netlify.app</span> 형태로 생성됨</div>
+              <div class="check-sub">원하면 Site settings → Change site name 에서 짧은 이름으로 변경 가능</div>
+            </div>
+          </label>
+        </div>
+        <div class="callout callout-info">
+          <span class="callout-icon">💡</span>
+          <span>나중에 별도 도메인(예: travel-map.kr)을 사고 싶으면 가비아·후이즈에서 연 1~3만원에 살 수 있습니다. 지금은 Netlify 무료 주소로도 AdSense 신청이 가능합니다.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step" id="s3">
+      <div class="step-num-wrap">
+        <div class="step-num">3</div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <span class="step-title">파일 안 URL 교체</span>
+          <span class="badge badge-key">필수</span>
+        </div>
+        <p class="step-desc">Netlify 주소가 생겼으니 파일 3곳에 적힌 <span class="code">your-domain.com</span>을 실제 주소로 바꿔야 합니다.</p>
+        <div class="checklist">
+          <label class="check-item" data-id="3-1">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><span class="code">index.html</span> — canonical, og:url, og:image 세 줄의 URL 교체</div>
+              <div class="check-sub">메모장/VSCode로 열고 Ctrl+H → "your-domain.com" 찾아 바꾸기</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="3-2">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><span class="code">sitemap.xml</span> — &lt;loc&gt; 태그 안의 URL 교체</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="3-3">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><span class="code">robots.txt</span> — Sitemap: 줄의 URL 교체</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="3-4">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">수정한 파일 3개를 Netlify에 다시 드래그&드롭해 재배포</div>
+              <div class="check-sub">Site overview → Deploys → "Deploy manually" 다시 사용</div>
+            </div>
+          </label>
+        </div>
+        <div class="callout callout-warn">
+          <span class="callout-icon">⚠️</span>
+          <span>og:image에 적힌 <span class="code">og-image.png</span>는 실제로 없는 파일입니다. 지금은 그냥 넘어가도 되고, 나중에 앱 스크린샷 하나를 og-image.png로 만들어 같이 올리면 카카오/SNS 공유 시 미리보기 이미지가 뜹니다.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step" id="s4">
+      <div class="step-num-wrap">
+        <div class="step-num">4</div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <span class="step-title">구글 서치 콘솔 등록</span>
+          <span class="badge badge-key">필수</span>
+        </div>
+        <p class="step-desc">구글에게 "내 사이트가 생겼어요"라고 알려주는 작업입니다. 여기 등록해야 구글이 내 사이트를 검색 결과에 올려주고, AdSense 심사 때도 도움이 됩니다.</p>
+        <div class="checklist">
+          <label class="check-item" data-id="4-1">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><a href="https://search.google.com/search-console" target="_blank" style="color:var(--accent)">search.google.com/search-console</a> 접속 → 구글 로그인</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="4-2">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">"속성 추가" → "URL 접두어" 선택 → Netlify 주소 입력</div>
+              <div class="check-sub">예: https://my-travel-map.netlify.app</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="4-3">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">소유권 확인 방법 → "HTML 파일" 선택 → 파일 다운로드</div>
+              <div class="check-sub">google1234abcd.html 같은 이름의 파일이 다운로드됩니다</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="4-4">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">다운받은 파일을 폴더에 넣고 Netlify에 재배포</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="4-5">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">서치 콘솔로 돌아와 "확인" 버튼 클릭 → 소유권 확인 완료</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="4-6">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">좌측 메뉴 "Sitemaps" → <span class="code">sitemap.xml</span> 입력 후 제출</div>
+              <div class="check-sub">이제 구글이 내 사이트를 인식하고 색인합니다 (반영까지 1~3일)</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step" id="s5">
+      <div class="step-num-wrap">
+        <div class="step-num">5</div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <span class="step-title">구글 애드센스 신청</span>
+          <span class="badge badge-later">사이트 개설 후 신청</span>
+        </div>
+        <p class="step-desc">사이트가 배포되었으면 AdSense를 신청할 수 있습니다. 심사는 보통 1~2주 걸리며, 처음에 반려될 수도 있습니다 — 정상적인 과정입니다.</p>
+        <div class="checklist">
+          <label class="check-item" data-id="5-1">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label"><a href="https://adsense.google.com" target="_blank" style="color:var(--accent)">adsense.google.com</a> 접속 → "시작하기"</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="5-2">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">사이트 주소 입력, 이메일 입력 (choihh38@gmail.com), 국가 선택 (대한민국)</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="5-3">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">AdSense 광고 코드(<span class="code">&lt;script async src="https://pagead2..."&gt;</span>) 복사 → Claude에게 붙여넣기</div>
+              <div class="check-sub">index.html의 &lt;head&gt;에 삽입해야 합니다 — 직접 하기 어려우면 코드를 Claude에게 주세요, 대신 넣어드립니다</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="5-4">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">코드 삽입 후 Netlify에 재배포 → AdSense에서 "확인 요청"</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="5-5">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">1~2주 기다리기 — 이메일로 결과 통보됨</div>
+            </div>
+          </label>
+        </div>
+        <div class="callout callout-warn">
+          <span class="callout-icon">⚠️</span>
+          <span><strong>반려 가능성</strong> — 도구형 단일 페이지 앱은 첫 심사에서 "콘텐츠 부족"으로 반려될 수 있습니다. 그럴 경우 아래 6단계를 참고하세요.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 -->
+    <div class="step" id="s6">
+      <div class="step-num-wrap">
+        <div class="step-num">6</div>
+      </div>
+      <div class="step-body">
+        <div class="step-header">
+          <span class="step-title">반려됐을 때 대처법</span>
+          <span class="badge badge-later">필요시</span>
+        </div>
+        <p class="step-desc">구글 AdSense는 "콘텐츠가 충분한가"를 중요하게 봅니다. 도구/앱 사이트는 처음에 반려되는 경우가 많습니다. 아래 방법으로 보강하면 통과 가능성이 높아집니다.</p>
+        <div class="checklist">
+          <label class="check-item" data-id="6-1">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">사용 가이드 페이지 추가 — "여행 마인드맵 사용법" 글 작성</div>
+              <div class="check-sub">500자 이상의 텍스트 콘텐츠가 있는 별도 HTML 페이지 (guide.html 등)</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="6-2">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">About 페이지 또는 섹션 추가 — 서비스 소개, 개발 배경</div>
+            </div>
+          </label>
+          <label class="check-item" data-id="6-3">
+            <div class="check-box"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4L4.5 7.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="check-text">
+              <div class="check-label">사이트 개설 후 2~4주 운영한 뒤 재신청</div>
+              <div class="check-sub">구글은 운영 기간과 방문자 수도 봅니다</div>
+            </div>
+          </label>
+        </div>
+        <div class="callout callout-ok">
+          <span class="callout-icon">✅</span>
+          <span>사용 가이드 페이지나 About 페이지가 필요하면 Claude에게 "사용 가이드 페이지 만들어줘"라고 하면 바로 만들어드릴 수 있습니다.</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="reset-btn" id="reset-btn">체크 초기화</button>
+
+</div>
+
+<script>
+const TOTAL = 18;
+const PREFIX = 'tmv2-guide-';
+
+function loadState() {
+  const items = document.querySelectorAll('.check-item[data-id]');
+  let checked = 0;
+  items.forEach(item => {
+    const id = item.dataset.id;
+    try {
+      if (localStorage.getItem(PREFIX + id) === '1') {
+        item.classList.add('checked');
+        checked++;
+      }
+    } catch(_) {}
+    item.addEventListener('click', () => toggle(item));
+  });
+  updateProgress(checked);
+}
+
+function toggle(item) {
+  const id = item.dataset.id;
+  const isChecked = item.classList.toggle('checked');
+  try { localStorage.setItem(PREFIX + id, isChecked ? '1' : '0'); } catch(_) {}
+  const checked = document.querySelectorAll('.check-item.checked').length;
+  updateProgress(checked);
+  updateSteps();
+}
+
+function updateProgress(checked) {
+  const pct = Math.round(checked / TOTAL * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent = checked + ' / ' + TOTAL + ' 완료';
+}
+
+function updateSteps() {
+  for (let i = 1; i <= 6; i++) {
+    const stepItems = document.querySelectorAll(`.check-item[data-id^="${i}-"]`);
+    const allDone = Array.from(stepItems).every(el => el.classList.contains('checked'));
+    const stepEl = document.getElementById('s' + i);
+    if (stepEl) stepEl.classList.toggle('done', allDone);
+  }
+}
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!confirm('모든 체크를 초기화할까요?')) return;
+  document.querySelectorAll('.check-item').forEach(el => {
+    el.classList.remove('checked');
+    try { localStorage.removeItem(PREFIX + el.dataset.id); } catch(_) {}
+  });
+  updateProgress(0);
+  updateSteps();
+});
+
+loadState();
+updateSteps();
+</script>

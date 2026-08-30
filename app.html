@@ -4360,20 +4360,32 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   }
 
   if(isNew){
-    // 무료 플랜 5개 제한 체크
+    // 무료 플랜 5개 제한 체크 (로컬+캐시된 클라우드 수 모두 반영)
     const FREE_LIMIT = 5;
-    const existingCount = pgGetLocalProjects().length;
-    if(existingCount >= FREE_LIMIT){
+    const localCount = pgGetLocalProjects().length;
+    const cachedTotal = parseInt(localStorage.getItem('choible_proj_count') || '0', 10);
+    const effectiveCount = Math.max(localCount, cachedTotal);
+    if(effectiveCount >= FREE_LIMIT){
       showHint('🔒 무료 플랜은 최대 5개까지 저장 가능합니다. 기존 여행을 삭제해보세요.');
       setTimeout(()=>window.location.href='projects.html', 2000);
       return;
     }
+    // 중복 이름 방지: 같은 이름 있으면 번호 붙이기
+    function pgUniqueTitle(base){
+      const titles = new Set(pgGetLocalProjects().map(p=>p.title));
+      if(!titles.has(base)) return base;
+      let i=1;
+      while(titles.has(base+' '+i)) i++;
+      return base+' '+i;
+    }
     // 새 프로젝트 즉시 초기화
     currentProjectId = 'local_' + Date.now();
-    pgSetCurrentTitle('새 여행');
+    const newTitle = pgUniqueTitle('새 여행');
+    pgSetCurrentTitle(newTitle);
     const list = pgGetLocalProjects();
-    list.unshift({id: currentProjectId, title:'새 여행', updatedAt: new Date().toISOString(), preview:'장소 없음'});
+    list.unshift({id: currentProjectId, title: newTitle, updatedAt: new Date().toISOString(), preview:'장소 없음'});
     pgSetLocalProjects(list);
+    localStorage.setItem('choible_proj_count', (effectiveCount + 1).toString());
     // 빈 데이터 즉시 기록 (복원 기준점)
     localStorage.setItem('choible_proj_' + currentProjectId, JSON.stringify({v:2,places:[],extras:[],connections:[],idCtr:0,costItemCtr:0,panX:0,panY:0,sc:1,drawings:[],dayZones:[],dzCtr:0}));
     try{ if(!localStorage.getItem('tmv2_onboard_done')) showOnboard(); }catch(_){}

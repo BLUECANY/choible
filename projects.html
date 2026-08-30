@@ -723,6 +723,8 @@ function renderGrid(){
       subEl.textContent = '새로운 여행 플랜을 시작해보세요';
     }
   }
+  // 총 프로젝트 수를 localStorage에 캐시 (app.html에서 제한 체크에 사용)
+  try{ localStorage.setItem('choible_proj_count', allProjects.length); }catch(_){}
 }
 
 /* ── 플랜 제한 ── */

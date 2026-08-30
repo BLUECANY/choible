@@ -1,0 +1,455 @@
+<title>여행 마인드맵 — 새 기능 미리보기</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f8faff;
+  --surface:#ffffff;
+  --border:#e2e8f0;
+  --text:#0f172a;
+  --text2:#64748b;
+  --blue:#5b8af5;
+  --blue-lt:#f0f5ff;
+  --blue-md:#dce8ff;
+  --navy:#1a1a2e;
+  --green:#22c55e;
+  --radius:14px;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1117;--surface:#161b22;--border:#21262d;--text:#e6edf3;--text2:#8b949e;--blue:#79a8f8;--blue-lt:#1c2333;--blue-md:#1f2d48;--navy:#c9d1d9;
+}}
+:root[data-theme="dark"]{--bg:#0d1117;--surface:#161b22;--border:#21262d;--text:#e6edf3;--text2:#8b949e;--blue:#79a8f8;--blue-lt:#1c2333;--blue-md:#1f2d48;--navy:#c9d1d9;}
+
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:28px 20px 60px}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:36px}
+.header-eyebrow{font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+.header-title{font-size:clamp(22px,4vw,32px);font-weight:800;color:var(--text);line-height:1.2;margin-bottom:8px}
+.header-sub{font-size:14px;color:var(--text2)}
+
+/* FEATURE GRID */
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;max-width:960px;margin:0 auto}
+.feat{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column}
+.feat-label{display:flex;align-items:center;gap:8px;padding:16px 18px 14px;border-bottom:1px solid var(--border);font-size:13px;font-weight:800;color:var(--text)}
+.feat-label .tag{font-size:10px;font-weight:700;background:var(--blue-lt);color:var(--blue);border-radius:6px;padding:2px 7px;margin-left:auto}
+.feat-demo{padding:16px 18px 18px;flex:1}
+
+/* MOCK TOOLBAR */
+.mock-toolbar{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:20px;
+  padding:8px 14px;box-shadow:0 2px 12px rgba(0,0,0,.06);
+  font-size:12px;overflow:hidden;flex-wrap:wrap;
+}
+.mock-logo{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap}
+.mock-div{width:1px;height:18px;background:var(--border);flex-shrink:0}
+.mock-btn{background:var(--blue-lt);color:var(--blue);border:none;border-radius:8px;padding:5px 9px;font-size:11px;font-weight:700;cursor:default;white-space:nowrap}
+.mock-btn.del{background:#fff0f0;color:#ef4444}
+.autosave-badge{display:flex;align-items:center;gap:4px;font-size:10px;white-space:nowrap;margin-left:auto}
+.autosave-badge svg{flex-shrink:0}
+.autosave-badge.saved{color:var(--green)}
+.autosave-badge.idle{color:var(--text2)}
+
+/* MOCK PLACE CARD */
+.mock-card{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:12px;width:175px;overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+}
+.mock-card-photo{height:60px;display:flex;align-items:flex-end;padding:6px 8px;font-size:11px;font-weight:800;color:#fff;background:linear-gradient(135deg,#5b8af544,#7c3aed66)}
+.mock-card-head{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:#5b8af5}
+.mock-card-num{width:20px;height:20px;border-radius:50%;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:default}
+.mock-card-x{color:rgba(255,255,255,.6);font-size:10px;background:none;border:none;cursor:default}
+.mock-card-body{padding:8px 10px}
+.mock-card-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px}
+.mock-card-addr{font-size:10px;color:var(--text2);margin-bottom:8px}
+.mock-card-btns{display:flex;gap:5px;flex-wrap:wrap}
+.gmap-btn,.wiki-btn{
+  display:inline-flex;align-items:center;gap:3px;
+  border:none;border-radius:7px;padding:3px 7px;
+  font-size:10px;font-weight:700;cursor:pointer;transition:background .15s;
+}
+.gmap-btn{background:#e8f0fe;color:#4285F4}
+.gmap-btn:hover{background:#d2e3fc}
+.wiki-btn{background:var(--blue-lt);color:var(--blue)}
+.wiki-btn:hover{background:var(--blue-md)}
+
+/* UNDO DEMO */
+.undo-stage{
+  background:var(--blue-lt);border-radius:10px;padding:14px;
+  display:flex;flex-direction:column;gap:10px;
+}
+.undo-hint{font-size:11px;color:var(--text2);text-align:center}
+.undo-node{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:10px;padding:6px 10px;font-size:11px;font-weight:700;
+  cursor:pointer;transition:all .15s;color:var(--text);
+}
+.undo-node:hover{border-color:#ef4444;background:#fff5f5;color:#ef4444}
+.undo-node.deleted{opacity:0;transform:scale(.85);pointer-events:none}
+.undo-nodes{display:flex;gap:6px;flex-wrap:wrap;min-height:36px;align-items:center}
+.undo-toast{
+  background:var(--navy);color:#fff;border-radius:8px;padding:6px 12px;
+  font-size:11px;font-weight:700;text-align:center;
+  opacity:0;transition:opacity .3s;
+}
+.undo-toast.show{opacity:1}
+.undo-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.undo-btn{
+  display:flex;align-items:center;gap:4px;
+  background:var(--surface);border:1.5px solid var(--border);border-radius:8px;
+  padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text);
+  transition:all .15s;
+}
+.undo-btn:hover{border-color:var(--blue);color:var(--blue)}
+kbd{background:var(--border);border-radius:4px;padding:1px 5px;font-family:monospace;font-size:10px;color:var(--text2)}
+
+/* AUTOSAVE DEMO */
+.autosave-demo{display:flex;flex-direction:column;gap:10px}
+.as-status{
+  background:var(--blue-lt);border-radius:10px;padding:12px 14px;
+  font-size:12px;color:var(--text2);display:flex;align-items:center;gap:8px;
+}
+.as-dot{width:8px;height:8px;border-radius:50%;background:#cbd5e1;flex-shrink:0;transition:background .4s}
+.as-dot.active{background:var(--green)}
+.as-label{font-weight:700;color:var(--text);font-size:11px}
+.as-time{font-size:10px;color:var(--text2);margin-left:auto}
+.as-simulate-btn{
+  background:var(--blue);color:#fff;border:none;border-radius:8px;
+  padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;
+  transition:background .15s;align-self:flex-start;
+}
+.as-simulate-btn:hover{background:#3b6fd4}
+.as-explain{font-size:11px;color:var(--text2);line-height:1.6}
+
+/* MINIMAP */
+#demo-map{width:100%;height:180px;border-radius:10px;overflow:hidden;border:1.5px solid var(--border)}
+
+/* WIKI POPUP DEMO */
+.wiki-demo{position:relative}
+.wiki-trigger{
+  display:flex;align-items:center;gap:8px;
+  background:var(--blue-lt);border:1.5px solid var(--border);border-radius:10px;
+  padding:10px 14px;cursor:pointer;transition:background .15s;font-size:12px;font-weight:700;color:var(--blue);
+}
+.wiki-trigger:hover{background:var(--blue-md)}
+.wiki-popup{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:12px;
+  box-shadow:0 8px 32px rgba(0,0,0,.12);
+  overflow:hidden;margin-top:10px;
+  display:none;flex-direction:column;
+  animation:popIn .2s ease;
+}
+.wiki-popup.show{display:flex}
+@keyframes popIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.wiki-pop-img{width:100%;height:90px;object-fit:cover;background:linear-gradient(135deg,#5b8af544,#7c3aed44);display:flex;align-items:center;justify-content:center;font-size:28px}
+.wiki-pop-body{padding:12px 14px}
+.wiki-pop-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:5px}
+.wiki-pop-desc{font-size:11px;color:var(--text2);line-height:1.65;margin-bottom:8px}
+.wiki-pop-link{font-size:10px;color:var(--blue);font-weight:700;text-decoration:none}
+.wiki-pop-link:hover{text-decoration:underline}
+.wiki-pop-close-row{display:flex;justify-content:flex-end;padding:0 14px 10px}
+.wiki-close-btn{font-size:11px;color:var(--text2);background:var(--blue-lt);border:none;border-radius:6px;padding:3px 9px;cursor:pointer;font-weight:700}
+.wiki-close-btn:hover{background:var(--blue-md)}
+
+/* VERSION BADGE */
+.version-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.ver-badge{font-size:10px;font-weight:700;border-radius:6px;padding:3px 8px;display:flex;align-items:center;gap:4px}
+.ver-badge.new{background:#dcfce7;color:#15803d}
+.ver-badge.fix{background:#fef9c3;color:#a16207}
+.ver-badge.impr{background:var(--blue-lt);color:var(--blue)}
+</style>
+
+<div class="header">
+  <div class="header-eyebrow">v2.1 업데이트</div>
+  <div class="header-title">✈️ 여행 마인드맵 — 새 기능 미리보기</div>
+  <div class="header-sub">추가된 기능을 직접 눌러보세요</div>
+</div>
+
+<div class="features">
+
+  <!-- 1. AUTOSAVE -->
+  <div class="feat">
+    <div class="feat-label">
+      💾 자동 저장 타임스탬프
+      <span class="tag">NEW</span>
+    </div>
+    <div class="feat-demo autosave-demo">
+      <div class="mock-toolbar">
+        <span class="mock-logo">✈️ 여행 마인드맵</span>
+        <div class="mock-div"></div>
+        <span class="mock-btn">💾 저장</span>
+        <span class="mock-btn">📂 열기</span>
+        <div class="mock-div"></div>
+        <div class="autosave-badge idle" id="as-badge">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span id="as-txt">3분 전 저장</span>
+        </div>
+      </div>
+      <div class="as-status">
+        <div class="as-dot" id="as-dot"></div>
+        <div>
+          <div class="as-label">30초마다 자동 저장</div>
+          <div style="font-size:10px;color:var(--text2)">localStorage에 자동 백업 · 브라우저 닫아도 유지</div>
+        </div>
+        <div class="as-time" id="as-time">3분 전</div>
+      </div>
+      <button class="as-simulate-btn" onclick="simulateAutoSave()">⚡ 저장 시뮬레이션</button>
+      <div class="as-explain">저장 직후 배지가 초록색 "방금 저장됨"으로 2초간 표시되고, 이후 경과 시간으로 전환됩니다.</div>
+    </div>
+  </div>
+
+  <!-- 2. UNDO -->
+  <div class="feat">
+    <div class="feat-label">
+      ↩️ Ctrl+Z 실행 취소
+      <span class="tag">NEW</span>
+    </div>
+    <div class="feat-demo">
+      <div class="undo-stage">
+        <div class="undo-hint">노드를 클릭해 삭제해보세요</div>
+        <div class="undo-nodes" id="undo-nodes">
+          <div class="undo-node" id="un-0" onclick="deleteNode(0)">📍 도쿄 타워 ✕</div>
+          <div class="undo-node" id="un-1" onclick="deleteNode(1)">🍜 신주쿠 라멘 ✕</div>
+          <div class="undo-node" id="un-2" onclick="deleteNode(2)">🌸 우에노 공원 ✕</div>
+        </div>
+        <div class="undo-actions">
+          <button class="undo-btn" onclick="doUndo()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+            실행 취소
+          </button>
+          <span style="font-size:11px;color:var(--text2)">또는 <kbd>Ctrl</kbd>+<kbd>Z</kbd></span>
+          <span id="undo-count" style="font-size:10px;color:var(--text2);margin-left:auto"></span>
+        </div>
+        <div class="undo-toast" id="undo-toast">↩️ 실행 취소됨</div>
+      </div>
+      <div class="version-row" style="margin-top:12px">
+        <span class="ver-badge fix">최대 40단계 기록</span>
+        <span class="ver-badge fix">장소 추가·삭제·전체삭제 모두 복구</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. GOOGLE MAPS + WIKI BUTTONS -->
+  <div class="feat">
+    <div class="feat-label">
+      📍 장소 카드 — 버튼 추가
+      <span class="tag">NEW</span>
+    </div>
+    <div class="feat-demo" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+        <div class="mock-card">
+          <div class="mock-card-photo">도쿄 타워</div>
+          <div class="mock-card-head">
+            <div class="mock-card-num">1</div>
+            <div class="mock-card-x">✕</div>
+          </div>
+          <div class="mock-card-body">
+            <div class="mock-card-name">도쿄 타워</div>
+            <div class="mock-card-addr">Minato, 도쿄, 일본</div>
+            <div class="mock-card-btns">
+              <a class="gmap-btn" href="https://maps.google.com/?q=35.6586,139.7454" target="_blank" rel="noopener">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                구글 지도
+              </a>
+              <button class="wiki-btn" onclick="toggleWikiDemo()">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                정보
+              </button>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--text2);line-height:1.8;align-self:center">
+          모든 장소 노드에<br>두 버튼이 생겼어요.<br><br>
+          <strong style="color:var(--text)">구글 지도</strong> → 새 탭에서 열림<br>
+          <strong style="color:var(--text)">정보</strong> → Wikipedia 팝업
+        </div>
+      </div>
+      <div class="wiki-demo">
+        <div class="wiki-popup" id="wiki-demo-pop">
+          <div class="wiki-pop-img">🗼</div>
+          <div class="wiki-pop-body">
+            <div class="wiki-pop-title">도쿄 타워 (Tokyo Tower)</div>
+            <div class="wiki-pop-desc">도쿄 미나토구에 위치한 333m 높이의 통신탑. 에펠탑을 본떠 1958년 건설되었으며 도쿄의 상징적인 랜드마크입니다. 전망대에서 후지산까지 보이는 날도 있습니다.</div>
+            <a class="wiki-pop-link" href="https://ko.wikipedia.org/wiki/도쿄_타워" target="_blank" rel="noopener">Wikipedia에서 더 보기 →</a>
+          </div>
+          <div class="wiki-pop-close-row">
+            <button class="wiki-close-btn" onclick="toggleWikiDemo()">닫기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. MINIMAP -->
+  <div class="feat" style="grid-column:span 2">
+    <div class="feat-label">
+      🗺️ 미니맵 — 실제 지도에서 동선 확인
+      <span class="tag">NEW</span>
+    </div>
+    <div class="feat-demo" style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:12px;color:var(--text2)">장소 추가 시 우하단 "🗺️ 지도" 버튼이 활성화되고, 누르면 실제 OpenStreetMap 지도에 번호 마커가 표시돼요.</div>
+      <div id="demo-map"></div>
+      <div class="version-row">
+        <span class="ver-badge new">번호별 마커</span>
+        <span class="ver-badge new">자동 범위 조정</span>
+        <span class="ver-badge impr">OpenStreetMap 무료</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SAVE FORMAT -->
+  <div class="feat">
+    <div class="feat-label">
+      📄 저장 형식 변경 (JSON → HTML)
+      <span class="tag">IMPROVED</span>
+    </div>
+    <div class="feat-demo" style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:12px;color:var(--text2)">저장 파일을 브라우저에서 열면 여행 계획을 사람이 읽을 수 있는 표로 확인할 수 있어요. 앱에서 불러오면 모든 경로가 완전 복원됩니다.</div>
+      <div style="background:var(--blue-lt);border-radius:10px;padding:12px 14px;font-size:11px;line-height:1.8;color:var(--text2)">
+        <div style="font-weight:800;color:var(--text);margin-bottom:4px">여행마인드맵-2026-08-28.html</div>
+        <div>✈️ 여행 마인드맵 저장 파일</div>
+        <div>저장일: 2026-08-28 · 장소 5곳</div>
+        <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
+          <span style="color:var(--blue);font-weight:700">📍 장소 목록 (표 형식)</span><br>
+          도쿄 타워, 신주쿠, 아사쿠사…
+        </div>
+      </div>
+      <div class="version-row">
+        <span class="ver-badge fix">기존 .json도 계속 불러오기 가능</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. SEARCH -->
+  <div class="feat">
+    <div class="feat-label">
+      🔍 검색 관련성 개선
+      <span class="tag">IMPROVED</span>
+    </div>
+    <div class="feat-demo" style="display:flex;flex-direction:column;gap:10px">
+      <div style="font-size:12px;color:var(--text2)">검색 결과가 이름 일치도·관광지 여부·언어 등을 점수화해 상위에 노출됩니다.</div>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:10px;font-weight:800;color:var(--text2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px">예: "도쿄 타워" 검색 시</div>
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;display:flex;align-items:center;gap:8px">
+          <div style="width:32px;height:32px;border-radius:6px;background:var(--blue-lt);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">🗼</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--text)">도쿄 타워</div>
+            <div style="font-size:10px;color:var(--text2)">Minato, 도쿄도, 일본</div>
+          </div>
+          <div style="margin-left:auto;font-size:9px;background:#dcfce7;color:#15803d;font-weight:700;border-radius:5px;padding:2px 6px">이름 일치 ↑</div>
+        </div>
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:8px;padding:8px 11px;display:flex;align-items:center;gap:8px;opacity:.6">
+          <div style="width:32px;height:32px;border-radius:6px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">📍</div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--text)">Tokyo Tower Road</div>
+            <div style="font-size:10px;color:var(--text2)">도로명 (하위 노출)</div>
+          </div>
+        </div>
+      </div>
+      <div class="version-row">
+        <span class="ver-badge impr">관광지·박물관 가중치 +1.2</span>
+        <span class="ver-badge impr">한국어 검색 시 한국 결과 우선</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── AUTOSAVE DEMO ──
+let savedTime = new Date(Date.now() - 3*60*1000);
+function simulateAutoSave(){
+  const dot = document.getElementById('as-dot');
+  const txt = document.getElementById('as-txt');
+  const badge = document.getElementById('as-badge');
+  const time = document.getElementById('as-time');
+  dot.classList.add('active');
+  txt.textContent = '방금 저장됨';
+  badge.className = 'autosave-badge saved';
+  time.textContent = '방금';
+  savedTime = new Date();
+  setTimeout(()=>{
+    dot.classList.remove('active');
+    badge.className = 'autosave-badge idle';
+    updateBadge();
+  }, 2000);
+}
+function updateBadge(){
+  const diff = Math.round((Date.now()-savedTime)/60000);
+  const txt = document.getElementById('as-txt');
+  const time = document.getElementById('as-time');
+  const label = diff<1?'방금 저장됨':diff===1?'1분 전 저장':`${diff}분 전 저장`;
+  if(txt) txt.textContent = label;
+  if(time) time.textContent = diff<1?'방금':diff===1?'1분 전':`${diff}분 전`;
+}
+setInterval(updateBadge, 30000);
+updateBadge();
+
+// ── UNDO DEMO ──
+const nodeData = [
+  {id:0, label:'📍 도쿄 타워'},
+  {id:1, label:'🍜 신주쿠 라멘'},
+  {id:2, label:'🌸 우에노 공원'}
+];
+let deletedStack = [];
+function deleteNode(idx){
+  const el = document.getElementById(`un-${idx}`);
+  if(!el || el.classList.contains('deleted')) return;
+  deletedStack.push(idx);
+  el.classList.add('deleted');
+  updateUndoCount();
+}
+function doUndo(){
+  if(!deletedStack.length){ showToast('↩️ 되돌릴 작업이 없어요'); return; }
+  const idx = deletedStack.pop();
+  const el = document.getElementById(`un-${idx}`);
+  if(el){ el.classList.remove('deleted'); }
+  showToast('↩️ 실행 취소됨');
+  updateUndoCount();
+}
+function showToast(msg){
+  const t = document.getElementById('undo-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+function updateUndoCount(){
+  const c = document.getElementById('undo-count');
+  c.textContent = deletedStack.length ? `히스토리 ${deletedStack.length}단계` : '';
+}
+
+// ── WIKI DEMO ──
+function toggleWikiDemo(){
+  const pop = document.getElementById('wiki-demo-pop');
+  pop.classList.toggle('show');
+}
+
+// ── MINIMAP ──
+(function initMap(){
+  const map = L.map('demo-map', {zoomControl:false, attributionControl:true, dragging:false, scrollWheelZoom:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap'}).addTo(map);
+  const places = [
+    {name:'도쿄 타워', lat:35.6586, lng:139.7454, ci:0, num:1},
+    {name:'아사쿠사', lat:35.7148, lng:139.7967, ci:1, num:2},
+    {name:'시부야', lat:35.6598, lng:139.7004, ci:2, num:3},
+    {name:'신주쿠', lat:35.6896, lng:139.6917, ci:3, num:4},
+    {name:'우에노', lat:35.7141, lng:139.7774, ci:4, num:5},
+  ];
+  const colors = ['#5b8af5','#f59e0b','#10b981','#ef4444','#8b5cf6'];
+  const pts = [];
+  places.forEach(p=>{
+    const icon = L.divIcon({
+      className:'',
+      html:`<div style="width:22px;height:22px;background:${colors[p.ci]};border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.25)">${p.num}</div>`,
+      iconSize:[22,22],iconAnchor:[11,11]
+    });
+    L.marker([p.lat,p.lng],{icon}).addTo(map).bindTooltip(p.name,{direction:'top',permanent:false});
+    pts.push([p.lat,p.lng]);
+  });
+  map.fitBounds(L.latLngBounds(pts),{padding:[18,18],maxZoom:13});
+})();
+</script>
