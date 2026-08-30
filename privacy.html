@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>개인정보처리방침 — 여행 마인드맵</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>개인정보처리방침 — choible</title>
+<link rel="icon" type="image/svg+xml" href="/choible-icon.svg">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<meta name="description" content="여행 마인드맵 서비스의 개인정보처리방침입니다.">
+<meta name="description" content="choible 서비스의 개인정보처리방침입니다.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://choible.com/privacy.html">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2293239362569484" crossorigin="anonymous"></script>
@@ -18,16 +18,15 @@
   --border:    #e2eaf6;
   --text:      #0f172a;
   --text2:     #5a6a80;
-  --accent:    #0ea5e9;
-  --accent-dk: #0284c7;
-  --accent-lt: #e0f2fe;
+  --accent:    #4F6EF7;
+  --accent-dk: #3b56d4;
+  --accent-lt: #eef1fe;
   --nav-bg:    #ffffff;
   --footer-bg: #0a1525;
   --footer-bd: #17263d;
   --footer-t:  #e2eaf6;
   --footer-t2: #6a7d98;
 }
-/* 항상 라이트 모드 */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -172,7 +171,7 @@ footer {
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="/">✈️ 여행 <span>마인드맵</span></a>
+  <a class="nav-logo" href="/">choi<span>ble</span></a>
   <a class="nav-back" href="/">← 홈으로</a>
 </nav>
 
@@ -180,61 +179,81 @@ footer {
 <main>
   <span class="page-eyebrow">법적 고지</span>
   <h1 class="page-title">개인정보처리방침</h1>
-  <p class="page-date">최종 수정일: 2026년 8월 27일 · 시행일: 2025년 1월 1일</p>
+  <p class="page-date">최종 수정일: 2026년 8월 30일 · 시행일: 2025년 1월 1일</p>
 
   <div class="policy-article">
 
     <div class="policy-section">
       <h2>1. 수집하는 개인정보 항목 및 목적</h2>
-      <p>여행 마인드맵(이하 "서비스")은 별도의 서버를 운영하지 않으며, 사용자의 개인정보를 수집·저장하지 않습니다. 회원가입, 로그인, 결제 등 개인정보를 요구하는 기능이 없습니다.</p>
-      <p>사용자가 서비스 내에서 입력하는 모든 여행 데이터(장소 이름, 주소, 메모, 경비 등)는 오직 사용자 본인의 기기 내 브라우저 저장소(localStorage)에만 저장되며, 외부 서버로 전송되거나 제3자와 공유되지 않습니다.</p>
+      <p>choible(이하 "서비스")은 회원 기능 제공을 위해 아래 개인정보를 수집합니다.</p>
+      <ul class="policy-list">
+        <li><strong>이메일 주소</strong> — 회원가입, 이메일 인증, 계정 식별에 사용됩니다.</li>
+        <li><strong>비밀번호</strong> — 암호화(bcrypt)되어 저장되며, 원문은 저장·열람되지 않습니다.</li>
+        <li><strong>여행 계획 데이터</strong> — 회원이 저장하는 장소 이름, 메모, 경비, 경로 등의 여행 계획 정보는 클라우드 서버에 저장되며, 회원 본인만 접근할 수 있습니다.</li>
+      </ul>
+      <p>비회원의 경우 여행 데이터는 사용 중인 기기의 브라우저 저장소(localStorage)에만 저장되며, 외부 서버로 전송되지 않습니다.</p>
       <div class="policy-highlight">
-        🔒 사용자의 여행 계획 데이터는 인터넷에 전송되지 않습니다. 모든 데이터는 사용 중인 기기 안에만 존재합니다.
+        🔒 비회원 여행 데이터는 인터넷에 전송되지 않습니다. 회원 저장 기능을 이용할 경우, 데이터는 암호화된 채널(HTTPS)을 통해 Supabase 서버에 안전하게 전송됩니다.
       </div>
     </div>
 
     <div class="policy-section">
       <h2>2. 제3자 외부 서비스 이용</h2>
-      <p>서비스는 장소 검색, 경로 계산, 이미지 제공을 위해 아래 외부 API를 사용합니다. 해당 서비스 이용 시 검색어, 좌표 정보 등이 각 서비스 서버에 전달될 수 있으며, 해당 서비스의 개인정보처리방침이 적용됩니다.</p>
+      <p>서비스는 기능 제공을 위해 아래 외부 서비스를 사용합니다. 해당 서비스 이용 시 각 서비스의 개인정보처리방침이 적용됩니다.</p>
       <ul class="policy-list">
+        <li><strong>Supabase</strong> — 회원 인증 및 데이터 저장 서비스. 회원 이메일, 비밀번호(암호화), 여행 데이터가 저장됩니다. <a href="https://supabase.com/privacy" target="_blank" rel="noopener" style="color:var(--accent)">Supabase 개인정보처리방침</a></li>
+        <li><strong>Resend</strong> — 이메일 발송 서비스. 회원가입 인증 코드 이메일 전송에 사용됩니다. <a href="https://resend.com/legal/privacy-policy" target="_blank" rel="noopener" style="color:var(--accent)">Resend 개인정보처리방침</a></li>
         <li><strong>Photon / Nominatim</strong> — OpenStreetMap 기반 장소 검색 서비스. 검색어 및 좌표 정보가 전달될 수 있습니다.</li>
         <li><strong>OSRM (Open Source Routing Machine)</strong> — 출발지·목적지 좌표를 이용한 경로 및 이동 시간 계산 서비스.</li>
         <li><strong>Wikipedia / Wikimedia Commons</strong> — 장소 관련 이미지 및 정보 제공 서비스.</li>
-        <li><strong>Google AdSense</strong> — 광고 서비스. 쿠키 및 비슷한 기술을 사용하여 맞춤 광고를 제공할 수 있으며, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google 개인정보처리방침</a>이 적용됩니다.</li>
+        <li><strong>Google AdSense</strong> — 광고 서비스. 쿠키 및 비슷한 기술을 사용하여 맞춤 광고를 제공할 수 있으며, <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" style="color:var(--accent)">Google 개인정보처리방침</a>이 적용됩니다.</li>
       </ul>
     </div>
 
     <div class="policy-section">
       <h2>3. 쿠키 및 로컬 스토리지</h2>
-      <p>서비스는 아래 목적으로만 브라우저 로컬 스토리지를 사용합니다.</p>
+      <p>서비스는 아래 목적으로 브라우저 로컬 스토리지 및 세션 스토리지를 사용합니다.</p>
       <ul class="policy-list">
-        <li><strong>tmv2_onboard_done</strong> — 온보딩 튜토리얼 표시 여부 기록 (처음 방문자에게 사용법 안내 후 중복 표시 방지)</li>
-        <li><strong>tmv2_data</strong> — 사용자가 작성한 여행 계획 데이터 자동 저장</li>
+        <li><strong>tmv2_onboard_done</strong> — 온보딩 튜토리얼 표시 여부 기록</li>
+        <li><strong>tmv2_data</strong> — 비회원 여행 계획 데이터 자동 저장 (기기 내 저장, 외부 전송 없음)</li>
+        <li><strong>Supabase 인증 세션</strong> — 로그인 상태 유지를 위한 세션 토큰 저장 (로그아웃 시 삭제됨)</li>
       </ul>
-      <p>위 데이터는 외부로 전송되지 않으며, 사용자는 브라우저 설정에서 언제든지 삭제할 수 있습니다. Google AdSense 광고 쿠키는 Google에서 관리하며, 사용자는 <a href="https://adssettings.google.com/" target="_blank" rel="noopener">Google 광고 설정</a>에서 맞춤 광고를 비활성화할 수 있습니다.</p>
+      <p>사용자는 브라우저 설정에서 언제든지 저장된 데이터를 삭제할 수 있습니다. Google AdSense 광고 쿠키는 Google에서 관리하며, <a href="https://adssettings.google.com/" target="_blank" rel="noopener">Google 광고 설정</a>에서 맞춤 광고를 비활성화할 수 있습니다.</p>
     </div>
 
     <div class="policy-section">
       <h2>4. 정보의 보유 및 파기</h2>
-      <p>서비스가 수집하는 정보가 없으므로 별도의 보유 기간 및 파기 절차가 존재하지 않습니다. 브라우저에 저장된 여행 데이터는 사용자 본인이 브라우저 데이터를 삭제하거나 앱 내 "전체 삭제" 기능을 이용해 언제든지 완전히 제거할 수 있습니다.</p>
+      <p>회원 탈퇴 시 이메일 주소 및 저장된 여행 데이터는 즉시 삭제됩니다. 비회원의 브라우저 저장 데이터는 사용자가 직접 브라우저 데이터 삭제 또는 앱 내 "전체 삭제" 기능을 통해 언제든지 제거할 수 있습니다.</p>
+      <p>관련 법령에 따라 보존이 필요한 정보가 있을 경우 해당 법령에서 정한 기간 동안 보관 후 파기합니다.</p>
     </div>
 
     <div class="policy-section">
-      <h2>5. 아동 개인정보 보호</h2>
+      <h2>5. 이용자의 권리</h2>
+      <p>회원은 언제든지 다음 권리를 행사할 수 있습니다.</p>
+      <ul class="policy-list">
+        <li><strong>개인정보 열람</strong> — 수집된 본인의 개인정보를 확인할 수 있습니다.</li>
+        <li><strong>개인정보 삭제</strong> — 계정 삭제 시 관련 데이터가 즉시 파기됩니다.</li>
+        <li><strong>처리 정지</strong> — 개인정보 처리 정지를 요청할 수 있습니다.</li>
+      </ul>
+      <p>권리 행사를 원하시면 아래 문의처로 연락해 주세요. 영업일 기준 3일 이내 처리해 드립니다.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>6. 아동 개인정보 보호</h2>
       <p>서비스는 만 14세 미만 아동으로부터 고의적으로 개인정보를 수집하지 않습니다. 만 14세 미만 아동의 경우 보호자의 지도 하에 서비스를 이용하시기 바랍니다.</p>
     </div>
 
     <div class="policy-section">
-      <h2>6. 개인정보처리방침 변경</h2>
+      <h2>7. 개인정보처리방침 변경</h2>
       <p>본 방침은 관련 법령 또는 서비스 변경에 따라 업데이트될 수 있습니다. 변경 시 본 페이지 상단의 "최종 수정일"을 업데이트하여 공지합니다. 중요한 변경 사항이 있을 경우 서비스 내 공지를 통해 별도로 안내할 수 있습니다.</p>
     </div>
 
     <div class="policy-section">
-      <h2>7. 개인정보 관련 문의</h2>
+      <h2>8. 개인정보 관련 문의</h2>
       <p>개인정보 처리에 관한 문의, 불만, 또는 열람·정정·삭제 요청이 있으시면 아래로 연락해 주세요.</p>
       <div class="policy-contact">
-        <strong>여행 마인드맵 개인정보 담당</strong><br>
-        이메일: <a href="mailto:ch52maker@gmail.com">ch52maker@gmail.com</a><br>
+        <strong>choible 개인정보 담당</strong><br>
+        이메일: <a href="mailto:choihh38@gmail.com">choihh38@gmail.com</a><br>
         <span style="font-size:13px;color:var(--text2);margin-top:6px;display:block;">문의 접수 후 영업일 기준 3일 이내에 답변 드립니다.</span>
       </div>
     </div>
@@ -245,14 +264,14 @@ footer {
 <!-- FOOTER -->
 <footer>
   <div class="footer-top">
-    <span class="footer-logo">✈️ 여행 마인드맵</span>
+    <span class="footer-logo">choible</span>
     <nav class="footer-links" aria-label="푸터 링크">
       <a href="/">홈</a>
       <a href="/app.html">앱 시작하기</a>
       <a href="/privacy.html" aria-current="page">개인정보처리방침</a>
     </nav>
   </div>
-  <div class="footer-bottom">© 2026 여행 마인드맵 · 문의: ch52maker@gmail.com</div>
+  <div class="footer-bottom">© 2026 choible · 문의: choihh38@gmail.com</div>
 </footer>
 
 </body>
