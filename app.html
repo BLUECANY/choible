@@ -4656,7 +4656,14 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
       .select('id,title,is_public,share_token,created_at,updated_at,data')
       .eq('user_id', currentUser.id)
       .order('updated_at', { ascending: false });
-    if(error){ listEl.innerHTML = '<div class="mmp-empty">오류: '+error.message+'</div>'; return; }
+    if(error){
+      if(error.message && error.message.includes('schema cache')){
+        listEl.innerHTML = '<div class="mmp-empty">⚠️ 클라우드 연결 오류<br><small>Supabase 대시보드에서 mindmaps 테이블을 생성해 주세요.</small></div>';
+      } else {
+        listEl.innerHTML = '<div class="mmp-empty">불러오기 실패: '+error.message+'</div>';
+      }
+      return;
+    }
     if(!data||!data.length){ listEl.innerHTML = '<div class="mmp-empty">저장된 여행이 없습니다</div>'; return; }
     listEl.innerHTML = '';
     data.forEach(map => {
