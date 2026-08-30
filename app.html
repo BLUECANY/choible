@@ -88,8 +88,10 @@
     #ac{
       position:absolute;top:calc(100% + 8px);left:0;width:360px;
       background:#fff;border-radius:16px;
-      box-shadow:0 12px 40px rgba(0,0,0,.15);z-index:4000;overflow:hidden;display:none;
+      box-shadow:0 12px 40px rgba(0,0,0,.15);z-index:4000;overflow-y:auto;overflow-x:hidden;display:none;
+      max-height:min(480px,calc(100vh - 120px));
     }
+    #ac.flip-up{top:auto;bottom:calc(100% + 8px)}
     .ac-item{display:flex;cursor:pointer;border-bottom:1px solid #f5f5f5;transition:background .15s;overflow:hidden}
     .ac-item:last-child{border:none}
     .ac-item:hover{background:#f0f5ff}
@@ -116,7 +118,7 @@
       width:100vw;height:100vh;height:100svh;position:relative;background:#fff;
       background-image:radial-gradient(circle,#e0e0e0 1px,transparent 1px);
       background-size:28px 28px;
-      cursor:grab;overflow:hidden;
+      cursor:grab;overflow:visible;
     }
     #canvas.panning{cursor:grabbing}
     #world{position:absolute;top:0;left:0;width:100%;height:100%;transform-origin:0 0}
@@ -1555,14 +1557,24 @@ async function doSearch(q){
     }catch(_){}
   }
   spinner.style.display='none';
-  if(!res.length){acEl.innerHTML=`<div style="padding:14px 16px 10px;text-align:center;color:#aaa;font-size:13px">검색 결과가 없습니다.<br><small style="color:#bbb">${isKo?'더 구체적인 주소나 상호명으로 검색해보세요':'Try searching in English or Korean'}</small></div>`+manualAddHTML();acEl.style.display='block';return}
+  if(!res.length){acEl.innerHTML=`<div style="padding:14px 16px 10px;text-align:center;color:#aaa;font-size:13px">검색 결과가 없습니다.<br><small style="color:#bbb">${isKo?'더 구체적인 주소나 상호명으로 검색해보세요':'Try searching in English or Korean'}</small></div>`+manualAddHTML();acEl.style.display='block';positionAc();return}
   acData=res;
   acEl.innerHTML=res.map((it,i)=>`<div class="ac-item" onclick="addPlace(${i})">
     <div class="ac-thumb" id="ac-thumb-${i}"><img alt=""><span class="ac-type-icon">📍</span></div>
     <div class="ac-info"><div class="ac-name">${escHtml(it.name)}</div><div class="ac-addr">${escHtml(it.addr.length>55?it.addr.slice(0,55)+'…':it.addr)}</div></div>
   </div>`).join('')+manualAddHTML();
   acEl.style.display='block';
+  positionAc();
   res.forEach((_,i)=>loadAcPhoto(i,res[i].name));
+}
+function positionAc(){
+  // 드롭다운이 화면 아래로 넘칠 경우 위로 뒤집기
+  requestAnimationFrame(()=>{
+    const rect=acEl.getBoundingClientRect();
+    const spaceBelow=window.innerHeight-rect.top;
+    if(spaceBelow<200)acEl.classList.add('flip-up');
+    else acEl.classList.remove('flip-up');
+  });
 }
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 // 제목 유사도: 검색어와 위키 문서 제목이 어느 정도 일치해야 사진 사용
@@ -1590,7 +1602,9 @@ async function loadAcPhoto(i,name){
 // 장소 추가
 // ══════════════════════════════════════════
 function worldCenter(){
-  return {cx:(window.innerWidth/2-panX)/sc, cy:(window.innerHeight/2-panY)/sc};
+  // 화면 중앙보다 살짝 위 (툴바/푸터 여백 고려)
+  const safeY=(window.innerHeight/2 - 60 - panY)/sc;
+  return {cx:(window.innerWidth/2-panX)/sc, cy:safeY};
 }
 function addPlace(i){
   snapshot();
@@ -2078,18 +2092,26 @@ document.addEventListener('mouseup',()=>{
   cvs.classList.remove('panning');
 });
 
-// 휠 — 트랙패드: Ctrl/Cmd+스크롤 → 줌, 일반 스크롤 → 패닝 (Figma 방식)
+// 휠 줌/패닝 (Google Maps 방식)
+// - 마우스 휠: 바로 줌
+// - 트랙패드 핀치(Ctrl+스크롤): 줌
+// - 트랙패드 두 손가락 스크롤: 패닝
 cvs.addEventListener('wheel',e=>{
   e.preventDefault();
   if(e.ctrlKey||e.metaKey){
     // 핀치 줌 or Ctrl+스크롤 → 줌
     const factor=e.deltaY<0?1.1:1/1.1;
     zoomAt(e.clientX,e.clientY,factor);
+  }else if(Math.abs(e.deltaX)>Math.abs(e.deltaY)*0.8||(Math.abs(e.deltaX)>3&&e.deltaMode===0&&Math.abs(e.deltaY)<40)){
+    // 트랙패드 두 손가락 가로/세로 스크롤 → 패닝
+    panX-=e.deltaX;panY-=e.deltaY;applyT();
   }else{
-    // 트랙패드 두 손가락 스크롤 → 패닝
-    const dx=e.deltaX!==undefined?e.deltaX:0;
-    const dy=e.deltaY!==undefined?e.deltaY:0;
-    panX-=dx;panY-=dy;applyT();
+    // 마우스 휠 or 트랙패드 세로 스크롤 → 줌
+    const absD=Math.abs(e.deltaY);
+    const factor=e.deltaY<0
+      ?(absD>50?1.25:1.1)
+      :(absD>50?1/1.25:1/1.1);
+    zoomAt(e.clientX,e.clientY,factor);
   }
 },{passive:false});
 
@@ -3504,7 +3526,9 @@ async function showWiki(name,lat,lng){
   titleEl.textContent=name;
   descEl.textContent='정보를 불러오는 중…';
   imgEl.style.display='none';
-  pop.style.cssText=`display:flex;top:${Math.min(window.innerHeight-340,200)}px;left:${Math.max(20,window.innerWidth/2-140)}px`;
+  const wLeft=Math.min(Math.max(20,window.innerWidth/2-140),window.innerWidth-300);
+  const wTop=Math.min(Math.max(80,window.innerHeight-380),window.innerHeight-340);
+  pop.style.cssText=`display:flex;top:${wTop}px;left:${wLeft}px`;
   // 영문 위키 summary 시도
   try{
     const d=await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name.replace(/ /g,'_'))}`).then(r=>r.ok?r.json():Promise.reject());
