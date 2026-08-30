@@ -1386,9 +1386,7 @@
         <div style="font-size:14px;font-weight:700;color:#1a1a2e" id="am-user-email">—</div>
         <div style="font-size:11px;color:#aaa;margin-top:2px">로그인됨</div>
       </div>
-      <button class="am-btn" onclick="openMyMaps()" style="margin-bottom:8px">🗂️ 내 여행 목록</button>
-      <button class="am-btn" onclick="cloudSaveMap()" style="margin-bottom:8px;background:linear-gradient(135deg,#10b981,#059669)">☁️ 현재 여행 클라우드 저장</button>
-      <button class="am-btn" onclick="doLogout()" style="background:none;border:1.5px solid #eee;color:#aaa;font-size:13px;margin-top:2px">로그아웃</button>
+      <button class="am-btn" onclick="doLogout()" style="background:none;border:1.5px solid #eee;color:#aaa;font-size:13px">로그아웃</button>
     </div>
   </div>
 </div>
@@ -4581,22 +4579,22 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     showHint('👋 로그아웃되었습니다.');
   };
 
-  // ── 현재 맵 데이터 가져오기 (로컬 변수에서) ──
+  // ── 현재 맵 데이터 가져오기 ──
+  // let 변수는 window.*로 접근 불가 → 클로저로 직접 참조
   function getMapData(){
-    // 전역 변수에서 직접 참조
     return {
       v: 2,
-      places: window.places||[],
-      extras: window.extras||[],
-      connections: window.connections||[],
-      idCtr: window.idCtr||0,
-      costItemCtr: window.costItemCtr||0,
-      panX: window.panX||0,
-      panY: window.panY||0,
-      sc: window.sc||1,
-      drawings: window.drawings||[],
-      dayZones: window.dayZones||[],
-      dzCtr: window.dzCtr||0
+      places: places||[],
+      extras: extras||[],
+      connections: connections||[],
+      idCtr: idCtr||0,
+      costItemCtr: costItemCtr||0,
+      panX: panX||0,
+      panY: panY||0,
+      sc: sc||1,
+      drawings: drawings||[],
+      dayZones: dayZones||[],
+      dzCtr: dzCtr||0
     };
   }
 
@@ -4724,27 +4722,23 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     // 내부 저장 상태 복원
     const d = map.data;
     if(!d) return;
-    if(typeof window.clearAll === 'function') window.clearAll();
-    if(d.panX!=null) window.panX=d.panX;
-    if(d.panY!=null) window.panY=d.panY;
-    if(d.sc!=null){ window.sc=d.sc; if(window.applyT) window.applyT(); }
-    if(d.idCtr!=null) window.idCtr=d.idCtr;
-    if(d.costItemCtr!=null) window.costItemCtr=d.costItemCtr;
-    (d.places||[]).forEach(p=>{ window.places.push(p); if(window.buildPlaceNode) window.buildPlaceNode(p.id); });
-    (d.extras||[]).forEach(e=>{ window.extras.push(e); e.type==='memo'?(window.buildMemoNode&&window.buildMemoNode(e)):(window.buildCostNode&&window.buildCostNode(e)); });
-    window.connections = d.connections||[];
-    if(d.drawings) window.drawings=d.drawings;
-    if(d.dayZones){ d.dayZones.forEach(z=>{window.dayZones.push(z);if(window.buildDayZone)window.buildDayZone(z);}); if(d.dzCtr)window.dzCtr=d.dzCtr; }
-    if(window.redrawSVG) window.redrawSVG();
-    if(window.redrawDrawLayer) window.redrawDrawLayer();
-    if(window.updateTotalCost) window.updateTotalCost();
-    if(window.updateStats) window.updateStats();
-    if(window.renumberAll) window.renumberAll();
-    if(window.updateDateConstraints) window.updateDateConstraints();
-    if(window.updateTimeline) window.updateTimeline();
-    if(window.updateMinimap) window.updateMinimap();
+    clearAll();
+    if(d.panX!=null) panX=d.panX;
+    if(d.panY!=null) panY=d.panY;
+    if(d.sc!=null){ sc=d.sc; applyT(); }
+    if(d.idCtr!=null) idCtr=d.idCtr;
+    if(d.costItemCtr!=null) costItemCtr=d.costItemCtr;
+    (d.places||[]).forEach(p=>{ places.push(p); buildPlaceNode(p.id); });
+    (d.extras||[]).forEach(e=>{ extras.push(e); e.type==='memo'?buildMemoNode(e):buildCostNode(e); });
+    connections = d.connections||[];
+    if(d.drawings) drawings=d.drawings;
+    if(d.dayZones){ d.dayZones.forEach(z=>{dayZones.push(z);buildDayZone(z);}); if(d.dzCtr)dzCtr=d.dzCtr; }
+    redrawSVG(); redrawDrawLayer(); updateTotalCost(); updateStats(); renumberAll();
+    updateDateConstraints(); updateTimeline(); updateMinimap();
     if((d.places||[]).length||(d.extras||[]).length) document.getElementById('empty').style.display='none';
     currentMapId = map.id;
+    currentProjectId = map.id;
+    pgSetCurrentTitle(map.title||'새 여행');
     showHint('✅ "'+map.title+'" 불러왔습니다!');
   }
 
@@ -4790,23 +4784,17 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     isShareView = true;
     const d = data.data;
     if(!d) return;
-    if(typeof window.clearAll==='function') window.clearAll();
-    if(d.panX!=null) window.panX=d.panX;
-    if(d.panY!=null) window.panY=d.panY;
-    if(d.sc!=null){ window.sc=d.sc; if(window.applyT) window.applyT(); }
-    (d.places||[]).forEach(p=>{ window.places.push(p); if(window.buildPlaceNode) window.buildPlaceNode(p.id); });
-    (d.extras||[]).forEach(e=>{ window.extras.push(e); e.type==='memo'?(window.buildMemoNode&&window.buildMemoNode(e)):(window.buildCostNode&&window.buildCostNode(e)); });
-    window.connections = d.connections||[];
-    if(d.drawings) window.drawings=d.drawings;
-    if(d.dayZones){ d.dayZones.forEach(z=>{window.dayZones.push(z);if(window.buildDayZone)window.buildDayZone(z);}); if(d.dzCtr)window.dzCtr=d.dzCtr; }
-    if(window.redrawSVG) window.redrawSVG();
-    if(window.redrawDrawLayer) window.redrawDrawLayer();
-    if(window.updateTotalCost) window.updateTotalCost();
-    if(window.updateStats) window.updateStats();
-    if(window.renumberAll) window.renumberAll();
-    if(window.updateDateConstraints) window.updateDateConstraints();
-    if(window.updateTimeline) window.updateTimeline();
-    if(window.updateMinimap) window.updateMinimap();
+    clearAll();
+    if(d.panX!=null) panX=d.panX;
+    if(d.panY!=null) panY=d.panY;
+    if(d.sc!=null){ sc=d.sc; applyT(); }
+    (d.places||[]).forEach(p=>{ places.push(p); buildPlaceNode(p.id); });
+    (d.extras||[]).forEach(e=>{ extras.push(e); e.type==='memo'?buildMemoNode(e):buildCostNode(e); });
+    connections = d.connections||[];
+    if(d.drawings) drawings=d.drawings;
+    if(d.dayZones){ d.dayZones.forEach(z=>{dayZones.push(z);buildDayZone(z);}); if(d.dzCtr)dzCtr=d.dzCtr; }
+    redrawSVG(); redrawDrawLayer(); updateTotalCost(); updateStats(); renumberAll();
+    updateDateConstraints(); updateTimeline(); updateMinimap();
     if((d.places||[]).length) document.getElementById('empty').style.display='none';
 
     // 공유 배너 표시
