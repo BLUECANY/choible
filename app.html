@@ -4360,6 +4360,14 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   }
 
   if(isNew){
+    // 무료 플랜 5개 제한 체크
+    const FREE_LIMIT = 5;
+    const existingCount = pgGetLocalProjects().length;
+    if(existingCount >= FREE_LIMIT){
+      showHint('🔒 무료 플랜은 최대 5개까지 저장 가능합니다. 기존 여행을 삭제해보세요.');
+      setTimeout(()=>window.location.href='projects.html', 2000);
+      return;
+    }
     // 새 프로젝트 즉시 초기화
     currentProjectId = 'local_' + Date.now();
     pgSetCurrentTitle('새 여행');
