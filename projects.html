@@ -641,17 +641,25 @@ async function loadProjects(){
   allProjects=[];
 
   if(currentUser){
-    const {data,error}=await sb.from('mindmaps')
-      .select('id,title,updated_at,data')
-      .eq('user_id',currentUser.id)
-      .order('updated_at',{ascending:false});
-    if(!error){
-      allProjects=(data||[]).map(p=>({
-        id:p.id,cloud:true,
-        title:p.title||'새 여행',
-        updatedAt:p.updated_at,
-        preview:previewText(p.data||{}),
-      }));
+    try{
+      // 8초 타임아웃: Promise.race로 Supabase 쿼리가 너무 오래 걸리면 빈 결과로 처리
+      const queryPromise=sb.from('mindmaps')
+        .select('id,title,updated_at,data')
+        .eq('user_id',currentUser.id)
+        .order('updated_at',{ascending:false});
+      const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),8000));
+      const {data,error}=await Promise.race([queryPromise,timeoutPromise]);
+      if(!error){
+        allProjects=(data||[]).map(p=>({
+          id:p.id,cloud:true,
+          title:p.title||'새 여행',
+          updatedAt:p.updated_at,
+          preview:previewText(p.data||{}),
+        }));
+      }
+    }catch(e){
+      // 타임아웃이나 에러 시 로컬 프로젝트로 폴백
+      allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
     }
   } else {
     allProjects=getLocal().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
@@ -846,35 +854,37 @@ async function offerMigration(user){
   showToast('☁️ 클라우드로 이전 완료!');
 }
 
-/* ── Bootstrap: wait for auth then show page ── */
-let _firstEvent=true;
+/* ── Bootstrap: getSession()으로 즉시 시작 ── */
+let _booted=false;
+async function boot(){
+  try{
+    // getSession()은 로컬 캐시에서 즉시 반환 — 네트워크 대기 없음
+    const {data:{session}}=await sb.auth.getSession();
+    currentUser=session?.user||null;
+  }catch(e){
+    currentUser=null;
+  }
+  updateHeader(currentUser);
+  hideLoader();
+  _booted=true;
+  await loadProjects();
+}
+boot();
+
+// 이후 상태 변경(로그인/로그아웃) 감지
 sb.auth.onAuthStateChange(async(event,session)=>{
+  if(!_booted) return; // boot()가 아직 처리 중이면 skip
   const user=session?.user||null;
-  const wasGuest=!currentUser&&_firstEvent;
+  const prevId=currentUser?.id;
   currentUser=user;
   updateHeader(user);
-
-  if(_firstEvent){
-    _firstEvent=false;
-    // Auth check done — reveal page
-    hideLoader();
-    await loadProjects();
-  } else if(event==='SIGNED_IN'){
-    if(wasGuest) await offerMigration(user);
+  if(event==='SIGNED_IN' && user?.id!==prevId){
+    await offerMigration(user);
     await loadProjects();
   } else if(event==='SIGNED_OUT'){
     await loadProjects();
   }
 });
-
-// Safety fallback: if onAuthStateChange takes >4s, show page anyway
-setTimeout(()=>{
-  if(_firstEvent){
-    _firstEvent=false;
-    hideLoader();
-    loadProjects();
-  }
-},4000);
 </script>
 </body>
 </html>
