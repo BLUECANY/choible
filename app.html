@@ -2057,8 +2057,9 @@ function buildMemoNode(ext){
     <div class="rh rh-t" data-side="t"></div>
     <div class="rh rh-b" data-side="b"></div>
     <div class="mc-head"><span class="mc-title">📝 메모</span><button class="mc-del">✕</button></div>
-    <div class="mc-body"><textarea class="mc-text" placeholder="메모를 입력하세요…">${ext.text||''}</textarea></div>`;
+    <div class="mc-body"><textarea class="mc-text" placeholder="메모를 입력하세요…"></textarea></div>`;
   const ta=el.querySelector('.mc-text');
+  ta.value = ext.text || ''; // innerHTML 대신 .value로 설정 (특수문자 안전)
   ta.addEventListener('input',()=>{ext.text=ta.value;updateTimeline();});
   ta.addEventListener('mousedown',e=>e.stopPropagation());
   ta.addEventListener('click',e=>e.stopPropagation());
@@ -2129,8 +2130,8 @@ function buildCostNode(ext){
     if(lastDragMoved){lastDragMoved=false;return}
     onNodeClick(ext.id);
   });
-  renderCostItems(ext);
   world.appendChild(el);
+  renderCostItems(ext); // appendChild 이후 호출해야 getElementById가 정상 동작
 }
 function renderCostItems(ext){
   const listEl=document.getElementById(`cc-list-${ext.id}`);
