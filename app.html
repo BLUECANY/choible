@@ -1079,7 +1079,6 @@
   <button class="t-btn" onclick="showExpenseChart()" title="경비 카테고리별 차트">📊 차트</button>
   <button class="t-btn" onclick="optimizeRoute()" title="경로 최적화 (최단 순서 제안)">🔀 최적화</button>
   <button class="t-btn" onclick="window.print()" title="인쇄">🖨️</button>
-  <button class="t-btn" id="dark-toggle" onclick="toggleDark()" title="다크모드 전환">🌙</button>
   <div class="t-div"></div>
   <button class="t-btn" onclick="showOnboard()" title="사용법 보기">❓</button>
   <button class="t-btn del-btn" onclick="clearAll()">전체 삭제</button>
@@ -3719,53 +3718,7 @@ function pgSetCurrentTitle(title){
   const el=document.getElementById('pg-current-title');
   if(el) el.textContent=title;
 }
-
-// ── 프로젝트 열기 (URL 파라미터에서) ──
-async function pgOpenProjectFromURL(id){
-  clearAll();
-  if(!id.startsWith('local_')){
-    // 클라우드 프로젝트 (UUID)
-    const {data,error}=await sb.from('mindmaps').select('*').eq('id',id).single();
-    if(error||!data){showHint('❌ 불러오기 실패');window.location.href='projects.html';return;}
-    currentMapId=data.id;
-    currentProjectId=data.id;
-    pgSetCurrentTitle(data.title||'새 여행');
-    pgLoadMapData(data.data);
-  } else {
-    // 로컬 프로젝트
-    currentProjectId=id;
-    currentMapId=null;
-    const raw=localStorage.getItem('choible_proj_'+id);
-    const meta=pgGetLocalProjects().find(p=>p.id===id);
-    pgSetCurrentTitle(meta?.title||'새 여행');
-    if(raw) pgLoadMapData(JSON.parse(raw));
-  }
-  doAutoSave();
-}
-
-// ── 시작 시 URL 파라미터 라우팅 ──
-(function pgInit(){
-  const params=new URLSearchParams(location.search);
-  if(params.has('share')) return; // 공유 링크는 checkShareParam에서 처리
-  const projId=params.get('project');
-  const isNew=params.has('newproject');
-  if(projId){
-    pgOpenProjectFromURL(projId);
-  } else if(isNew){
-    currentProjectId='local_'+Date.now();
-    currentMapId=null;
-    pgSetCurrentTitle('새 여행');
-    const list=pgGetLocalProjects();
-    if(!list.find(p=>p.id===currentProjectId)){
-      list.unshift({id:currentProjectId,title:'새 여행',updatedAt:new Date().toISOString(),preview:'장소 없음'});
-      pgSetLocalProjects(list);
-    }
-    try{if(!localStorage.getItem('tmv2_onboard_done'))showOnboard();}catch(_){}
-  } else {
-    // 프로젝트 파라미터 없이 접근 → 프로젝트 갤러리로 이동
-    window.location.href='projects.html';
-  }
-})();
+// URL 라우팅은 Supabase 초기화 후(bottom IIFE)에서 처리
 
 // 자동저장 데이터 복원
 function restoreAutoSave(){
@@ -3920,25 +3873,6 @@ function checkBudgetWarnings(){
   });
 }
 
-// ══════════════════════════════════════════
-// 다크 모드
-// ══════════════════════════════════════════
-let darkMode=false;
-function applyDark(on){
-  darkMode=on;
-  document.documentElement.setAttribute('data-theme',on?'dark':'');
-  const btn=document.getElementById('dark-toggle');
-  if(btn)btn.textContent=on?'☀️':'🌙';
-  try{localStorage.setItem('tmv2_dark',on?'1':'0');}catch(_){}
-}
-function toggleDark(){applyDark(!darkMode);}
-(function(){
-  try{
-    // 기본값: 화이트모드. 사용자가 직접 다크로 바꾼 경우만 다크 적용
-    const stored=localStorage.getItem('tmv2_dark');
-    if(stored==='1'){applyDark(true);}
-  }catch(_){}
-})();
 
 // ══════════════════════════════════════════
 // 최근 검색 히스토리
@@ -4373,23 +4307,61 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   sb.auth.onAuthStateChange((_evt, session) => {
     currentUser = session?.user || null;
     updateAuthUI();
-    // 갤러리가 열려있으면 갱신
-    const gallery=document.getElementById('project-gallery');
-    if(gallery && !gallery.classList.contains('pg-hidden')){
-      pgRenderGallery();
-    }
   });
 
-  // 페이지 로드 시 auth 확인
-  sb.auth.getSession().then(({ data }) => {
+  // 페이지 로드 시 auth 확인 후 URL 라우팅
+  sb.auth.getSession().then(async ({ data }) => {
     currentUser = data?.session?.user || null;
     updateAuthUI();
-    const isShare = new URLSearchParams(location.search).has('share');
-    if(isShare){
+
+    const params = new URLSearchParams(location.search);
+
+    // 공유 링크
+    if(params.has('share')){
       checkShareParam();
+      return;
+    }
+
+    const projId = params.get('project');
+    const isNew  = params.has('newproject');
+
+    if(projId){
+      // 프로젝트 열기
+      clearAll();
+      if(!projId.startsWith('local_')){
+        // 클라우드 프로젝트
+        const {data: mapData, error} = await sb.from('mindmaps').select('*').eq('id', projId).single();
+        if(error || !mapData){ showHint('❌ 불러오기 실패'); window.location.href='projects.html'; return; }
+        currentMapId = mapData.id;
+        currentProjectId = mapData.id;
+        pgSetCurrentTitle(mapData.title || '새 여행');
+        pgLoadMapData(mapData.data);
+      } else {
+        // 로컬 프로젝트
+        currentProjectId = projId;
+        currentMapId = null;
+        const raw = localStorage.getItem('choible_proj_' + projId);
+        const meta = pgGetLocalProjects().find(p => p.id === projId);
+        pgSetCurrentTitle(meta?.title || '새 여행');
+        if(raw) pgLoadMapData(JSON.parse(raw));
+      }
+      doAutoSave();
+
+    } else if(isNew){
+      // 새 프로젝트
+      currentProjectId = 'local_' + Date.now();
+      currentMapId = null;
+      pgSetCurrentTitle('새 여행');
+      const list = pgGetLocalProjects();
+      if(!list.find(p => p.id === currentProjectId)){
+        list.unshift({id: currentProjectId, title:'새 여행', updatedAt: new Date().toISOString(), preview:'장소 없음'});
+        pgSetLocalProjects(list);
+      }
+      try{ if(!localStorage.getItem('tmv2_onboard_done')) showOnboard(); }catch(_){}
+
     } else {
-      // 갤러리 렌더 (이미 pgInit에서 toolbar 숨김)
-      pgRenderGallery();
+      // 파라미터 없이 직접 접근 → 갤러리로
+      window.location.href = 'projects.html';
     }
   });
 
