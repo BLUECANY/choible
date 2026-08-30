@@ -71,6 +71,26 @@
     .t-home-btn:hover{background:#f0f0f0;color:#1a1a2e}
     .t-logo{font-size:14px;font-weight:800;color:#1a1a2e;white-space:nowrap}
     .t-div{width:1px;height:22px;background:#eee;flex-shrink:0}
+    #overflow-dropdown{
+      position:absolute;top:calc(100% + 10px);right:0;min-width:180px;
+      background:#fff;border-radius:14px;padding:6px;
+      box-shadow:0 8px 32px rgba(0,0,0,.16),0 1px 4px rgba(0,0,0,.08);
+      display:none;flex-direction:column;gap:2px;z-index:9999;
+    }
+    #overflow-dropdown.open{display:flex}
+    #overflow-dropdown button{
+      background:none;border:none;padding:9px 14px;border-radius:9px;
+      font-size:13px;font-weight:500;color:#1a1a2e;cursor:pointer;text-align:left;
+      transition:background .12s;white-space:nowrap;
+    }
+    #overflow-dropdown button:hover{background:#f3f4f8}
+    #overflow-dropdown button.danger{color:#e53e3e}
+    #overflow-dropdown button.danger:hover{background:#fff5f5}
+    #overflow-dropdown hr{border:none;border-top:1px solid #eee;margin:4px 0}
+    [data-theme="dark"] #overflow-dropdown{background:#252540;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+    [data-theme="dark"] #overflow-dropdown button{color:#c9d1f5}
+    [data-theme="dark"] #overflow-dropdown button:hover{background:#2e2e58}
+    [data-theme="dark"] #overflow-dropdown hr{border-color:#383860}
     .search-wrap{position:relative}
     #search-input{
       border:2px solid #eee;border-radius:12px;padding:8px 40px 8px 14px;
@@ -1048,8 +1068,9 @@
 
 <div id="toolbar">
   <a href="index.html" class="t-home-btn" title="홈으로"><img src="/choible-icon.svg" alt="choible" width="22" height="22" style="border-radius:5px;vertical-align:middle;display:block"></a>
-  <a id="pg-back-btn" href="projects.html" title="프로젝트 목록" onclick="try{doAutoSave();}catch(_){}">← 프로젝트</a>
+  <a id="pg-back-btn" href="projects.html" title="프로젝트 목록" onclick="try{doAutoSave();}catch(_){}" style="flex-shrink:0">← 프로젝트</a>
   <span id="pg-current-title"></span>
+  <a href="app.html?newproject=1" id="pg-new-btn" title="새 프로젝트 만들기" onclick="try{doAutoSave();}catch(_){}" style="font-size:12px;font-weight:600;color:#5b8af5;text-decoration:none;padding:3px 9px;border-radius:8px;border:1.5px solid #5b8af5;white-space:nowrap;transition:background .15s;flex-shrink:0" onmouseover="this.style.background='#eff4ff'" onmouseout="this.style.background=''">+ 새 여행</a>
   <span class="t-logo">✈️ 여행 마인드맵</span>
   <div class="t-div"></div>
   <div class="search-wrap">
@@ -1074,13 +1095,17 @@
   <button class="t-btn" onclick="saveToProject()" title="현재 프로젝트에 저장">💾 저장</button>
   <button class="t-btn" onclick="window.location.href='projects.html'" title="내 프로젝트 열기">📂 열기</button>
   <div class="t-div"></div>
-  <button class="t-btn" onclick="exportICS()" title="Google Calendar로 내보내기">📅 캘린더</button>
-  <button class="t-btn" onclick="showExpenseChart()" title="경비 카테고리별 차트">📊 차트</button>
-  <button class="t-btn" onclick="optimizeRoute()" title="경로 최적화 (최단 순서 제안)">🔀 최적화</button>
-  <button class="t-btn" onclick="window.print()" title="인쇄">🖨️</button>
-  <div class="t-div"></div>
-  <button class="t-btn" onclick="showOnboard()" title="사용법 보기">❓</button>
-  <button class="t-btn del-btn" onclick="clearAll()">전체 삭제</button>
+  <div id="overflow-wrap" style="position:relative">
+    <button class="t-btn" id="overflow-btn" onclick="toggleOverflow(event)" title="더보기">⋯</button>
+    <div id="overflow-dropdown">
+      <button onclick="exportICS();closeOverflow()">📅 캘린더 내보내기</button>
+      <button onclick="showExpenseChart();closeOverflow()">📊 경비 차트</button>
+      <button onclick="optimizeRoute();closeOverflow()">🔀 경로 최적화</button>
+      <hr>
+      <button onclick="showOnboard();closeOverflow()">❓ 사용법 보기</button>
+      <button class="danger" onclick="clearAll();closeOverflow()">🗑️ 전체 삭제</button>
+    </div>
+  </div>
   <div class="t-div"></div>
   <button id="auth-btn" onclick="openAuthModal()" title="로그인 / 내 여행">
     <span class="auth-avatar" id="auth-avatar">👤</span>
@@ -3493,7 +3518,7 @@ const ONBOARD_STEPS=[
   {icon:'📝',title:'메모와 경비 카드도 활용해보세요',
    desc:'툴바의 <strong>📝 메모</strong>·<strong>💰 비용</strong> 버튼으로 카드를 추가하고<br>장소 노드나 다른 카드에 연결할 수 있어요.<br>오른쪽 <strong>일정 사이드바</strong>에서 한눈에 확인하세요!'},
   {icon:'🎉',title:'준비 완료! 지금 시작해보세요',
-   desc:'💾 저장으로 계획을 <strong>HTML 파일</strong>로 내보내고,<br>📂 열기로 언제든 다시 불러올 수 있어요.<br>🖊️ 그리기 도구로 캔버스에 자유롭게 낙서도 해보세요!<br><br><span style="color:#bbb;font-size:12px">궁금하거나 불편한 점은 🐛 문의 버튼을 이용해주세요</span>'},
+   desc:'💾 저장으로 현재 프로젝트에 저장하고,<br>📂 열기로 내 프로젝트 목록에서 다른 여행을 열 수 있어요.<br>🖊️ 그리기 도구로 캔버스에 자유롭게 낙서도 해보세요!<br><br><span style="color:#bbb;font-size:12px">궁금하거나 불편한 점은 ch52maker@gmail.com 으로 문의해주세요</span>'},
 ];
 let obStep=0;
 function initOnboard(){
@@ -3555,7 +3580,7 @@ window.addEventListener('load',()=>initOnboard());
   const hideBtns = allBtns.filter(b =>
     hideIds.includes(b.id) ||
     b.classList.contains('del-btn') ||
-    b.getAttribute('onclick')?.match(/saveData|load-input|showOnboard/)
+    b.getAttribute('onclick')?.match(/saveToProject|projects\.html|showOnboard/)
   );
   hideBtns.forEach(b => b.setAttribute('data-mob','hide'));
 
@@ -3582,8 +3607,8 @@ window.addEventListener('load',()=>initOnboard());
     {icon:'🖊️', label:'그리기', fn:()=>toggleDrawMode()},
     {icon:'−', label:'축소', fn:()=>zoomBy(1/1.25)},
     {icon:'+', label:'확대', fn:()=>zoomBy(1.25)},
-    {icon:'💾', label:'저장', fn:()=>saveData()},
-    {icon:'📂', label:'불러오기', fn:()=>document.getElementById('load-input').click()},
+    {icon:'💾', label:'저장', fn:()=>saveToProject()},
+    {icon:'📂', label:'내 프로젝트', fn:()=>{closeDrawer();window.location.href='projects.html';}},
     {icon:'❓', label:'사용법', fn:()=>showOnboard()},
     {icon:'🗑️', label:'전체삭제', fn:()=>{closeDrawer();clearAll();}},
   ];
@@ -3665,8 +3690,21 @@ function updateAutoSaveBadge(){
   const diff=Math.round((Date.now()-lastAutoSave)/60000);
   txt.textContent=diff<1?'방금 저장됨':diff===1?'1분 전 저장':diff<60?`${diff}분 전 저장`:'1시간+ 전 저장';
 }
-setInterval(doAutoSave,30000);
+setInterval(doAutoSave,10000);
 setInterval(updateAutoSaveBadge,60000);
+
+// ⋯ 오버플로 메뉴
+function toggleOverflow(e){
+  e.stopPropagation();
+  const d=document.getElementById('overflow-dropdown');
+  d.classList.toggle('open');
+  if(d.classList.contains('open')){
+    setTimeout(()=>document.addEventListener('click',closeOverflow,{once:true}),0);
+  }
+}
+function closeOverflow(){
+  document.getElementById('overflow-dropdown')?.classList.remove('open');
+}
 
 // 즉시 저장 + 토스트 (💾 저장 버튼용)
 function saveToProject(){
@@ -3695,8 +3733,13 @@ function pgSaveLocalProject(id, data){
     list[idx].updatedAt=new Date().toISOString();
     list[idx].preview=pgPreviewText(data);
     pgSetLocalProjects(list);
-    localStorage.setItem('choible_proj_'+id, JSON.stringify(data));
+  } else {
+    // 목록에 없어도 새 항목으로 추가 (upsert)
+    list.unshift({id, title:'새 여행', updatedAt:new Date().toISOString(), preview:pgPreviewText(data)});
+    pgSetLocalProjects(list);
   }
+  // 데이터는 항상 저장
+  localStorage.setItem('choible_proj_'+id, JSON.stringify(data));
 }
 function pgPreviewText(data){
   const places=(data.places||[]);
@@ -4367,6 +4410,8 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
         list.unshift({id: currentProjectId, title:'새 여행', updatedAt: new Date().toISOString(), preview:'장소 없음'});
         pgSetLocalProjects(list);
       }
+      // 초기 빈 데이터 즉시 저장 (새 프로젝트가 반드시 복원 가능하도록)
+      doAutoSave();
       try{ if(!localStorage.getItem('tmv2_onboard_done')) showOnboard(); }catch(_){}
 
     } else {
@@ -4734,7 +4779,7 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     if(banner){ banner.classList.add('show'); if(authorEl) authorEl.textContent = data.title||'이 여행'; document.body.classList.add('share-mode'); }
     // 읽기 전용: 편집 기능 숨기기
     ['#draw-toggle-btn','#dz-btn','.memo-btn','.cost-btn','.del-btn',
-     'button[onclick="clearAll()"]','button[onclick="saveData()"]','button[onclick="optimizeRoute()"]']
+     'button[onclick="clearAll()"]','button[onclick="saveToProject()"]','button[onclick="optimizeRoute()"]']
       .forEach(sel=>{ try{ document.querySelectorAll(sel).forEach(el=>el.style.display='none'); }catch(_){} });
   }
 
