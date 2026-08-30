@@ -1048,7 +1048,7 @@
 
 <div id="toolbar">
   <a href="index.html" class="t-home-btn" title="홈으로"><img src="/choible-icon.svg" alt="choible" width="22" height="22" style="border-radius:5px;vertical-align:middle;display:block"></a>
-  <a id="pg-back-btn" href="projects.html" title="프로젝트 목록">← 프로젝트</a>
+  <a id="pg-back-btn" href="projects.html" title="프로젝트 목록" onclick="try{doAutoSave();}catch(_){}">← 프로젝트</a>
   <span id="pg-current-title"></span>
   <span class="t-logo">✈️ 여행 마인드맵</span>
   <div class="t-div"></div>
@@ -1071,9 +1071,8 @@
   <button class="t-btn cost-btn" onclick="addCostCard()">💰 비용</button>
   <button class="t-btn" id="draw-toggle-btn" onclick="toggleDrawMode()" style="color:#7c3aed" title="캔버스에 그리기/쓰기">🖊️ 그리기</button>
   <div class="t-div"></div>
-  <button class="t-btn" onclick="saveData()" title="HTML로 저장">💾 저장</button>
-  <input type="file" id="load-input" accept=".html,.json" style="display:none" onchange="loadData(event)">
-  <button class="t-btn" onclick="document.getElementById('load-input').click()" title="저장 파일 불러오기">📂 열기</button>
+  <button class="t-btn" onclick="saveToProject()" title="현재 프로젝트에 저장">💾 저장</button>
+  <button class="t-btn" onclick="window.location.href='projects.html'" title="내 프로젝트 열기">📂 열기</button>
   <div class="t-div"></div>
   <button class="t-btn" onclick="exportICS()" title="Google Calendar로 내보내기">📅 캘린더</button>
   <button class="t-btn" onclick="showExpenseChart()" title="경비 카테고리별 차트">📊 차트</button>
@@ -3669,6 +3668,17 @@ function updateAutoSaveBadge(){
 setInterval(doAutoSave,30000);
 setInterval(updateAutoSaveBadge,60000);
 
+// 즉시 저장 + 토스트 (💾 저장 버튼용)
+function saveToProject(){
+  doAutoSave();
+  // 클라우드 프로젝트면 즉시 동기화 요청
+  if(typeof window.saveCloudNow === 'function') window.saveCloudNow();
+  showHint('✅ 저장 완료!');
+}
+
+// 페이지 이탈 시 저장
+window.addEventListener('beforeunload', ()=>{ try{ doAutoSave(); }catch(_){} });
+
 // ══════════════════════════════════════════════════════
 // 프로젝트 유틸리티 (로컬 저장)
 // ══════════════════════════════════════════════════════
@@ -4737,23 +4747,33 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     }
   };
 
-  // ── 자동저장 시 클라우드도 동기화 (5분마다, 로그인 시) ──
+  // ── 자동저장 시 클라우드도 동기화 (30초 디바운스, 로그인 시) ──
   let cloudSyncTimer = null;
   const _origAutoSave = window.doAutoSave;
   if(_origAutoSave){
     window.doAutoSave = function(){
       _origAutoSave();
       if(currentUser && currentMapId && !isShareView){
-        // 5분 디바운스로 클라우드 동기
         clearTimeout(cloudSyncTimer);
         cloudSyncTimer = setTimeout(async ()=>{
           const data = getMapData();
           await sb.from('mindmaps').update({ data, updated_at: new Date().toISOString() })
             .eq('id', currentMapId).eq('user_id', currentUser.id);
-        }, 5*60*1000);
+        }, 30*1000);
       }
     };
   }
+
+  // 즉시 클라우드 저장 (💾 저장 버튼 → saveToProject() 에서 호출)
+  window.saveCloudNow = async function(){
+    if(!currentUser || !currentMapId || isShareView) return;
+    clearTimeout(cloudSyncTimer);
+    try{
+      const data = getMapData();
+      await sb.from('mindmaps').update({ data, updated_at: new Date().toISOString() })
+        .eq('id', currentMapId).eq('user_id', currentUser.id);
+    }catch(_){}
+  };
 
   // ── XSS 방어용 escape ──
   function escHtml(str){
