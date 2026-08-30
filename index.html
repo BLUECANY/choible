@@ -379,9 +379,9 @@ footer{
           <div style="text-align:center;margin-bottom:14px">
             <div style="font-size:28px;margin-bottom:4px">🔢</div>
             <div style="font-size:13px;font-weight:700;color:#1a1a2e">이메일 인증</div>
-            <div style="font-size:11px;color:#aaa;margin-top:3px"><span id="idx-su-otp-email"></span>로<br>발송된 6자리 코드를 입력하세요</div>
+            <div style="font-size:11px;color:#aaa;margin-top:3px"><span id="idx-su-otp-email"></span>로<br>발송된 인증 코드를 입력하세요</div>
           </div>
-          <div style="margin-bottom:12px"><input id="idx-su-otp-code" type="text" inputmode="numeric" maxlength="6" placeholder="123456" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:22px;font-weight:800;letter-spacing:8px;text-align:center;outline:none;box-sizing:border-box"></div>
+          <div style="margin-bottom:12px"><input id="idx-su-otp-code" type="text" inputmode="numeric" maxlength="8" placeholder="12345678" style="width:100%;border:1.5px solid #eee;border-radius:10px;padding:9px 12px;font-size:22px;font-weight:800;letter-spacing:6px;text-align:center;outline:none;box-sizing:border-box"></div>
           <button onclick="idxVerifyOtp()" style="width:100%;background:linear-gradient(135deg,#10b981,#059669);border:none;border-radius:11px;padding:11px;font-size:14px;font-weight:800;color:#fff;cursor:pointer">인증 완료</button>
           <div id="idx-su-otp-err" style="font-size:12px;color:#ef4444;margin-top:8px;text-align:center;min-height:14px"></div>
           <div style="text-align:center;margin-top:8px"><button onclick="idxResetOtp()" style="background:none;border:none;font-size:12px;color:#aaa;cursor:pointer">← 다시 가입하기</button></div>
@@ -483,7 +483,7 @@ footer{
     const code=document.getElementById('idx-su-otp-code').value.trim();
     const err=document.getElementById('idx-su-otp-err');
     err.textContent='';
-    if(code.length!==6){err.textContent='6자리 코드를 입력해주세요.';return;}
+    if(code.length<6){err.textContent='코드를 입력해주세요.';return;}
     const {error}=await sb.auth.verifyOtp({email:idxSuEmail,token:code,type:'signup'});
     if(error){err.textContent='코드가 틀렸거나 만료되었습니다.';return;}
     closeIndexAuth();

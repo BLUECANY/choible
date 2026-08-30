@@ -1294,11 +1294,11 @@
           <div style="text-align:center;margin-bottom:16px">
             <div style="font-size:32px;margin-bottom:6px">🔢</div>
             <div style="font-size:14px;font-weight:700;color:#1a1a2e">이메일 인증</div>
-            <div style="font-size:12px;color:#aaa;margin-top:4px"><span id="su-otp-email"></span>로<br>발송된 6자리 코드를 입력하세요</div>
+            <div style="font-size:12px;color:#aaa;margin-top:4px"><span id="su-otp-email"></span>로<br>발송된 인증 코드를 입력하세요</div>
           </div>
           <div class="am-field">
-            <input class="am-input" id="su-otp-code" type="text" inputmode="numeric" maxlength="6"
-              placeholder="123456" style="text-align:center;font-size:22px;font-weight:800;letter-spacing:8px">
+            <input class="am-input" id="su-otp-code" type="text" inputmode="numeric" maxlength="8"
+              placeholder="12345678" style="text-align:center;font-size:22px;font-weight:800;letter-spacing:6px">
           </div>
           <button class="am-btn green" id="su-otp-btn" onclick="verifySuOtp()">인증 완료</button>
           <div class="am-err" id="su-otp-err"></div>
@@ -4370,7 +4370,7 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     const errEl = document.getElementById('su-otp-err');
     const btn   = document.getElementById('su-otp-btn');
     errEl.textContent = '';
-    if(code.length !== 6){ errEl.textContent = '6자리 코드를 입력해주세요.'; return; }
+    if(code.length < 6){ errEl.textContent = '코드를 입력해주세요.'; return; }
     btn.disabled = true; btn.textContent = '확인 중…';
     const { error } = await sb.auth.verifyOtp({ email: suEmail, token: code, type: 'signup' });
     btn.disabled = false; btn.textContent = '인증 완료';
