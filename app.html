@@ -837,7 +837,7 @@
     .rec-header{
       display:flex;align-items:center;justify-content:space-between;
       padding:11px 14px;background:#FFF0F3;border-bottom:1px solid #FFD9E2;
-      flex-shrink:0;cursor:pointer;
+      flex-shrink:0;cursor:default;
     }
     [data-theme="dark"] .rec-header{background:#2a1520;border-color:#4a2030}
     .rec-header-left{display:flex;align-items:center;gap:7px}
@@ -3898,7 +3898,7 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
   /* 패널 HTML 삽입 */
   const panelHTML = `
     <div id="rec-panel">
-      <div class="rec-header" onclick="recToggleMin()">
+      <div class="rec-header">
         <div class="rec-header-left">
           <div class="rec-live-dot"></div>
           <span class="rec-title">여행 준비물 추천</span>
