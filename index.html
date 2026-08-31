@@ -347,7 +347,7 @@ footer{
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="app.html"><img src="/choible-icon.svg" alt="choible" width="24" height="24" style="border-radius:6px;flex-shrink:0"> choible <span class="nav-logo-badge">FREE</span></a>
+  <a class="nav-logo" href="/"><img src="/choible-icon.svg" alt="choible" width="28" height="28" style="border-radius:8px;flex-shrink:0"> choible <span class="nav-logo-badge">FREE</span></a>
   <div class="nav-right">
     <a href="community.html" style="font-size:13px;font-weight:600;color:#5a6280;text-decoration:none;padding:6px 12px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='#eef1fe';this.style.color='#4f6ef7'" onmouseout="this.style.background='';this.style.color='#5a6280'">🌐 커뮤니티</a>
     <button class="nav-login" id="nav-login-btn" onclick="openIndexAuth()">👤 <span id="nav-login-label">로그인</span></button>
@@ -441,7 +441,17 @@ footer{
     }
   }
 
-  window.openIndexAuth = function(){ document.getElementById('idx-auth-modal').style.display='block'; document.getElementById('idx-auth-overlay').style.display='block'; };
+  window.openIndexAuth = function(){
+    // 로그인 상태면 기존 모달(계정 정보)만 표시, 아니면 통합 로그인 페이지로
+    sb.auth.getSession().then(({data})=>{
+      if(data?.session){
+        document.getElementById('idx-auth-modal').style.display='block';
+        document.getElementById('idx-auth-overlay').style.display='block';
+      } else {
+        window.location.href='/auth.html?redirect=/';
+      }
+    });
+  };
   window.closeIndexAuth = function(){ document.getElementById('idx-auth-modal').style.display='none'; document.getElementById('idx-auth-overlay').style.display='none'; };
   window.idxTab = function(t){
     document.getElementById('idx-sec-li').style.display = t==='li'?'block':'none';

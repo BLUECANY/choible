@@ -60,7 +60,9 @@ header{
   padding:0 20px;height:56px;position:sticky;top:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
 }
-.hd-logo{font-weight:800;font-size:18px;color:var(--accent);text-decoration:none;letter-spacing:-.3px;}
+.hd-logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.hd-logo img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
+.hd-logo span{font-weight:800;font-size:18px;color:var(--text1);letter-spacing:-.4px;}
 .hd-nav{display:flex;align-items:center;gap:6px;}
 .hd-nav a{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;}
 .hd-nav a:hover,.hd-nav a.active{background:var(--accent-soft);color:var(--accent);}
@@ -384,7 +386,10 @@ header{
 <body>
 
 <header>
-  <a class="hd-logo" href="/">choible</a>
+  <a class="hd-logo" href="/">
+    <img src="/choible-icon.svg" alt="choible">
+    <span>choible</span>
+  </a>
   <nav class="hd-nav">
     <a href="/projects.html" onclick="goToPlanner(event)">✈️ 플래너</a>
     <a href="/community.html" class="active">🌐 커뮤니티</a>
