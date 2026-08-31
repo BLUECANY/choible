@@ -99,22 +99,24 @@
     [data-theme="dark"] #overflow-dropdown button{color:#c9d1f5}
     [data-theme="dark"] #overflow-dropdown button:hover{background:#2e2e58}
     [data-theme="dark"] #overflow-dropdown hr{border-color:#383860}
-    .search-wrap{position:relative}
+    .search-wrap{position:relative;display:flex;align-items:center;gap:6px}
     #search-input{
-      border:2px solid #eee;border-radius:12px;padding:8px 40px 8px 14px;
+      border:2px solid #eee;border-radius:12px;padding:8px 14px;
       font-size:14px;width:200px;outline:none;transition:all .2s;
-      color:#1a1a2e;background:#fafafa;
+      color:#1a1a2e;background:#fafafa;min-width:0;
     }
     #search-input:focus{border-color:#5b8af5;background:#fff;box-shadow:0 0 0 3px rgba(91,138,245,.1)}
     #search-input::placeholder{color:#ccc}
     .sp{
-      position:absolute;right:12px;top:50%;transform:translateY(-50%);
-      width:14px;height:14px;border:2px solid #eee;border-top-color:#5b8af5;
+      width:16px;height:16px;flex-shrink:0;
+      border:2px solid #eee;border-top-color:#5b8af5;
       border-radius:50%;animation:spin .7s linear infinite;display:none;
     }
-    @keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
+    .sp.active{display:block}
+    @keyframes spin{to{transform:rotate(360deg)}}
     #ac{
-      position:absolute;top:calc(100% + 8px);left:0;width:360px;
+      position:absolute;top:calc(100% + 8px);left:0;
+      width:min(360px,calc(100vw - 24px));
       background:#fff;border-radius:16px;
       box-shadow:0 12px 40px rgba(0,0,0,.15);z-index:4000;overflow-y:auto;overflow-x:hidden;display:none;
       max-height:min(480px,calc(100vh - 120px));
@@ -662,7 +664,7 @@
       .search-wrap{flex:1;min-width:0}
       #search-input{
         width:100%;font-size:14px;
-        padding:9px 36px 9px 12px;
+        padding:9px 12px;
         border-radius:12px;
       }
       /* 홈 버튼 터치 영역 확대 */
@@ -1798,7 +1800,7 @@ function mergeDedup(lists){
   return kept;
 }
 async function doSearch(q){
-  spinner.style.display='block';acEl.style.display='none';
+  spinner.classList.add('active');acEl.style.display='none';
   const isKo=/[ㄱ-ㅎ가-힣]/.test(q);
   currentOverseas=detectOverseas(q); // 해외 도시 감지
 
@@ -1852,7 +1854,7 @@ async function doSearch(q){
       res=mergeDedup([fb]);
     }catch(_){}
   }
-  spinner.style.display='none';
+  spinner.classList.remove('active');
   if(!res.length){acEl.innerHTML=`<div style="padding:14px 16px 10px;text-align:center;color:#aaa;font-size:13px">검색 결과가 없습니다.<br><small style="color:#bbb">${isKo?'더 구체적인 주소나 상호명으로 검색해보세요':'Try searching in English or Korean'}</small></div>`+manualAddHTML();acEl.style.display='block';positionAc();return}
   acData=res;
   acEl.innerHTML=res.map((it,i)=>`<div class="ac-item" onclick="addPlace(${i})">
