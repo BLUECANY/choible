@@ -124,6 +124,8 @@ header{
 .post-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.35;}
 .post-desc{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.6;white-space:pre-wrap;word-break:break-word;}
 .post-places{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.post-planner-link{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:600;color:var(--accent);text-decoration:none;background:var(--accent-soft);padding:7px 14px;border-radius:20px;margin-bottom:12px;transition:opacity .15s;}
+.post-planner-link:hover{opacity:.8;}
 .place-tag{
   font-size:12px;font-weight:600;color:var(--accent);
   background:var(--accent-soft);border-radius:20px;padding:4px 10px;
@@ -862,6 +864,7 @@ function buildPostEl(p){
       <div class="post-title">${escHtml(p.title)}</div>
       ${places.length?`<div class="post-places">${placeTags}${moreCount}</div>`:''}
       ${p.description?`<div class="post-desc">${escHtml(p.description)}</div>`:''}
+      ${p.share_link?`<a href="${escHtml(p.share_link)}" target="_blank" rel="noopener" class="post-planner-link">🗺️ 플래너 보기 →</a>`:''}
       <div class="post-actions">
         <button class="act-btn ${liked?'liked':''}" id="like-btn-${p.id}" onclick="toggleLike('${p.id}')">
           <svg viewBox="0 0 24 24" fill="${liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -914,18 +917,21 @@ async function toggleLike(postId){
   const btn=document.getElementById('like-btn-'+postId);
   const cnt=document.getElementById('like-cnt-'+postId);
   const cur=parseInt(cnt.textContent)||0;
-  // Optimistic update
+  // Optimistic update (DOM + postsCache 동기화)
   const svg=btn.querySelector('svg');
+  const post=postsCache.find(p=>p.id===postId);
   if(liked){
     likedPosts.delete(postId);
     btn.classList.remove('liked');
     if(svg)svg.setAttribute('fill','none');
     cnt.textContent=Math.max(0,cur-1);
+    if(post) post.likes_count=Math.max(0,(post.likes_count||0)-1);
   }else{
     likedPosts.add(postId);
     btn.classList.add('liked');
     if(svg)svg.setAttribute('fill','currentColor');
     cnt.textContent=cur+1;
+    if(post) post.likes_count=(post.likes_count||0)+1;
   }
   try{
     if(liked){
@@ -991,9 +997,11 @@ async function submitComment(postId){
     if(!r.ok)throw new Error();
     const [newComment]=await r.json();
     await sbAuthFetch('/rest/v1/rpc/increment_comments',currentToken,{method:'POST',body:JSON.stringify({pid:postId})});
-    // Update count display
+    // Update count display + postsCache
     const cntEl=document.getElementById('cmt-cnt-'+postId);
     if(cntEl)cntEl.textContent=parseInt(cntEl.textContent||0)+1;
+    const cpost=postsCache.find(p=>p.id===postId);
+    if(cpost)cpost.comments_count=(cpost.comments_count||0)+1;
     // Add comment to list
     const list=document.getElementById('clist-'+postId);
     const noComment=list.querySelector('.no-comments');
@@ -1110,23 +1118,58 @@ async function submitShare(){
   const nick=localStorage.getItem('choible_nick_'+currentUser.id)||currentUser.email?.split('@')[0]||'여행자';
 
   submitBtn.disabled=true;
+  submitBtn.textContent='공유 중…';
   try{
+    // ── 플래너 공유 링크 생성 ──
+    let shareLink=null;
+    if(selectedTripId&&currentToken){
+      const shareToken='share_'+Math.random().toString(36).slice(2);
+      if(selectedTripId.startsWith('local_')){
+        // 로컬 프로젝트 → mindmaps에 업로드 후 공개 링크 생성
+        try{
+          const projRaw=localStorage.getItem('choible_proj_'+selectedTripId);
+          const projData=projRaw?JSON.parse(projRaw):{};
+          const up=await sbAuthFetch('/rest/v1/mindmaps',currentToken,{
+            method:'POST',
+            headers:{'Prefer':'return=representation'},
+            body:JSON.stringify({user_id:currentUser.id,title,data:projData,share_token:shareToken,is_public:true})
+          });
+          if(up.ok){ shareLink=location.origin+'/app.html?share='+shareToken; }
+        }catch(e2){console.warn('mindmap upload failed',e2);}
+      } else {
+        // 클라우드 프로젝트 → is_public+share_token 업데이트
+        try{
+          const up=await sbAuthFetch('/rest/v1/mindmaps?id=eq.'+selectedTripId,currentToken,{
+            method:'PATCH',
+            headers:{'Prefer':'return=minimal'},
+            body:JSON.stringify({share_token:shareToken,is_public:true})
+          });
+          if(up.ok){ shareLink=location.origin+'/app.html?share='+shareToken; }
+        }catch(e2){console.warn('mindmap patch failed',e2);}
+      }
+    }
+
     const r=await sbAuthFetch('/rest/v1/community_posts',currentToken,{
       method:'POST',
       headers:{'Prefer':'return=representation'},
-      body:JSON.stringify({user_id:currentUser.id,user_email:currentUser.email,user_nickname:nick,title,places,emoji:selectedEmoji,description:desc||null,likes_count:0,comments_count:0})
+      body:JSON.stringify({user_id:currentUser.id,user_email:currentUser.email,user_nickname:nick,title,places,emoji:selectedEmoji,description:desc||null,share_link:shareLink,likes_count:0,comments_count:0})
     });
     if(!r.ok){const err=await r.json();throw new Error(err.message||'error');}
     const [newPost]=await r.json();
     closeShareModal();
     postsCache.unshift(newPost);
-    renderFeed();
+    // 전체 재렌더 대신 새 글만 맨 앞에 삽입 (기존 좋아요/댓글 수 유지)
+    const feed=document.getElementById('feed');
+    const emptyEl=feed.querySelector('.empty-state');
+    if(emptyEl)emptyEl.remove();
+    feed.insertBefore(buildPostEl(newPost),feed.firstChild);
     showToast('여행이 공유됐어요! 🎉');
   }catch(e){
     errEl.textContent='공유에 실패했어요: '+e.message;
     errEl.style.display='block';
   }
   submitBtn.disabled=false;
+  submitBtn.textContent='공유하기';
 }
 
 // ── Planner nav (로컬 프로젝트만 사용 - 클라우드 UUID는 app.html 리디렉션 루프 유발) ──

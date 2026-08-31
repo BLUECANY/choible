@@ -14,10 +14,14 @@ CREATE TABLE IF NOT EXISTS community_posts (
   places text[] DEFAULT '{}',
   emoji text DEFAULT '✈️',
   description text,
+  share_link text,
   likes_count integer DEFAULT 0 NOT NULL,
   comments_count integer DEFAULT 0 NOT NULL,
   created_at timestamptz DEFAULT now() NOT NULL
 );
+
+-- share_link 컬럼 추가 (기존 테이블에도 적용)
+ALTER TABLE community_posts ADD COLUMN IF NOT EXISTS share_link text;
 
 -- 2. community_likes
 CREATE TABLE IF NOT EXISTS community_likes (
