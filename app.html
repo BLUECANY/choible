@@ -1406,7 +1406,7 @@
         <div style="font-size:14px;font-weight:700;color:#1a1a2e" id="am-user-email">—</div>
         <div style="font-size:11px;color:#aaa;margin-top:2px">로그인됨</div>
       </div>
-      <a href="projects.html?openProfile=1" class="am-btn" style="display:block;text-align:center;text-decoration:none;background:linear-gradient(135deg,#5b8af5,#10b981);color:#fff;font-weight:700;font-size:13px;border-radius:10px;padding:10px;margin-bottom:8px">👤 내 프로필 설정</a>
+      <button onclick="openProfileModal()" class="am-btn" style="display:block;width:100%;text-align:center;background:linear-gradient(135deg,#5b8af5,#10b981);color:#fff;font-weight:700;font-size:13px;border-radius:10px;padding:10px;margin-bottom:8px;border:none;cursor:pointer;">👤 내 프로필 설정</button>
       <button class="am-btn" onclick="doLogout()" style="background:none;border:1.5px solid #eee;color:#aaa;font-size:13px">로그아웃</button>
     </div>
   </div>
@@ -4671,6 +4671,164 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
     showHint('👋 로그아웃되었습니다.');
   };
 
+  // ── 프로필 모달 ──
+  const SB_PROFILE_URL = SUPABASE_URL;
+  const SB_PROFILE_KEY = SUPABASE_ANON;
+
+  function _profileAvatarKey(){ return currentUser ? 'choible_avatar_' + currentUser.id : null; }
+  function _profileNickKey(){ return currentUser ? 'choible_nick_' + currentUser.id : null; }
+
+  function renderProfileAvatarApp(){
+    const el = document.getElementById('app-profile-avatar-lg');
+    if(!el || !currentUser) return;
+    const saved = localStorage.getItem(_profileAvatarKey());
+    if(saved){ el.innerHTML = '<img src="' + saved + '" alt="프로필">'; }
+    else {
+      const nick = localStorage.getItem(_profileNickKey()) || '';
+      el.textContent = (nick ? nick[0] : (currentUser.email||'?')[0]).toUpperCase();
+    }
+    // update header avatar
+    const hdrAv = document.getElementById('auth-avatar');
+    if(hdrAv){
+      const nick = localStorage.getItem(_profileNickKey()) || '';
+      if(saved){ hdrAv.innerHTML = '<img src="' + saved + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="">'; }
+      else { hdrAv.textContent = (nick ? nick[0] : (currentUser.email||'?')[0]).toUpperCase(); }
+    }
+  }
+
+  window.openProfileModal = function(){
+    if(!currentUser) return;
+    document.getElementById('app-profile-email-txt').textContent = currentUser.email || '—';
+    const joined = currentUser.created_at
+      ? new Date(currentUser.created_at).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})
+      : '—';
+    document.getElementById('app-profile-since').textContent = '가입일 ' + joined;
+    let localProjs = [];
+    try { localProjs = JSON.parse(localStorage.getItem('choible_projects') || '[]'); } catch {}
+    const total = localProjs.length;
+    const cloud = localProjs.filter(p => p.cloud).length;
+    document.getElementById('app-stat-total').textContent = total;
+    document.getElementById('app-stat-cloud').textContent = cloud;
+    document.getElementById('app-stat-local').textContent = total - cloud;
+    document.getElementById('app-profile-nick').value = localStorage.getItem(_profileNickKey()) || '';
+    const pwForm = document.getElementById('app-pw-form');
+    if(pwForm) pwForm.classList.add('hidden');
+    const pwToggle = document.getElementById('app-pw-toggle');
+    if(pwToggle) pwToggle.textContent = '🔑 비밀번호 변경하기';
+    ['app-pw-current','app-pw-new','app-pw-confirm'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const pwErr = document.getElementById('app-pw-err');
+    if(pwErr) pwErr.style.display = 'none';
+    renderProfileAvatarApp();
+    const overlay = document.getElementById('app-profile-overlay');
+    if(overlay) overlay.classList.add('open');
+    // Close auth modal
+    closeAuthModal();
+  };
+
+  window.closeProfileModal = function(){
+    const overlay = document.getElementById('app-profile-overlay');
+    if(overlay) overlay.classList.remove('open');
+  };
+
+  window.handleAppAvatarUpload = function(e){
+    const file = e.target.files[0];
+    if(!file || !currentUser) return;
+    if(file.size > 2*1024*1024){ showHint('이미지는 2MB 이하만 가능해요'); return; }
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 256; canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        const s = Math.min(img.width, img.height);
+        const ox = (img.width-s)/2, oy = (img.height-s)/2;
+        ctx.drawImage(img, ox, oy, s, s, 0, 0, 256, 256);
+        localStorage.setItem(_profileAvatarKey(), canvas.toDataURL('image/jpeg', .85));
+        renderProfileAvatarApp();
+        showHint('✅ 프로필 사진이 변경되었습니다');
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
+  window.saveProfileNickname = async function(){
+    const val = document.getElementById('app-profile-nick').value.trim();
+    const btn = document.getElementById('app-nick-save-btn');
+    if(!currentUser) return;
+    if(val){ localStorage.setItem(_profileNickKey(), val); }
+    else { localStorage.removeItem(_profileNickKey()); }
+    // Sync to Supabase community_posts
+    try{
+      const sess = await sb.auth.getSession();
+      const token = sess.data?.session?.access_token;
+      if(token){
+        await fetch(SB_PROFILE_URL + '/rest/v1/community_posts?user_id=eq.' + currentUser.id, {
+          method: 'PATCH',
+          headers: { 'apikey': SB_PROFILE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ user_nickname: val || currentUser.email?.split('@')[0] || '여행자' })
+        });
+      }
+    }catch(e){ console.warn('nickname sync failed', e); }
+    renderProfileAvatarApp();
+    updateAuthUI();
+    btn.textContent = '✓'; btn.disabled = true;
+    setTimeout(() => { btn.textContent = '저장'; btn.disabled = false; }, 1500);
+    showHint('✅ 닉네임이 저장되었습니다');
+  };
+
+  window.toggleAppPwForm = function(){
+    const form = document.getElementById('app-pw-form');
+    const btn = document.getElementById('app-pw-toggle');
+    const hidden = form.classList.toggle('hidden');
+    btn.textContent = hidden ? '🔑 비밀번호 변경하기' : '🔒 닫기';
+    if(!hidden) setTimeout(() => document.getElementById('app-pw-current').focus(), 50);
+  };
+
+  window.saveAppPassword = async function(){
+    const cur = document.getElementById('app-pw-current').value;
+    const nw = document.getElementById('app-pw-new').value;
+    const cf = document.getElementById('app-pw-confirm').value;
+    const errEl = document.getElementById('app-pw-err');
+    const btn = document.getElementById('app-pw-save-btn');
+    errEl.style.display = 'none';
+    if(!cur||!nw||!cf){ errEl.textContent='모든 항목을 입력해주세요.'; errEl.style.display='block'; return; }
+    if(nw.length < 8){ errEl.textContent='새 비밀번호는 8자 이상이어야 합니다.'; errEl.style.display='block'; return; }
+    if(nw !== cf){ errEl.textContent='새 비밀번호가 일치하지 않습니다.'; errEl.style.display='block'; return; }
+    if(!currentUser){ errEl.textContent='인증 서비스를 사용할 수 없습니다.'; errEl.style.display='block'; return; }
+    btn.disabled = true; btn.textContent = '변경 중…';
+    const { error: authErr } = await sb.auth.signInWithPassword({ email: currentUser.email, password: cur });
+    if(authErr){
+      errEl.textContent = '현재 비밀번호가 올바르지 않습니다.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = '비밀번호 변경';
+      return;
+    }
+    const { error } = await sb.auth.updateUser({ password: nw });
+    btn.disabled = false; btn.textContent = '비밀번호 변경';
+    if(error){ errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+    ['app-pw-current','app-pw-new','app-pw-confirm'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('app-pw-form').classList.add('hidden');
+    document.getElementById('app-pw-toggle').textContent = '🔑 비밀번호 변경하기';
+    showHint('✅ 비밀번호가 변경되었습니다');
+  };
+
+  window.confirmAppDeleteAccount = async function(){
+    const ok = confirm('⚠️ 계정 탈퇴\n\n모든 로컬 데이터와 클라우드 여행이 영구 삭제됩니다.\n정말 탈퇴하시겠습니까?');
+    if(!ok) return;
+    const ok2 = confirm('마지막 확인입니다. 복구가 불가능합니다.\n계속하시겠습니까?');
+    if(!ok2) return;
+    if(currentUser){ await sb.from('mindmaps').delete().eq('user_id', currentUser.id).catch(()=>{}); }
+    Object.keys(localStorage).filter(k => k.startsWith('choible_')).forEach(k => localStorage.removeItem(k));
+    await sb.auth.signOut().catch(()=>{});
+    currentUser = null;
+    closeProfileModal();
+    updateAuthUI();
+    showHint('탈퇴가 완료되었습니다. 이용해주셔서 감사합니다.');
+  };
+
   // ── 현재 맵 데이터 가져오기 ──
   // let 변수는 window.*로 접근 불가 → 클로저로 직접 참조
   function getMapData(){
@@ -5008,5 +5166,130 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
 })();
 
 </script>
+
+<!-- Profile modal CSS -->
+<style>
+.app-profile-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);
+  z-index:9000;display:none;place-items:center;overflow-y:auto;padding:20px 0;
+}
+.app-profile-overlay.open{display:grid;}
+.app-profile-modal{
+  background:#fff;border-radius:20px;padding:28px 24px 24px;
+  width:min(400px,92vw);box-shadow:0 16px 48px rgba(0,0,0,.25);
+  animation:appProfUp .2s ease;position:relative;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+@keyframes appProfUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+[data-theme="dark"] .app-profile-modal{background:#1a1d2e;color:#e6e9f6;}
+.app-profile-close{
+  position:absolute;top:14px;right:14px;border:none;background:none;
+  cursor:pointer;color:#9098b3;font-size:16px;padding:5px 8px;border-radius:8px;transition:background .15s;line-height:1;
+}
+.app-profile-close:hover{background:#f0f2f8;color:#1b1e2e;}
+[data-theme="dark"] .app-profile-close:hover{background:#2a2e45;color:#e6e9f6;}
+.app-profile-avatar-wrap{position:relative;width:80px;margin:0 auto 14px;cursor:pointer;}
+.app-profile-avatar-lg{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,#5b8af5,#10b981);
+  display:grid;place-items:center;font-size:30px;font-weight:800;color:#fff;
+  box-shadow:0 4px 16px rgba(79,110,247,.35);overflow:hidden;
+}
+.app-profile-avatar-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.app-profile-avatar-edit{
+  position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;
+  background:#5b8af5;border:2px solid #fff;
+  display:grid;place-items:center;font-size:11px;color:#fff;pointer-events:none;
+}
+.app-profile-name-row{text-align:center;margin-bottom:3px;}
+.app-profile-name-row strong{font-size:14px;font-weight:700;word-break:break-all;color:#5a6280;}
+[data-theme="dark"] .app-profile-name-row strong{color:#8891b8;}
+.app-profile-since{text-align:center;font-size:12px;color:#9098b3;margin-bottom:18px;}
+.app-profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;}
+.app-profile-stat{background:#f0f2f8;border-radius:12px;padding:12px 8px;text-align:center;}
+[data-theme="dark"] .app-profile-stat{background:#212437;}
+.app-profile-stat-val{font-size:20px;font-weight:800;color:#5b8af5;line-height:1.1;}
+.app-profile-stat-label{font-size:11px;color:#9098b3;margin-top:3px;font-weight:500;}
+.app-profile-section{border-top:1px solid #e4e8f0;padding-top:14px;margin-top:2px;}
+[data-theme="dark"] .app-profile-section{border-color:#2a2e45;}
+.app-profile-section-title{font-size:11px;font-weight:700;color:#9098b3;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+.app-profile-field{display:flex;gap:8px;align-items:center;}
+.app-profile-field input{flex:1;padding:9px 12px;border:1.5px solid #e4e8f0;border-radius:10px;font-size:14px;background:#f0f2f8;color:#1b1e2e;outline:none;transition:border .15s,box-shadow .15s;}
+[data-theme="dark"] .app-profile-field input{background:#212437;border-color:#2a2e45;color:#e6e9f6;}
+.app-profile-field input:focus{border-color:#5b8af5;box-shadow:0 0 0 3px rgba(91,138,245,.12);}
+.app-profile-save-btn{padding:9px 16px;border:none;border-radius:10px;background:#5b8af5;color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+.app-profile-save-btn:hover{opacity:.85;}
+.app-profile-save-btn:disabled{opacity:.5;cursor:default;}
+.app-profile-pw-toggle{width:100%;text-align:left;background:none;border:none;font-size:13px;color:#5b8af5;cursor:pointer;padding:0;font-weight:600;}
+.app-profile-pw-form{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.app-profile-pw-form.hidden{display:none;}
+.app-profile-pw-form input{padding:9px 12px;border:1.5px solid #e4e8f0;border-radius:10px;font-size:14px;background:#f0f2f8;color:#1b1e2e;outline:none;transition:border .15s,box-shadow .15s;}
+[data-theme="dark"] .app-profile-pw-form input{background:#212437;border-color:#2a2e45;color:#e6e9f6;}
+.app-profile-pw-form input:focus{border-color:#5b8af5;box-shadow:0 0 0 3px rgba(91,138,245,.12);}
+.app-profile-pw-err{font-size:12px;color:#f43f5e;display:none;}
+.app-profile-danger-zone{border-top:1px solid #e4e8f0;padding-top:14px;margin-top:2px;}
+[data-theme="dark"] .app-profile-danger-zone{border-color:#2a2e45;}
+.app-profile-danger-title{font-size:11px;font-weight:700;color:#f43f5e;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+.app-profile-danger-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.app-profile-danger-desc{font-size:12px;color:#9098b3;line-height:1.5;}
+.app-profile-delete-btn{padding:8px 14px;border:1.5px solid #f43f5e;border-radius:10px;background:none;color:#f43f5e;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.app-profile-delete-btn:hover{background:rgba(244,63,94,.08);}
+.app-profile-actions{display:flex;gap:8px;margin-top:18px;}
+.app-profile-signout-btn{flex:1;padding:11px;border:none;border-radius:10px;background:rgba(244,63,94,.1);color:#f43f5e;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;}
+.app-profile-signout-btn:hover{background:rgba(244,63,94,.18);}
+</style>
+
+<!-- Profile modal HTML -->
+<div class="app-profile-overlay" id="app-profile-overlay" onclick="if(event.target===this)closeProfileModal()">
+  <div class="app-profile-modal">
+    <button class="app-profile-close" onclick="closeProfileModal()">✕</button>
+
+    <input type="file" id="app-avatar-file-input" accept="image/*" style="display:none" onchange="handleAppAvatarUpload(event)">
+    <div class="app-profile-avatar-wrap" onclick="document.getElementById('app-avatar-file-input').click()" title="사진 변경">
+      <div class="app-profile-avatar-lg" id="app-profile-avatar-lg">?</div>
+      <div class="app-profile-avatar-edit">✎</div>
+    </div>
+    <div class="app-profile-name-row"><strong id="app-profile-email-txt">—</strong></div>
+    <div class="app-profile-since" id="app-profile-since">가입일 —</div>
+
+    <div class="app-profile-stats">
+      <div class="app-profile-stat"><div class="app-profile-stat-val" id="app-stat-total">0</div><div class="app-profile-stat-label">총 여행</div></div>
+      <div class="app-profile-stat"><div class="app-profile-stat-val" id="app-stat-cloud">0</div><div class="app-profile-stat-label">클라우드</div></div>
+      <div class="app-profile-stat"><div class="app-profile-stat-val" id="app-stat-local">0</div><div class="app-profile-stat-label">로컬</div></div>
+    </div>
+
+    <div class="app-profile-section">
+      <div class="app-profile-section-title">닉네임</div>
+      <div class="app-profile-field">
+        <input type="text" id="app-profile-nick" placeholder="닉네임 입력" maxlength="20" autocomplete="off">
+        <button class="app-profile-save-btn" id="app-nick-save-btn" onclick="saveProfileNickname()">저장</button>
+      </div>
+    </div>
+
+    <div class="app-profile-section">
+      <div class="app-profile-section-title">비밀번호 변경</div>
+      <button class="app-profile-pw-toggle" id="app-pw-toggle" onclick="toggleAppPwForm()">🔑 비밀번호 변경하기</button>
+      <div class="app-profile-pw-form hidden" id="app-pw-form">
+        <input type="password" id="app-pw-current" placeholder="현재 비밀번호" autocomplete="current-password">
+        <input type="password" id="app-pw-new" placeholder="새 비밀번호 (8자 이상)" autocomplete="new-password">
+        <input type="password" id="app-pw-confirm" placeholder="새 비밀번호 확인" autocomplete="new-password">
+        <div class="app-profile-pw-err" id="app-pw-err"></div>
+        <button class="app-profile-save-btn" id="app-pw-save-btn" onclick="saveAppPassword()">비밀번호 변경</button>
+      </div>
+    </div>
+
+    <div class="app-profile-danger-zone">
+      <div class="app-profile-danger-title">위험 구역</div>
+      <div class="app-profile-danger-row">
+        <div class="app-profile-danger-desc">모든 로컬 데이터와 클라우드 여행이<br>영구적으로 삭제됩니다.</div>
+        <button class="app-profile-delete-btn" onclick="confirmAppDeleteAccount()">계정 탈퇴</button>
+      </div>
+    </div>
+
+    <div class="app-profile-actions">
+      <button class="app-profile-signout-btn" onclick="doLogout();closeProfileModal()">🔓 로그아웃</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

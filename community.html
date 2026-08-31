@@ -130,20 +130,41 @@ header{
 }
 
 /* Action bar */
-.post-actions{display:flex;align-items:center;gap:4px;padding-top:4px;}
+.post-actions{display:flex;align-items:center;gap:2px;padding-top:4px;}
 .act-btn{
   display:flex;align-items:center;gap:5px;
   background:none;border:none;cursor:pointer;
-  padding:7px 10px;border-radius:20px;
+  padding:7px 11px;border-radius:20px;
   font-size:13px;font-weight:600;color:var(--text2);
   transition:all .15s;
 }
 .act-btn:hover{background:var(--surface2);}
-.act-btn .icon{font-size:17px;line-height:1;transition:transform .15s;}
+.act-btn svg{width:18px;height:18px;flex-shrink:0;transition:transform .15s;}
 .act-btn.liked{color:#f43f5e;}
-.act-btn.liked .icon{animation:heartpop .25s ease;}
+.act-btn.liked svg{animation:heartpop .25s ease;}
 @keyframes heartpop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
 .act-btn .cnt{font-variant-numeric:tabular-nums;}
+.post-menu-btn{
+  margin-left:auto;background:none;border:none;cursor:pointer;
+  padding:7px 8px;border-radius:20px;color:var(--text3);
+  font-size:18px;line-height:1;transition:all .15s;display:flex;align-items:center;
+}
+.post-menu-btn:hover{background:var(--surface2);color:var(--text);}
+.post-ctx-menu{
+  position:absolute;right:0;top:100%;margin-top:4px;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:6px;min-width:140px;
+  box-shadow:var(--shadow-md);z-index:50;display:none;
+}
+.post-ctx-menu.open{display:block;}
+.post-ctx-menu button{
+  display:block;width:100%;text-align:left;background:none;border:none;
+  padding:8px 12px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;color:var(--text2);transition:background .12s;
+}
+.post-ctx-menu button:hover{background:var(--surface2);}
+.post-ctx-menu button.danger{color:var(--danger);}
+.post-menu-wrap{position:relative;}
 
 /* Comment section */
 .comments-section{
@@ -294,6 +315,68 @@ header{
   .hd-nav a{padding:5px 8px;font-size:12px;}
   .main{padding:16px 12px 100px;}
 }
+
+/* ── Profile modal ── */
+.profile-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+  z-index:700;display:none;place-items:center;overflow-y:auto;padding:20px 0;
+}
+.profile-overlay.open{display:grid;}
+.profile-modal{
+  background:var(--surface);border-radius:20px;padding:28px 24px 24px;
+  width:min(400px,92vw);box-shadow:0 16px 48px rgba(0,0,0,.22);
+  animation:fadeUpProf .2s ease;position:relative;
+}
+@keyframes fadeUpProf{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.profile-modal-close{
+  position:absolute;top:14px;right:14px;border:none;background:none;
+  cursor:pointer;color:var(--text3);font-size:16px;padding:5px 8px;
+  border-radius:8px;transition:background .15s;line-height:1;
+}
+.profile-modal-close:hover{background:var(--surface2);color:var(--text);}
+.profile-avatar-wrap{position:relative;width:80px;margin:0 auto 14px;cursor:pointer;}
+.profile-avatar-lg{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:30px;font-weight:800;color:#fff;
+  box-shadow:0 4px 16px rgba(79,110,247,.35);overflow:hidden;
+}
+.profile-avatar-lg img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.profile-avatar-edit{
+  position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;
+  background:var(--accent);border:2px solid var(--surface);
+  display:grid;place-items:center;font-size:11px;color:#fff;pointer-events:none;
+}
+.profile-name-row{text-align:center;margin-bottom:3px;}
+.profile-name-row strong{font-size:14px;font-weight:700;word-break:break-all;color:var(--text2);}
+.profile-since-row{text-align:center;font-size:12px;color:var(--text3);margin-bottom:18px;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:18px;}
+.profile-stat{background:var(--surface2);border-radius:12px;padding:12px 8px;text-align:center;}
+.profile-stat-val{font-size:20px;font-weight:800;color:var(--accent);line-height:1.1;}
+.profile-stat-label{font-size:11px;color:var(--text3);margin-top:3px;font-weight:500;}
+.profile-section{border-top:1px solid var(--border);padding-top:14px;margin-top:2px;}
+.profile-section-title{font-size:11px;font-weight:700;color:var(--text3);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+.profile-field{display:flex;gap:8px;align-items:center;}
+.profile-field input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:var(--font);background:var(--surface2);color:var(--text);outline:none;transition:border .15s,box-shadow .15s;}
+.profile-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12);}
+.profile-save-btn{padding:9px 16px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;}
+.profile-save-btn:hover{opacity:.85;}
+.profile-save-btn:disabled{opacity:.5;cursor:default;}
+.profile-pw-toggle{width:100%;text-align:left;background:none;border:none;font-family:var(--font);font-size:13px;color:var(--accent);cursor:pointer;padding:0;font-weight:600;}
+.profile-pw-form{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+.profile-pw-form.hidden{display:none;}
+.profile-pw-form input{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:var(--font);background:var(--surface2);color:var(--text);outline:none;transition:border .15s,box-shadow .15s;}
+.profile-pw-form input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(79,110,247,.12);}
+.profile-pw-err{font-size:12px;color:var(--danger);display:none;}
+.profile-danger-zone{border-top:1px solid var(--border);padding-top:14px;margin-top:2px;}
+.profile-danger-title{font-size:11px;font-weight:700;color:var(--danger);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+.profile-danger-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.profile-danger-desc{font-size:12px;color:var(--text3);line-height:1.5;}
+.profile-delete-btn{padding:8px 14px;border:1.5px solid var(--danger);border-radius:10px;background:none;color:var(--danger);font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.profile-delete-btn:hover{background:rgba(244,63,94,.08);}
+.profile-actions{display:flex;gap:8px;margin-top:18px;}
+.profile-signout-btn{flex:1;padding:11px;border:none;border-radius:10px;background:rgba(244,63,94,.1);color:var(--danger);font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;transition:background .15s;}
+.profile-signout-btn:hover{background:rgba(244,63,94,.18);}
 </style>
 </head>
 <body>
@@ -301,8 +384,7 @@ header{
 <header>
   <a class="hd-logo" href="/">choible</a>
   <nav class="hd-nav">
-    <a href="/app.html">✈️ 플래너</a>
-    <a href="/projects.html">📁 프로젝트</a>
+    <a href="/projects.html" onclick="goToPlanner(event)">✈️ 플래너</a>
     <a href="/community.html" class="active">🌐 커뮤니티</a>
   </nav>
   <div class="hd-right" id="hd-right">
@@ -359,6 +441,9 @@ header{
     <div class="modal-label">제목</div>
     <input class="modal-input" id="share-title" type="text" placeholder="예: 3박 4일 오사카 완전정복" maxlength="60">
 
+    <div class="modal-label">방문 장소 <span style="font-weight:400;font-size:11px;color:var(--text3)">쉼표로 구분 (선택)</span></div>
+    <input class="modal-input" id="share-places" type="text" placeholder="예: 도톤보리, 오사카성, 난바" maxlength="200">
+
     <div class="modal-label">이모지 선택</div>
     <div class="modal-emoji-row" id="emoji-row">
       <span class="emoji-opt sel" data-e="✈️">✈️</span>
@@ -392,6 +477,59 @@ header{
     <div class="login-modal-btns">
       <button class="login-modal-close" onclick="closeLoginModal()">닫기</button>
       <a href="/projects.html">로그인하기</a>
+    </div>
+  </div>
+</div>
+
+<!-- Profile modal -->
+<div class="profile-overlay" id="profile-overlay" onclick="if(event.target===this)closeProfileModal()">
+  <div class="profile-modal">
+    <button class="profile-modal-close" onclick="closeProfileModal()">✕</button>
+
+    <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+    <div class="profile-avatar-wrap" onclick="document.getElementById('avatar-file-input').click()" title="사진 변경">
+      <div class="profile-avatar-lg" id="profile-avatar-lg">?</div>
+      <div class="profile-avatar-edit">✎</div>
+    </div>
+    <div class="profile-name-row"><strong id="profile-email-txt">—</strong></div>
+    <div class="profile-since-row" id="profile-since-row">가입일 —</div>
+
+    <div class="profile-stats">
+      <div class="profile-stat"><div class="profile-stat-val" id="stat-total">0</div><div class="profile-stat-label">총 여행</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="stat-cloud">0</div><div class="profile-stat-label">클라우드</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="stat-local">0</div><div class="profile-stat-label">로컬</div></div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">닉네임</div>
+      <div class="profile-field">
+        <input type="text" id="profile-nickname" placeholder="닉네임 입력" maxlength="20" autocomplete="off">
+        <button class="profile-save-btn" id="nickname-save-btn" onclick="saveNickname()">저장</button>
+      </div>
+    </div>
+
+    <div class="profile-section">
+      <div class="profile-section-title">비밀번호 변경</div>
+      <button class="profile-pw-toggle" id="pw-toggle-btn" onclick="togglePwForm()">🔑 비밀번호 변경하기</button>
+      <div class="profile-pw-form hidden" id="pw-form">
+        <input type="password" id="pw-current" placeholder="현재 비밀번호" autocomplete="current-password">
+        <input type="password" id="pw-new" placeholder="새 비밀번호 (8자 이상)" autocomplete="new-password">
+        <input type="password" id="pw-confirm" placeholder="새 비밀번호 확인" autocomplete="new-password">
+        <div class="profile-pw-err" id="pw-err"></div>
+        <button class="profile-save-btn" id="pw-save-btn" onclick="savePassword()">비밀번호 변경</button>
+      </div>
+    </div>
+
+    <div class="profile-danger-zone">
+      <div class="profile-danger-title">위험 구역</div>
+      <div class="profile-danger-row">
+        <div class="profile-danger-desc">모든 로컬 데이터와 클라우드 여행이<br>영구적으로 삭제됩니다.</div>
+        <button class="profile-delete-btn" onclick="confirmDeleteAccount()">계정 탈퇴</button>
+      </div>
+    </div>
+
+    <div class="profile-actions">
+      <button class="profile-signout-btn" onclick="doSignOut();closeProfileModal()">🔓 로그아웃</button>
     </div>
   </div>
 </div>
@@ -476,7 +614,184 @@ function renderFAB(){
   document.getElementById('share-fab-guest').style.display=currentUser?'none':'flex';
 }
 
-function handleAvatarClick(){window.location.href='/projects.html?openProfile=1';}
+function handleAvatarClick(){ if(currentUser) openProfileModal(); else openLoginModal(); }
+
+// ── Profile modal ──
+function _avatarKey(){ return currentUser ? 'choible_avatar_' + currentUser.id : null; }
+function _nicknameKey(){ return currentUser ? 'choible_nick_' + currentUser.id : null; }
+
+function renderProfileAvatar(){
+  const el = document.getElementById('profile-avatar-lg');
+  if(!el || !currentUser) return;
+  const saved = localStorage.getItem(_avatarKey());
+  if(saved){
+    el.innerHTML = '<img src="' + saved + '" alt="프로필">';
+  } else {
+    const nick = localStorage.getItem(_nicknameKey()) || '';
+    const initial = (nick ? nick[0] : (currentUser.email||'?')[0]).toUpperCase();
+    el.textContent = initial;
+  }
+  // Also update header avatar
+  const hdrAv = document.getElementById('hd-avatar');
+  if(hdrAv){
+    const nick = localStorage.getItem(_nicknameKey()) || '';
+    if(saved){ hdrAv.innerHTML = '<img src="' + saved + '">'; }
+    else { hdrAv.textContent = (nick ? nick[0] : (currentUser.email||'?')[0]).toUpperCase(); }
+  }
+}
+
+function openProfileModal(){
+  if(!currentUser) return;
+  document.getElementById('profile-email-txt').textContent = currentUser.email || '—';
+  const joined = currentUser.created_at
+    ? new Date(currentUser.created_at).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})
+    : '—';
+  document.getElementById('profile-since-row').textContent = '가입일 ' + joined;
+  // Stats from localStorage
+  let localProjs = [];
+  try { localProjs = JSON.parse(localStorage.getItem('choible_projects') || '[]'); } catch {}
+  const total = localProjs.length;
+  const cloud = localProjs.filter(p => p.cloud).length;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-cloud').textContent = cloud;
+  document.getElementById('stat-local').textContent = total - cloud;
+  // Nickname
+  document.getElementById('profile-nickname').value = localStorage.getItem(_nicknameKey()) || '';
+  // Reset pw form
+  document.getElementById('pw-form').classList.add('hidden');
+  document.getElementById('pw-toggle-btn').textContent = '🔑 비밀번호 변경하기';
+  ['pw-current','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('pw-err').style.display = 'none';
+  renderProfileAvatar();
+  document.getElementById('profile-overlay').classList.add('open');
+}
+function closeProfileModal(){
+  document.getElementById('profile-overlay').classList.remove('open');
+}
+
+function handleAvatarUpload(e){
+  const file = e.target.files[0];
+  if(!file || !currentUser) return;
+  if(file.size > 2*1024*1024){ showToast('이미지는 2MB 이하만 가능해요'); return; }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256; canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      const s = Math.min(img.width, img.height);
+      const ox = (img.width-s)/2, oy = (img.height-s)/2;
+      ctx.drawImage(img, ox, oy, s, s, 0, 0, 256, 256);
+      const compressed = canvas.toDataURL('image/jpeg', .85);
+      localStorage.setItem(_avatarKey(), compressed);
+      renderProfileAvatar();
+      showToast('✅ 프로필 사진이 변경되었습니다');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+async function saveNickname(){
+  const val = document.getElementById('profile-nickname').value.trim();
+  const btn = document.getElementById('nickname-save-btn');
+  if(!currentUser) return;
+  if(val){ localStorage.setItem(_nicknameKey(), val); }
+  else { localStorage.removeItem(_nicknameKey()); }
+  // Sync nickname to community_posts in Supabase
+  if(currentToken){
+    try{
+      await sbAuthFetch('/rest/v1/community_posts?user_id=eq.' + currentUser.id, currentToken, {
+        method: 'PATCH',
+        headers: { 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ user_nickname: val || currentUser.email?.split('@')[0] || '여행자' })
+      });
+    }catch(e){ console.warn('nickname sync failed', e); }
+  }
+  renderProfileAvatar();
+  btn.textContent = '✓'; btn.disabled = true;
+  setTimeout(() => { btn.textContent = '저장'; btn.disabled = false; }, 1500);
+  showToast('✅ 닉네임이 저장되었습니다');
+}
+
+function togglePwForm(){
+  const form = document.getElementById('pw-form');
+  const btn = document.getElementById('pw-toggle-btn');
+  const hidden = form.classList.toggle('hidden');
+  btn.textContent = hidden ? '🔑 비밀번호 변경하기' : '🔒 닫기';
+  if(!hidden) setTimeout(() => document.getElementById('pw-current').focus(), 50);
+}
+
+async function savePassword(){
+  const cur = document.getElementById('pw-current').value;
+  const nw = document.getElementById('pw-new').value;
+  const cf = document.getElementById('pw-confirm').value;
+  const errEl = document.getElementById('pw-err');
+  const btn = document.getElementById('pw-save-btn');
+  errEl.style.display = 'none';
+  if(!cur||!nw||!cf){ errEl.textContent='모든 항목을 입력해주세요.'; errEl.style.display='block'; return; }
+  if(nw.length < 8){ errEl.textContent='새 비밀번호는 8자 이상이어야 합니다.'; errEl.style.display='block'; return; }
+  if(nw !== cf){ errEl.textContent='새 비밀번호가 일치하지 않습니다.'; errEl.style.display='block'; return; }
+  if(!currentUser || !currentToken){ errEl.textContent='인증 서비스를 사용할 수 없습니다.'; errEl.style.display='block'; return; }
+  btn.disabled = true; btn.textContent = '변경 중…';
+  try{
+    // Re-auth with current password
+    const authRes = await fetch(SB_URL + '/auth/v1/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: currentUser.email, password: cur })
+    });
+    if(!authRes.ok){
+      errEl.textContent = '현재 비밀번호가 올바르지 않습니다.';
+      errEl.style.display = 'block';
+      btn.disabled = false; btn.textContent = '비밀번호 변경';
+      return;
+    }
+    // Update password
+    const updRes = await fetch(SB_URL + '/auth/v1/user', {
+      method: 'PUT',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + currentToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: nw })
+    });
+    btn.disabled = false; btn.textContent = '비밀번호 변경';
+    if(!updRes.ok){ const err = await updRes.json(); errEl.textContent = err.message || '변경에 실패했습니다.'; errEl.style.display = 'block'; return; }
+    ['pw-current','pw-new','pw-confirm'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pw-form').classList.add('hidden');
+    document.getElementById('pw-toggle-btn').textContent = '🔑 비밀번호 변경하기';
+    showToast('✅ 비밀번호가 변경되었습니다');
+  }catch(e){
+    btn.disabled = false; btn.textContent = '비밀번호 변경';
+    errEl.textContent = '오류가 발생했습니다.'; errEl.style.display = 'block';
+  }
+}
+
+async function confirmDeleteAccount(){
+  const ok = confirm('⚠️ 계정 탈퇴\n\n모든 로컬 데이터와 클라우드 여행이 영구 삭제됩니다.\n정말 탈퇴하시겠습니까?');
+  if(!ok) return;
+  const ok2 = confirm('마지막 확인입니다. 복구가 불가능합니다.\n계속하시겠습니까?');
+  if(!ok2) return;
+  if(currentUser && currentToken){
+    await sbAuthFetch('/rest/v1/community_posts?user_id=eq.' + currentUser.id, currentToken, { method:'DELETE' }).catch(()=>{});
+  }
+  Object.keys(localStorage).filter(k => k.startsWith('choible_') || k === SB_SESSION_KEY).forEach(k => localStorage.removeItem(k));
+  if(currentToken){
+    await fetch(SB_URL + '/auth/v1/logout', {
+      method: 'POST',
+      headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + currentToken }
+    }).catch(()=>{});
+  }
+  showToast('탈퇴가 완료됐어요. 이용해주셔서 감사합니다.');
+  setTimeout(() => window.location.href = '/', 1500);
+}
+
+function doSignOut(){
+  localStorage.removeItem(SB_SESSION_KEY);
+  currentUser = null; currentToken = null;
+  renderHeader(); renderFAB();
+  showToast('로그아웃되었습니다');
+}
 
 // ── Feed ──
 async function loadFeed(){
@@ -549,13 +864,20 @@ function buildPostEl(p){
       ${p.description?`<div class="post-desc">${escHtml(p.description)}</div>`:''}
       <div class="post-actions">
         <button class="act-btn ${liked?'liked':''}" id="like-btn-${p.id}" onclick="toggleLike('${p.id}')">
-          <span class="icon">${liked?'❤️':'🤍'}</span>
+          <svg viewBox="0 0 24 24" fill="${liked?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
           <span class="cnt" id="like-cnt-${p.id}">${p.likes_count||0}</span>
         </button>
         <button class="act-btn" onclick="toggleComments('${p.id}')">
-          <span class="icon">💬</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           <span class="cnt" id="cmt-cnt-${p.id}">${p.comments_count||0}</span>
         </button>
+        ${currentUser&&currentUser.id===p.user_id?`
+        <div class="post-menu-wrap">
+          <button class="post-menu-btn" onclick="togglePostMenu(event,'${p.id}')">···</button>
+          <div class="post-ctx-menu" id="pmenu-${p.id}">
+            <button class="danger" onclick="deletePost('${p.id}')">🗑 게시물 삭제</button>
+          </div>
+        </div>`:''}
       </div>
       <div class="comments-section" id="comments-${p.id}">
         <div class="comments-list" id="clist-${p.id}">
@@ -593,13 +915,16 @@ async function toggleLike(postId){
   const cnt=document.getElementById('like-cnt-'+postId);
   const cur=parseInt(cnt.textContent)||0;
   // Optimistic update
+  const svg=btn.querySelector('svg');
   if(liked){
     likedPosts.delete(postId);
-    btn.classList.remove('liked');btn.querySelector('.icon').textContent='🤍';
+    btn.classList.remove('liked');
+    if(svg)svg.setAttribute('fill','none');
     cnt.textContent=Math.max(0,cur-1);
   }else{
     likedPosts.add(postId);
-    btn.classList.add('liked');btn.querySelector('.icon').textContent='❤️';
+    btn.classList.add('liked');
+    if(svg)svg.setAttribute('fill','currentColor');
     cnt.textContent=cur+1;
   }
   try{
@@ -743,13 +1068,20 @@ function renderTripSelect(){
     list.appendChild(row);
   });
   selectedTripId=localTrips[0]?.id||null;
-  // Pre-fill title
-  if(localTrips[0])document.getElementById('share-title').value=localTrips[0].title||'';
+  if(localTrips[0]){
+    document.getElementById('share-title').value=localTrips[0].title||'';
+    document.getElementById('share-places').value=localTrips[0].preview||'';
+  }
 }
 
 function onTripSelect(id,title){
   selectedTripId=id;
   document.getElementById('share-title').value=title;
+  // 장소 필드 채우기
+  const trip=localTrips.find(t=>t.id===id);
+  if(trip&&trip.preview){
+    document.getElementById('share-places').value=trip.preview;
+  }
   document.querySelectorAll('.trip-option').forEach(el=>{
     el.classList.toggle('selected',el.querySelector('input').value===id);
   });
@@ -773,12 +1105,9 @@ async function submitShare(){
   if(!title){errEl.textContent='제목을 입력해주세요.';errEl.style.display='block';return;}
   if(!currentUser){openLoginModal();return;}
 
-  // Get places from selected trip
-  let places=[];
-  if(selectedTripId){
-    const trip=localTrips.find(t=>t.id===selectedTripId);
-    if(trip&&trip.preview){places=trip.preview.split(',').map(s=>s.trim()).filter(Boolean);}
-  }
+  // 장소 입력 필드에서 가져오기
+  const placesRaw=document.getElementById('share-places').value.trim();
+  const places=placesRaw?placesRaw.split(',').map(s=>s.trim()).filter(Boolean):[];
   const nick=localStorage.getItem('choible_nick_'+currentUser.id)||currentUser.email?.split('@')[0]||'여행자';
 
   submitBtn.disabled=true;
@@ -799,6 +1128,39 @@ async function submitShare(){
     errEl.style.display='block';
   }
   submitBtn.disabled=false;
+}
+
+// ── Planner nav (최근 로컬 프로젝트 있으면 바로 이동) ──
+function goToPlanner(e){
+  e.preventDefault();
+  let ps=[];
+  try{ps=JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{}
+  window.location.href=ps.length>0?'/app.html?project='+encodeURIComponent(ps[0].id):'/projects.html';
+}
+
+// ── Post context menu ──
+function togglePostMenu(e,postId){
+  e.stopPropagation();
+  const menu=document.getElementById('pmenu-'+postId);
+  const isOpen=menu.classList.contains('open');
+  document.querySelectorAll('.post-ctx-menu').forEach(m=>m.classList.remove('open'));
+  if(!isOpen)menu.classList.add('open');
+  if(!isOpen)setTimeout(()=>document.addEventListener('click',()=>document.querySelectorAll('.post-ctx-menu').forEach(m=>m.classList.remove('open')),{once:true}),10);
+}
+
+async function deletePost(postId){
+  if(!confirm('이 게시물을 삭제할까요? 되돌릴 수 없어요.'))return;
+  document.querySelectorAll('.post-ctx-menu').forEach(m=>m.classList.remove('open'));
+  try{
+    const r=await sbAuthFetch('/rest/v1/community_posts?id=eq.'+postId,currentToken,{method:'DELETE'});
+    if(!r.ok)throw new Error();
+    // Remove from cache and DOM
+    postsCache=postsCache.filter(p=>p.id!==postId);
+    const el=document.getElementById('post-'+postId);
+    if(el)el.remove();
+    if(!postsCache.length)renderFeed();
+    showToast('게시물이 삭제됐어요.');
+  }catch{showToast('삭제에 실패했어요.');}
 }
 
 // ── Login modal ──

@@ -58,6 +58,7 @@ ALTER TABLE community_comments ENABLE ROW LEVEL SECURITY;
 -- 기존 정책 삭제 후 재생성 (중복 오류 방지)
 DROP POLICY IF EXISTS "posts_read_all" ON community_posts;
 DROP POLICY IF EXISTS "posts_insert_auth" ON community_posts;
+DROP POLICY IF EXISTS "posts_update_own" ON community_posts;
 DROP POLICY IF EXISTS "posts_delete_own" ON community_posts;
 DROP POLICY IF EXISTS "likes_read_all" ON community_likes;
 DROP POLICY IF EXISTS "likes_insert_auth" ON community_likes;
@@ -69,6 +70,7 @@ DROP POLICY IF EXISTS "comments_delete_own" ON community_comments;
 -- community_posts 정책
 CREATE POLICY "posts_read_all"    ON community_posts FOR SELECT USING (true);
 CREATE POLICY "posts_insert_auth" ON community_posts FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "posts_update_own"  ON community_posts FOR UPDATE USING (auth.uid() = user_id);
 CREATE POLICY "posts_delete_own"  ON community_posts FOR DELETE USING (auth.uid() = user_id);
 
 -- community_likes 정책
