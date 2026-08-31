@@ -467,7 +467,7 @@ footer{
       <h2>저장된 여행</h2>
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" placeholder="여행 검색..." oninput="renderGrid()" aria-label="여행 검색" autocomplete="off">
+        <input type="search" id="search-input" placeholder="여행 검색..." oninput="renderGrid()" aria-label="여행 검색" autocomplete="off" name="trip-search-q">
       </div>
     </div>
 
@@ -921,6 +921,8 @@ async function offerMigration(user){
 /* ── Bootstrap ── */
 // 1) 항상 즉시 렌더 (스피너 없음, 스켈레톤 즉시 교체)
 updateHeader(null);
+// 브라우저 자동완성 방지: 로드 직후 강제로 비움
+setTimeout(()=>{const si=document.getElementById('search-input');if(si)si.value='';},100);
 loadProjects();  // 로컬 프로젝트 즉시 표시
 
 // 2) SDK 없으면 여기서 종료 (로컬 전용 모드)

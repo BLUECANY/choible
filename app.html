@@ -1075,7 +1075,7 @@
   <span class="t-logo">✈️ 여행 마인드맵</span>
   <div class="t-div"></div>
   <div class="search-wrap">
-    <input id="search-input" type="text" placeholder="🔍  장소 검색…" autocomplete="off">
+    <input id="search-input" type="search" placeholder="🔍  장소 검색…" autocomplete="off" name="place-search-q">
     <div class="sp" id="spinner"></div>
     <div id="ac"></div>
   </div>
@@ -1686,6 +1686,8 @@ function detectOverseas(q){
 const inp=document.getElementById('search-input');
 const acEl=document.getElementById('ac');
 const spinner=document.getElementById('spinner');
+// 브라우저 자동완성 방지: 로드 직후 강제로 비움
+setTimeout(()=>{inp.value='';},100);
 
 inp.addEventListener('input',()=>{
   clearTimeout(acTimer);
