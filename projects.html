@@ -676,7 +676,7 @@ footer{
     <div id="auth-form">
       <div class="form-group">
         <label>이메일</label>
-        <input type="email" id="f-email" placeholder="you@example.com" autocomplete="email" onkeydown="onFormKey(event)">
+        <input type="text" inputmode="email" id="f-email" placeholder="you@example.com" autocomplete="email" onkeydown="onFormKey(event)">
       </div>
       <div class="form-group">
         <label>비밀번호</label>
@@ -1262,6 +1262,11 @@ if(sb){
       currentUser=user;
       updateHeader(user);
       loadProjects(); // 클라우드 프로젝트 로드
+      // URL 파라미터로 프로필 자동 오픈 (다른 페이지에서 링크로 진입 시)
+      if(new URLSearchParams(location.search).get('openProfile')==='1'){
+        history.replaceState(null,'',location.pathname);
+        setTimeout(()=>openProfileModal(),300);
+      }
     }
   }).catch(()=>{/* 세션 조회 실패 시 비로그인 상태 유지 */});
 
