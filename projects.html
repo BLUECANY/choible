@@ -309,6 +309,54 @@ main{flex:1;padding:28px 24px 48px;max-width:1200px;margin:0 auto;width:100%;}
 .acct-popover button:hover{background:var(--surface2);}
 .acct-popover .danger{color:var(--danger);}
 
+/* ── Search clear button ── */
+.search-clear{
+  border:none;background:none;cursor:pointer;color:var(--text3);
+  padding:0;width:18px;height:18px;flex-shrink:0;
+  display:none;align-items:center;justify-content:center;
+  font-size:11px;border-radius:50%;transition:color .15s,background .15s;
+}
+.search-clear.visible{display:flex;}
+.search-clear:hover{color:var(--text);background:var(--surface2);}
+
+/* ── Profile modal ── */
+.profile-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(8px);
+  z-index:600;display:none;place-items:center;
+}
+.profile-overlay.open{display:grid;}
+.profile-modal{
+  background:var(--surface);border-radius:20px;padding:32px 28px 28px;
+  width:min(380px,92vw);box-shadow:0 16px 48px rgba(0,0,0,.22);
+  animation:fadeUp .2s ease;position:relative;
+}
+.profile-modal-close{
+  position:absolute;top:14px;right:14px;border:none;background:none;
+  cursor:pointer;color:var(--text3);font-size:16px;padding:5px 8px;
+  border-radius:8px;transition:background .15s;line-height:1;
+}
+.profile-modal-close:hover{background:var(--surface2);color:var(--text);}
+.profile-avatar-lg{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-size:28px;font-weight:800;color:#fff;
+  margin:0 auto 14px;box-shadow:0 4px 16px rgba(79,110,247,.35);
+}
+.profile-name-row{text-align:center;margin-bottom:4px;}
+.profile-name-row strong{font-size:15px;font-weight:700;word-break:break-all;}
+.profile-since-row{text-align:center;font-size:12px;color:var(--text3);margin-bottom:22px;}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;}
+.profile-stat{background:var(--surface2);border-radius:12px;padding:14px 8px;text-align:center;}
+.profile-stat-val{font-size:22px;font-weight:800;color:var(--accent);line-height:1.1;}
+.profile-stat-label{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500;}
+.profile-signout-btn{
+  width:100%;padding:11px;border:none;border-radius:10px;
+  background:rgba(244,63,94,.1);color:var(--danger);
+  font-family:var(--font);font-size:14px;font-weight:700;
+  cursor:pointer;transition:background .15s;
+}
+.profile-signout-btn:hover{background:rgba(244,63,94,.18);}
+
 /* ── Auth modal ── */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,.42);backdrop-filter:blur(8px);
@@ -433,6 +481,7 @@ footer{
             <div class="acct-info-email">로그인된 계정</div>
             <div class="acct-info-name" id="acct-email">—</div>
           </div>
+          <button onclick="openProfileModal();toggleAcctMenu()">👤 내 프로필</button>
           <button onclick="doSignOut()">🔓 로그아웃</button>
         </div>
       </div>
@@ -468,6 +517,7 @@ footer{
       <div class="search-box">
         <span class="search-icon">🔍</span>
         <input type="search" id="search-input" placeholder="여행 검색..." oninput="renderGrid()" aria-label="여행 검색" autocomplete="off" name="trip-search-q">
+        <button class="search-clear" id="search-clear" onclick="clearSearch()" title="검색 지우기">✕</button>
       </div>
     </div>
 
@@ -494,6 +544,22 @@ footer{
   </footer>
 
 </div><!-- /.page -->
+
+<!-- Profile modal -->
+<div class="profile-overlay" id="profile-overlay" onclick="if(event.target===this)closeProfileModal()">
+  <div class="profile-modal">
+    <button class="profile-modal-close" onclick="closeProfileModal()">✕</button>
+    <div class="profile-avatar-lg" id="profile-avatar-lg">?</div>
+    <div class="profile-name-row"><strong id="profile-email-txt">—</strong></div>
+    <div class="profile-since-row" id="profile-since-row">가입일 —</div>
+    <div class="profile-stats">
+      <div class="profile-stat"><div class="profile-stat-val" id="stat-total">0</div><div class="profile-stat-label">총 여행</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="stat-cloud">0</div><div class="profile-stat-label">클라우드</div></div>
+      <div class="profile-stat"><div class="profile-stat-val" id="stat-local">0</div><div class="profile-stat-label">로컬</div></div>
+    </div>
+    <button class="profile-signout-btn" onclick="doSignOut();closeProfileModal()">🔓 로그아웃</button>
+  </div>
+</div>
 
 <!-- Card dropdown -->
 <div class="dropdown" id="dropdown"></div>
@@ -670,6 +736,8 @@ async function loadProjects(){
 function renderGrid(){
   const grid=document.getElementById('grid');
   const q=(document.getElementById('search-input').value||'').toLowerCase().trim();
+  const clearBtn=document.getElementById('search-clear');
+  if(clearBtn)clearBtn.classList.toggle('visible',q.length>0);
   const list=allProjects.filter(p=>!q||p.title.toLowerCase().includes(q));
 
   grid.innerHTML='';
@@ -822,6 +890,34 @@ async function shareP(id){
 }
 
 /* ── Account menu ── */
+/* ── Search clear ── */
+function clearSearch(){
+  const inp=document.getElementById('search-input');
+  if(inp)inp.value='';
+  renderGrid();
+}
+
+/* ── Profile modal ── */
+function openProfileModal(){
+  if(!currentUser)return;
+  const email=currentUser.email||'—';
+  const initial=(email[0]||'?').toUpperCase();
+  document.getElementById('profile-avatar-lg').textContent=initial;
+  document.getElementById('profile-email-txt').textContent=email;
+  const joined=currentUser.created_at?new Date(currentUser.created_at).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'}):'—';
+  document.getElementById('profile-since-row').textContent='가입일 '+joined;
+  const total=allProjects.length;
+  const cloud=allProjects.filter(p=>p.cloud).length;
+  const local=total-cloud;
+  document.getElementById('stat-total').textContent=total;
+  document.getElementById('stat-cloud').textContent=cloud;
+  document.getElementById('stat-local').textContent=local;
+  document.getElementById('profile-overlay').classList.add('open');
+}
+function closeProfileModal(){
+  document.getElementById('profile-overlay').classList.remove('open');
+}
+
 function toggleAcctMenu(){
   const p=document.getElementById('acct-popover');
   p.classList.toggle('open');

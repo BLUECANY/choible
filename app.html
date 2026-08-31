@@ -91,16 +91,25 @@
     [data-theme="dark"] #overflow-dropdown button{color:#c9d1f5}
     [data-theme="dark"] #overflow-dropdown button:hover{background:#2e2e58}
     [data-theme="dark"] #overflow-dropdown hr{border-color:#383860}
-    .search-wrap{position:relative}
+    .search-wrap{position:relative;display:flex;align-items:center;}
     #search-input{
-      border:2px solid #eee;border-radius:12px;padding:8px 40px 8px 14px;
+      border:2px solid #eee;border-radius:12px;padding:8px 36px 8px 14px;
       font-size:14px;width:200px;outline:none;transition:all .2s;
       color:#1a1a2e;background:#fafafa;
     }
+    .app-search-clear{
+      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      border:none;background:none;cursor:pointer;color:#aaa;
+      font-size:11px;width:18px;height:18px;display:none;
+      align-items:center;justify-content:center;border-radius:50%;
+      transition:color .15s,background .15s;padding:0;line-height:1;
+    }
+    .app-search-clear.visible{display:flex;}
+    .app-search-clear:hover{color:#555;background:#eee;}
     #search-input:focus{border-color:#5b8af5;background:#fff;box-shadow:0 0 0 3px rgba(91,138,245,.1)}
     #search-input::placeholder{color:#ccc}
     .sp{
-      position:absolute;right:12px;top:50%;transform:translateY(-50%);
+      position:absolute;right:34px;top:50%;transform:translateY(-50%);
       width:14px;height:14px;border:2px solid #eee;border-top-color:#5b8af5;
       border-radius:50%;animation:spin .7s linear infinite;display:none;
     }
@@ -1076,6 +1085,7 @@
   <div class="t-div"></div>
   <div class="search-wrap">
     <input id="search-input" type="search" placeholder="🔍  장소 검색…" autocomplete="off" name="place-search-q">
+    <button class="app-search-clear" id="app-search-clear" onclick="clearAppSearch()" title="검색 지우기">✕</button>
     <div class="sp" id="spinner"></div>
     <div id="ac"></div>
   </div>
@@ -1689,9 +1699,17 @@ const spinner=document.getElementById('spinner');
 // 브라우저 자동완성 방지: 로드 직후 강제로 비움
 setTimeout(()=>{inp.value='';},100);
 
+function clearAppSearch(){
+  inp.value='';
+  acEl.style.display='none';
+  const cb=document.getElementById('app-search-clear');
+  if(cb)cb.classList.remove('visible');
+}
 inp.addEventListener('input',()=>{
   clearTimeout(acTimer);
   const q=inp.value.trim();
+  const cb=document.getElementById('app-search-clear');
+  if(cb)cb.classList.toggle('visible',q.length>0);
   if(q.length<2){acEl.style.display='none';return}
   acTimer=setTimeout(()=>doSearch(q),380);
 });
