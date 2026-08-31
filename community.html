@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-74QYS1D4W4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-74QYS1D4W4');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>choible 커뮤니티</title>
+<meta name="description" content="여행자들이 나누는 여행 일정 이야기 — 좋아요와 댓글로 함께 여행을 계획해보세요.">
+<link rel="icon" type="image/svg+xml" href="/choible-icon.svg">
+<link rel="apple-touch-icon" sizes="192x192" href="/choible-icon-192.png">
+<meta name="theme-color" content="#5B8DEE">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f7f8fc;
+  --surface:#ffffff;
+  --surface2:#f0f2f8;
+  --border:#e4e8f0;
+  --text:#1b1e2e;
+  --text2:#5a6280;
+  --text3:#9098b3;
+  --accent:#4f6ef7;
+  --accent2:#20c997;
+  --accent-soft:#eef1fe;
+  --danger:#f43f5e;
+  --radius:16px;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.06);
+  --shadow-md:0 4px 16px rgba(79,110,247,.10);
+  --shadow-lg:0 8px 32px rgba(79,110,247,.16);
+  --font:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111320;--surface:#1a1d2e;--surface2:#212437;--border:#2a2e45;
+  --text:#e6e9f6;--text2:#8891b8;--text3:#4d5578;
+  --accent:#6b87f8;--accent2:#2ed4a6;--accent-soft:#1c2260;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.35);--shadow-lg:0 8px 32px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --bg:#111320;--surface:#1a1d2e;--surface2:#212437;--border:#2a2e45;
+  --text:#e6e9f6;--text2:#8891b8;--text3:#4d5578;
+  --accent:#6b87f8;--accent2:#2ed4a6;--accent-soft:#1c2260;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 16px rgba(0,0,0,.35);--shadow-lg:0 8px 32px rgba(0,0,0,.4);
+}
+
+html,body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── Header ── */
+header{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 20px;height:56px;position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.hd-logo{font-weight:800;font-size:18px;color:var(--accent);text-decoration:none;letter-spacing:-.3px;}
+.hd-nav{display:flex;align-items:center;gap:6px;}
+.hd-nav a{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;}
+.hd-nav a:hover,.hd-nav a.active{background:var(--accent-soft);color:var(--accent);}
+.hd-right{display:flex;align-items:center;gap:8px;}
+.hd-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0;}
+.hd-avatar img{width:100%;height:100%;object-fit:cover;}
+.hd-login-btn{font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:none;border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .15s;}
+.hd-login-btn:hover{background:var(--accent);color:#fff;}
+
+/* ── Main layout ── */
+.main{max-width:640px;margin:0 auto;padding:20px 16px 120px;}
+
+/* ── Page title ── */
+.page-title{font-size:22px;font-weight:800;margin-bottom:4px;color:var(--text);}
+.page-sub{font-size:14px;color:var(--text2);margin-bottom:20px;}
+
+/* ── Share FAB ── */
+.fab{
+  position:fixed;bottom:24px;right:24px;z-index:200;
+  background:linear-gradient(135deg,var(--accent),#6b4ff8);color:#fff;
+  border:none;border-radius:28px;padding:14px 22px;
+  font-size:14px;font-weight:700;cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 4px 20px rgba(79,110,247,.45);
+  transition:transform .15s,box-shadow .15s;
+}
+.fab:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(79,110,247,.5);}
+.fab:active{transform:translateY(0);}
+.fab-icon{font-size:18px;line-height:1;}
+
+/* ── Feed ── */
+.feed{display:flex;flex-direction:column;gap:0;}
+
+/* ── Post card ── */
+.post{
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:18px 0;
+}
+.post:first-child{border-radius:var(--radius) var(--radius) 0 0;}
+.post:last-child{border-radius:0 0 var(--radius) var(--radius);border-bottom:none;}
+.feed:not(:empty) .post:first-child:last-child{border-radius:var(--radius);border-bottom:none;}
+
+.post-inner{padding:0 18px;}
+
+/* Author row */
+.post-author{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.post-avatar{
+  width:38px;height:38px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#a78bfa,#60a5fa);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;color:#fff;overflow:hidden;
+}
+.post-avatar img{width:100%;height:100%;object-fit:cover;}
+.post-author-info{flex:1;min-width:0;}
+.post-author-name{font-size:14px;font-weight:700;color:var(--text);line-height:1.2;}
+.post-time{font-size:11px;color:var(--text3);margin-top:2px;}
+
+/* Content */
+.post-emoji{font-size:28px;margin-bottom:8px;display:block;}
+.post-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:8px;line-height:1.35;}
+.post-desc{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.6;white-space:pre-wrap;word-break:break-word;}
+.post-places{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;}
+.place-tag{
+  font-size:12px;font-weight:600;color:var(--accent);
+  background:var(--accent-soft);border-radius:20px;padding:4px 10px;
+}
+
+/* Action bar */
+.post-actions{display:flex;align-items:center;gap:4px;padding-top:4px;}
+.act-btn{
+  display:flex;align-items:center;gap:5px;
+  background:none;border:none;cursor:pointer;
+  padding:7px 10px;border-radius:20px;
+  font-size:13px;font-weight:600;color:var(--text2);
+  transition:all .15s;
+}
+.act-btn:hover{background:var(--surface2);}
+.act-btn .icon{font-size:17px;line-height:1;transition:transform .15s;}
+.act-btn.liked{color:#f43f5e;}
+.act-btn.liked .icon{animation:heartpop .25s ease;}
+@keyframes heartpop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+.act-btn .cnt{font-variant-numeric:tabular-nums;}
+
+/* Comment section */
+.comments-section{
+  border-top:1px solid var(--border);margin-top:12px;
+  display:none;padding-top:14px;
+}
+.comments-section.open{display:block;}
+.comments-list{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+.comment-item{display:flex;gap:9px;}
+.comment-avatar{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#34d399,#60a5fa);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;overflow:hidden;
+}
+.comment-avatar img{width:100%;height:100%;object-fit:cover;}
+.comment-body{flex:1;min-width:0;}
+.comment-author{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.comment-text{font-size:13px;color:var(--text2);line-height:1.5;word-break:break-word;}
+.comment-time{font-size:11px;color:var(--text3);margin-top:2px;}
+.comment-input-row{display:flex;gap:8px;align-items:flex-end;}
+.comment-input-avatar{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:#fff;overflow:hidden;margin-bottom:2px;
+}
+.comment-input-avatar img{width:100%;height:100%;object-fit:cover;}
+.comment-textarea{
+  flex:1;border:1.5px solid var(--border);border-radius:12px;
+  padding:9px 12px;font-size:13px;font-family:var(--font);
+  background:var(--surface2);color:var(--text);resize:none;
+  outline:none;transition:border .15s;min-height:38px;max-height:120px;
+  line-height:1.5;
+}
+.comment-textarea:focus{border-color:var(--accent);}
+.comment-submit{
+  background:var(--accent);color:#fff;border:none;
+  border-radius:12px;padding:8px 14px;font-size:13px;font-weight:700;
+  cursor:pointer;flex-shrink:0;transition:all .15s;height:38px;
+}
+.comment-submit:hover{background:var(--accent2);}
+.comment-submit:disabled{opacity:.45;cursor:not-allowed;}
+.comment-login-prompt{font-size:13px;color:var(--text3);text-align:center;padding:8px 0;}
+.comment-login-prompt a{color:var(--accent);font-weight:600;text-decoration:none;}
+.comments-loading{font-size:13px;color:var(--text3);text-align:center;padding:8px;}
+.no-comments{font-size:13px;color:var(--text3);text-align:center;padding:4px 0 8px;}
+
+/* ── Empty state ── */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  background:var(--surface);border-radius:var(--radius);
+}
+.empty-icon{font-size:48px;margin-bottom:16px;display:block;}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text);}
+.empty-desc{font-size:14px;color:var(--text2);line-height:1.6;}
+
+/* ── Loading skeleton ── */
+.skeleton-post{background:var(--surface);border-radius:var(--radius);padding:20px;margin-bottom:1px;}
+.sk{background:var(--surface2);border-radius:8px;animation:skpulse 1.2s ease-in-out infinite;}
+@keyframes skpulse{0%,100%{opacity:1}50%{opacity:.5}}
+.sk-avatar{width:38px;height:38px;border-radius:50%;margin-bottom:0;}
+.sk-line{height:12px;margin-bottom:8px;}
+.sk-line.w60{width:60%;}
+.sk-line.w80{width:80%;}
+.sk-line.w40{width:40%;}
+.sk-title{height:18px;width:70%;margin-bottom:10px;}
+
+/* ── Share modal ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+  z-index:500;display:none;align-items:flex-end;justify-content:center;
+}
+.modal-overlay.open{display:flex;}
+@media(min-width:640px){.modal-overlay{align-items:center;}}
+.modal-sheet{
+  background:var(--surface);width:100%;max-width:560px;
+  border-radius:24px 24px 0 0;padding:24px 20px 32px;
+  max-height:90vh;overflow-y:auto;
+}
+@media(min-width:640px){.modal-sheet{border-radius:24px;padding:28px 28px 32px;}}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 20px;}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:18px;color:var(--text);}
+.modal-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px;}
+.modal-input{
+  width:100%;border:1.5px solid var(--border);border-radius:12px;
+  padding:11px 14px;font-size:14px;font-family:var(--font);
+  background:var(--surface2);color:var(--text);outline:none;
+  transition:border .15s;margin-bottom:14px;
+}
+.modal-input:focus{border-color:var(--accent);}
+.modal-textarea{
+  width:100%;border:1.5px solid var(--border);border-radius:12px;
+  padding:11px 14px;font-size:14px;font-family:var(--font);
+  background:var(--surface2);color:var(--text);resize:none;outline:none;
+  transition:border .15s;margin-bottom:14px;min-height:80px;
+}
+.modal-textarea:focus{border-color:var(--accent);}
+.modal-trip-select{
+  border:1.5px solid var(--border);border-radius:12px;padding:10px;
+  display:flex;flex-direction:column;gap:6px;max-height:160px;overflow-y:auto;margin-bottom:14px;
+}
+.trip-option{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;
+  border-radius:10px;cursor:pointer;transition:background .12s;
+}
+.trip-option:hover,.trip-option.selected{background:var(--accent-soft);}
+.trip-option input[type=radio]{accent-color:var(--accent);}
+.trip-option-name{font-size:14px;font-weight:600;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trip-option-places{font-size:12px;color:var(--text2);}
+.modal-emoji-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.emoji-opt{font-size:22px;cursor:pointer;padding:5px 8px;border-radius:10px;border:2px solid transparent;transition:all .12s;}
+.emoji-opt.sel{border-color:var(--accent);background:var(--accent-soft);}
+.modal-btns{display:flex;gap:10px;margin-top:4px;}
+.modal-cancel{flex:1;background:var(--surface2);border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;color:var(--text2);cursor:pointer;}
+.modal-submit{flex:2;background:linear-gradient(135deg,var(--accent),#6b4ff8);border:none;border-radius:12px;padding:12px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;transition:opacity .15s;}
+.modal-submit:disabled{opacity:.4;cursor:not-allowed;}
+.modal-err{font-size:13px;color:var(--danger);margin:-8px 0 10px;display:none;}
+
+/* ── Login modal ── */
+.login-modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);
+  z-index:600;display:none;align-items:center;justify-content:center;padding:20px;
+}
+.login-modal-overlay.open{display:flex;}
+.login-modal{
+  background:var(--surface);border-radius:20px;padding:28px 24px;
+  width:100%;max-width:360px;text-align:center;
+}
+.login-modal h3{font-size:18px;font-weight:800;margin-bottom:8px;}
+.login-modal p{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+.login-modal-btns{display:flex;gap:10px;}
+.login-modal-btns a{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;background:var(--accent);color:#fff;transition:all .15s;}
+.login-modal-btns a:hover{background:var(--accent2);}
+.login-modal-close{flex:1;padding:12px;border-radius:12px;font-size:14px;font-weight:700;background:var(--surface2);color:var(--text2);border:none;cursor:pointer;}
+
+/* ── Toast ── */
+.toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--text);color:var(--bg);
+  padding:10px 18px;border-radius:24px;font-size:13px;font-weight:600;
+  opacity:0;transition:all .25s;pointer-events:none;z-index:999;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:480px){
+  .hd-nav{gap:2px;}
+  .hd-nav a{padding:5px 8px;font-size:12px;}
+  .main{padding:16px 12px 100px;}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="hd-logo" href="/">choible</a>
+  <nav class="hd-nav">
+    <a href="/app.html">✈️ 플래너</a>
+    <a href="/projects.html">📁 프로젝트</a>
+    <a href="/community.html" class="active">🌐 커뮤니티</a>
+  </nav>
+  <div class="hd-right" id="hd-right">
+    <div class="hd-avatar" id="hd-avatar" onclick="handleAvatarClick()" style="display:none"></div>
+    <button class="hd-login-btn" id="hd-login-btn" onclick="openLoginModal()" style="display:none">로그인</button>
+  </div>
+</header>
+
+<main class="main">
+  <h1 class="page-title">여행 커뮤니티</h1>
+  <p class="page-sub">여행자들의 일정을 구경하고 좋아요&댓글로 소통해보세요 🗺️</p>
+
+  <div class="feed" id="feed">
+    <!-- skeleton -->
+    <div class="skeleton-post" id="sk1">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="sk sk-avatar"></div>
+        <div style="flex:1"><div class="sk sk-line w60" style="margin-bottom:6px"></div><div class="sk sk-line w40"></div></div>
+      </div>
+      <div class="sk sk-title"></div>
+      <div class="sk sk-line w80"></div>
+      <div class="sk sk-line w60" style="margin-top:8px"></div>
+    </div>
+    <div class="skeleton-post" id="sk2" style="margin-top:1px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <div class="sk sk-avatar"></div>
+        <div style="flex:1"><div class="sk sk-line w60" style="margin-bottom:6px"></div><div class="sk sk-line w40"></div></div>
+      </div>
+      <div class="sk sk-title"></div>
+      <div class="sk sk-line w80"></div>
+    </div>
+  </div>
+</main>
+
+<!-- FAB -->
+<button class="fab" id="share-fab" onclick="openShareModal()" style="display:none">
+  <span class="fab-icon">✈️</span>내 여행 공유하기
+</button>
+<button class="fab" id="share-fab-guest" onclick="openLoginModal()" style="display:none">
+  <span class="fab-icon">✈️</span>여행 공유하기
+</button>
+
+<!-- Share modal -->
+<div class="modal-overlay" id="share-overlay" onclick="if(event.target===this)closeShareModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✈️ 여행 일정 공유</div>
+
+    <div class="modal-label">내 여행에서 선택</div>
+    <div class="modal-trip-select" id="trip-select-list">
+      <div style="font-size:13px;color:var(--text3);padding:8px 4px">불러오는 중…</div>
+    </div>
+
+    <div class="modal-label">제목</div>
+    <input class="modal-input" id="share-title" type="text" placeholder="예: 3박 4일 오사카 완전정복" maxlength="60">
+
+    <div class="modal-label">이모지 선택</div>
+    <div class="modal-emoji-row" id="emoji-row">
+      <span class="emoji-opt sel" data-e="✈️">✈️</span>
+      <span class="emoji-opt" data-e="🗺️">🗺️</span>
+      <span class="emoji-opt" data-e="🏖️">🏖️</span>
+      <span class="emoji-opt" data-e="🏔️">🏔️</span>
+      <span class="emoji-opt" data-e="🌸">🌸</span>
+      <span class="emoji-opt" data-e="🍜">🍜</span>
+      <span class="emoji-opt" data-e="🎡">🎡</span>
+      <span class="emoji-opt" data-e="🏛️">🏛️</span>
+      <span class="emoji-opt" data-e="🌊">🌊</span>
+      <span class="emoji-opt" data-e="🌃">🌃</span>
+    </div>
+
+    <div class="modal-label">한마디 소개 (선택)</div>
+    <textarea class="modal-textarea" id="share-desc" placeholder="여행 코스를 간단히 소개해주세요" maxlength="300"></textarea>
+
+    <div class="modal-err" id="share-err"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeShareModal()">취소</button>
+      <button class="modal-submit" id="share-submit" onclick="submitShare()">공유하기 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login modal -->
+<div class="login-modal-overlay" id="login-overlay" onclick="if(event.target===this)closeLoginModal()">
+  <div class="login-modal">
+    <h3>로그인이 필요해요</h3>
+    <p>좋아요, 댓글, 여행 공유 기능은<br>로그인 후 이용할 수 있어요.</p>
+    <div class="login-modal-btns">
+      <button class="login-modal-close" onclick="closeLoginModal()">닫기</button>
+      <a href="/projects.html">로그인하기</a>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL='https://rrssuofmyvfxzbliocmn.supabase.co';
+const SB_KEY='sb_publishable_Bv7Ta8pBlrn8jyjKGoyNNQ_PjGWjCkH';
+
+function sbFetch(path,opts={}){
+  const headers={'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json',...(opts.headers||{})};
+  return fetch(SB_URL+path,{...opts,headers});
+}
+function sbAuthFetch(path,token,opts={}){
+  const headers={'apikey':SB_KEY,'Authorization':'Bearer '+token,'Content-Type':'application/json',...(opts.headers||{})};
+  return fetch(SB_URL+path,{...opts,headers});
+}
+
+let currentUser=null;
+let currentToken=null;
+let likedPosts=new Set();
+let selectedEmoji='✈️';
+let selectedTripId=null;
+let localTrips=[];
+let postsCache=[];
+
+// ── Auth ──
+async function initAuth(){
+  try{
+    const r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(localStorage.getItem('sb-token')||'')}});
+    if(r.ok){
+      const u=await r.json();
+      currentUser=u;currentToken=localStorage.getItem('sb-token');
+    }
+  }catch{}
+  renderHeader();
+  renderFAB();
+}
+
+function renderHeader(){
+  const avatarEl=document.getElementById('hd-avatar');
+  const loginBtn=document.getElementById('hd-login-btn');
+  if(currentUser){
+    avatarEl.style.display='flex';loginBtn.style.display='none';
+    const nick=localStorage.getItem('choible_nick_'+currentUser.id);
+    const avatarData=localStorage.getItem('choible_avatar_'+currentUser.id);
+    if(avatarData){avatarEl.innerHTML='<img src="'+avatarData+'">';}
+    else{avatarEl.textContent=(nick||currentUser.email||'?')[0].toUpperCase();}
+  }else{
+    avatarEl.style.display='none';loginBtn.style.display='flex';
+  }
+}
+
+function renderFAB(){
+  document.getElementById('share-fab').style.display=currentUser?'flex':'none';
+  document.getElementById('share-fab-guest').style.display=currentUser?'none':'flex';
+}
+
+function handleAvatarClick(){window.location.href='/projects.html?openProfile=1';}
+
+// ── Feed ──
+async function loadFeed(){
+  try{
+    const r=await sbFetch('/rest/v1/community_posts?select=*&order=created_at.desc&limit=50',{headers:{'Prefer':'return=representation'}});
+    if(!r.ok){throw new Error('fetch failed');}
+    postsCache=await r.json();
+  }catch(e){
+    postsCache=[];
+  }
+  // Load user likes
+  if(currentUser&&currentToken){
+    try{
+      const lr=await sbAuthFetch('/rest/v1/community_likes?select=post_id&user_id=eq.'+currentUser.id,currentToken);
+      if(lr.ok){const likes=await lr.json();likes.forEach(l=>likedPosts.add(l.post_id));}
+    }catch{}
+  }
+  renderFeed();
+}
+
+function renderFeed(){
+  const feed=document.getElementById('feed');
+  // Remove skeletons
+  ['sk1','sk2'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+
+  if(!postsCache.length){
+    feed.innerHTML=`<div class="empty-state">
+      <span class="empty-icon">🗺️</span>
+      <div class="empty-title">아직 공유된 여행이 없어요</div>
+      <div class="empty-desc">첫 번째로 여행 일정을 공유해보세요!<br>다른 여행자들이 참고할 거예요 ✈️</div>
+    </div>`;
+    return;
+  }
+  feed.innerHTML='';
+  postsCache.forEach(p=>feed.appendChild(buildPostEl(p)));
+}
+
+function buildPostEl(p){
+  const div=document.createElement('div');
+  div.className='post';div.id='post-'+p.id;
+  const liked=likedPosts.has(p.id);
+  const nick=p.user_nickname||p.user_email?.split('@')[0]||'여행자';
+  const initials=nick[0].toUpperCase();
+  const avatarColors=[
+    'linear-gradient(135deg,#a78bfa,#60a5fa)',
+    'linear-gradient(135deg,#f97316,#f43f5e)',
+    'linear-gradient(135deg,#34d399,#10b981)',
+    'linear-gradient(135deg,#fbbf24,#f59e0b)',
+    'linear-gradient(135deg,#60a5fa,#6366f1)',
+    'linear-gradient(135deg,#f472b6,#a855f7)',
+  ];
+  const colorIdx=nick.charCodeAt(0)%avatarColors.length;
+  const places=Array.isArray(p.places)?p.places:(p.places||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const placeTags=places.slice(0,6).map(pl=>`<span class="place-tag">📍 ${pl}</span>`).join('');
+  const moreCount=places.length>6?`<span class="place-tag">+${places.length-6}</span>`:'';
+  const timeStr=relativeTime(p.created_at);
+
+  div.innerHTML=`
+    <div class="post-inner">
+      <div class="post-author">
+        <div class="post-avatar" style="background:${avatarColors[colorIdx]}">${initials}</div>
+        <div class="post-author-info">
+          <div class="post-author-name">${escHtml(nick)}</div>
+          <div class="post-time">${timeStr}</div>
+        </div>
+      </div>
+      <span class="post-emoji">${p.emoji||'✈️'}</span>
+      <div class="post-title">${escHtml(p.title)}</div>
+      ${places.length?`<div class="post-places">${placeTags}${moreCount}</div>`:''}
+      ${p.description?`<div class="post-desc">${escHtml(p.description)}</div>`:''}
+      <div class="post-actions">
+        <button class="act-btn ${liked?'liked':''}" id="like-btn-${p.id}" onclick="toggleLike('${p.id}')">
+          <span class="icon">${liked?'❤️':'🤍'}</span>
+          <span class="cnt" id="like-cnt-${p.id}">${p.likes_count||0}</span>
+        </button>
+        <button class="act-btn" onclick="toggleComments('${p.id}')">
+          <span class="icon">💬</span>
+          <span class="cnt" id="cmt-cnt-${p.id}">${p.comments_count||0}</span>
+        </button>
+      </div>
+      <div class="comments-section" id="comments-${p.id}">
+        <div class="comments-list" id="clist-${p.id}">
+          <div class="comments-loading">댓글 불러오는 중…</div>
+        </div>
+        ${currentUser?`
+          <div class="comment-input-row">
+            <div class="comment-input-avatar" id="cmt-my-avatar-${p.id}">${initials}</div>
+            <textarea class="comment-textarea" id="cmt-input-${p.id}" placeholder="댓글을 입력하세요…" rows="1" oninput="autoResize(this)"></textarea>
+            <button class="comment-submit" id="cmt-submit-${p.id}" onclick="submitComment('${p.id}')">게시</button>
+          </div>
+        `:`<div class="comment-login-prompt">댓글을 달려면 <a href="#" onclick="openLoginModal();return false">로그인</a>하세요</div>`}
+      </div>
+    </div>`;
+
+  // Set my avatar on comment input
+  if(currentUser){
+    const myNick=localStorage.getItem('choible_nick_'+currentUser.id)||currentUser.email?.split('@')[0]||'?';
+    const myAvatar=localStorage.getItem('choible_avatar_'+currentUser.id);
+    const myAvatarEl=div.querySelector('#cmt-my-avatar-'+p.id);
+    if(myAvatarEl){
+      if(myAvatar)myAvatarEl.innerHTML='<img src="'+myAvatar+'">';
+      else myAvatarEl.textContent=myNick[0].toUpperCase();
+    }
+  }
+  return div;
+}
+
+function autoResize(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+
+async function toggleLike(postId){
+  if(!currentUser){openLoginModal();return;}
+  const liked=likedPosts.has(postId);
+  const btn=document.getElementById('like-btn-'+postId);
+  const cnt=document.getElementById('like-cnt-'+postId);
+  const cur=parseInt(cnt.textContent)||0;
+  // Optimistic update
+  if(liked){
+    likedPosts.delete(postId);
+    btn.classList.remove('liked');btn.querySelector('.icon').textContent='🤍';
+    cnt.textContent=Math.max(0,cur-1);
+  }else{
+    likedPosts.add(postId);
+    btn.classList.add('liked');btn.querySelector('.icon').textContent='❤️';
+    cnt.textContent=cur+1;
+  }
+  try{
+    if(liked){
+      await sbAuthFetch('/rest/v1/community_likes?post_id=eq.'+postId+'&user_id=eq.'+currentUser.id,currentToken,{method:'DELETE'});
+      await sbAuthFetch('/rest/v1/rpc/decrement_likes',currentToken,{method:'POST',body:JSON.stringify({pid:postId})});
+    }else{
+      await sbAuthFetch('/rest/v1/community_likes',currentToken,{method:'POST',headers:{'Prefer':'return=minimal'},body:JSON.stringify({post_id:postId,user_id:currentUser.id})});
+      await sbAuthFetch('/rest/v1/rpc/increment_likes',currentToken,{method:'POST',body:JSON.stringify({pid:postId})});
+    }
+  }catch(e){console.warn('like sync failed',e);}
+}
+
+async function toggleComments(postId){
+  const section=document.getElementById('comments-'+postId);
+  if(section.classList.contains('open')){section.classList.remove('open');return;}
+  section.classList.add('open');
+  await loadComments(postId);
+}
+
+async function loadComments(postId){
+  const list=document.getElementById('clist-'+postId);
+  list.innerHTML='<div class="comments-loading">댓글 불러오는 중…</div>';
+  try{
+    const r=await sbFetch('/rest/v1/community_comments?select=*&post_id=eq.'+postId+'&order=created_at.asc&limit=50');
+    if(!r.ok)throw new Error();
+    const comments=await r.json();
+    if(!comments.length){list.innerHTML='<div class="no-comments">아직 댓글이 없어요. 첫 댓글을 남겨보세요!</div>';return;}
+    list.innerHTML='';
+    comments.forEach(c=>list.appendChild(buildCommentEl(c)));
+  }catch{list.innerHTML='<div class="no-comments">댓글을 불러오지 못했어요.</div>';}
+}
+
+function buildCommentEl(c){
+  const div=document.createElement('div');
+  div.className='comment-item';div.id='comment-'+c.id;
+  const nick=c.user_nickname||c.user_email?.split('@')[0]||'여행자';
+  const colors=['linear-gradient(135deg,#34d399,#60a5fa)','linear-gradient(135deg,#f97316,#fbbf24)','linear-gradient(135deg,#a78bfa,#f472b6)'];
+  const ci=nick.charCodeAt(0)%colors.length;
+  div.innerHTML=`
+    <div class="comment-avatar" style="background:${colors[ci]}">${nick[0].toUpperCase()}</div>
+    <div class="comment-body">
+      <div class="comment-author">${escHtml(nick)}</div>
+      <div class="comment-text">${escHtml(c.content)}</div>
+      <div class="comment-time">${relativeTime(c.created_at)}</div>
+    </div>`;
+  return div;
+}
+
+async function submitComment(postId){
+  if(!currentUser){openLoginModal();return;}
+  const input=document.getElementById('cmt-input-'+postId);
+  const submitBtn=document.getElementById('cmt-submit-'+postId);
+  const text=input.value.trim();
+  if(!text)return;
+  submitBtn.disabled=true;
+  const nick=localStorage.getItem('choible_nick_'+currentUser.id)||currentUser.email?.split('@')[0]||'여행자';
+  try{
+    const r=await sbAuthFetch('/rest/v1/community_comments',currentToken,{
+      method:'POST',
+      headers:{'Prefer':'return=representation'},
+      body:JSON.stringify({post_id:postId,user_id:currentUser.id,user_email:currentUser.email,user_nickname:nick,content:text})
+    });
+    if(!r.ok)throw new Error();
+    const [newComment]=await r.json();
+    await sbAuthFetch('/rest/v1/rpc/increment_comments',currentToken,{method:'POST',body:JSON.stringify({pid:postId})});
+    // Update count display
+    const cntEl=document.getElementById('cmt-cnt-'+postId);
+    if(cntEl)cntEl.textContent=parseInt(cntEl.textContent||0)+1;
+    // Add comment to list
+    const list=document.getElementById('clist-'+postId);
+    const noComment=list.querySelector('.no-comments');
+    if(noComment)noComment.remove();
+    list.appendChild(buildCommentEl(newComment));
+    input.value='';input.style.height='auto';
+    showToast('댓글이 등록됐어요!');
+  }catch{showToast('댓글 등록에 실패했어요.');}
+  submitBtn.disabled=false;
+}
+
+// ── Share modal ──
+function openShareModal(){
+  if(!currentUser){openLoginModal();return;}
+  localTrips=getLocalTrips();
+  renderTripSelect();
+  document.getElementById('share-title').value='';
+  document.getElementById('share-desc').value='';
+  document.getElementById('share-err').style.display='none';
+  document.getElementById('share-overlay').classList.add('open');
+}
+function closeShareModal(){document.getElementById('share-overlay').classList.remove('open');}
+
+function getLocalTrips(){
+  try{return JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{return[];}
+}
+
+function renderTripSelect(){
+  const list=document.getElementById('trip-select-list');
+  if(!localTrips.length){
+    list.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 4px">저장된 여행이 없어요.<br><a href="/app.html" style="color:var(--accent);font-weight:600">여행 만들러 가기 →</a></div>';
+    selectedTripId=null;return;
+  }
+  list.innerHTML='';
+  localTrips.forEach((t,i)=>{
+    const row=document.createElement('label');
+    row.className='trip-option'+(i===0?' selected':'');
+    row.innerHTML=`
+      <input type="radio" name="trip-opt" value="${t.id}" ${i===0?'checked':''} onchange="onTripSelect('${t.id}','${escHtml(t.title)}')">
+      <div style="flex:1;min-width:0">
+        <div class="trip-option-name">${escHtml(t.title)}</div>
+        ${t.preview?`<div class="trip-option-places">${escHtml(t.preview)}</div>`:''}
+      </div>`;
+    list.appendChild(row);
+  });
+  selectedTripId=localTrips[0]?.id||null;
+  // Pre-fill title
+  if(localTrips[0])document.getElementById('share-title').value=localTrips[0].title||'';
+}
+
+function onTripSelect(id,title){
+  selectedTripId=id;
+  document.getElementById('share-title').value=title;
+  document.querySelectorAll('.trip-option').forEach(el=>{
+    el.classList.toggle('selected',el.querySelector('input').value===id);
+  });
+}
+
+// Emoji
+document.addEventListener('click',function(e){
+  const opt=e.target.closest('.emoji-opt');
+  if(!opt)return;
+  document.querySelectorAll('.emoji-opt').forEach(el=>el.classList.remove('sel'));
+  opt.classList.add('sel');
+  selectedEmoji=opt.dataset.e;
+});
+
+async function submitShare(){
+  const title=document.getElementById('share-title').value.trim();
+  const desc=document.getElementById('share-desc').value.trim();
+  const errEl=document.getElementById('share-err');
+  const submitBtn=document.getElementById('share-submit');
+  errEl.style.display='none';
+  if(!title){errEl.textContent='제목을 입력해주세요.';errEl.style.display='block';return;}
+  if(!currentUser){openLoginModal();return;}
+
+  // Get places from selected trip
+  let places=[];
+  if(selectedTripId){
+    const trip=localTrips.find(t=>t.id===selectedTripId);
+    if(trip&&trip.preview){places=trip.preview.split(',').map(s=>s.trim()).filter(Boolean);}
+  }
+  const nick=localStorage.getItem('choible_nick_'+currentUser.id)||currentUser.email?.split('@')[0]||'여행자';
+
+  submitBtn.disabled=true;
+  try{
+    const r=await sbAuthFetch('/rest/v1/community_posts',currentToken,{
+      method:'POST',
+      headers:{'Prefer':'return=representation'},
+      body:JSON.stringify({user_id:currentUser.id,user_email:currentUser.email,user_nickname:nick,title,places,emoji:selectedEmoji,description:desc||null,likes_count:0,comments_count:0})
+    });
+    if(!r.ok){const err=await r.json();throw new Error(err.message||'error');}
+    const [newPost]=await r.json();
+    closeShareModal();
+    postsCache.unshift(newPost);
+    renderFeed();
+    showToast('여행이 공유됐어요! 🎉');
+  }catch(e){
+    errEl.textContent='공유에 실패했어요: '+e.message;
+    errEl.style.display='block';
+  }
+  submitBtn.disabled=false;
+}
+
+// ── Login modal ──
+function openLoginModal(){document.getElementById('login-overlay').classList.add('open');}
+function closeLoginModal(){document.getElementById('login-overlay').classList.remove('open');}
+
+// ── Toast ──
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── Utils ──
+function escHtml(s){
+  if(!s)return'';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function relativeTime(isoStr){
+  if(!isoStr)return'';
+  const diff=(Date.now()-new Date(isoStr).getTime())/1000;
+  if(diff<60)return'방금 전';
+  if(diff<3600)return Math.floor(diff/60)+'분 전';
+  if(diff<86400)return Math.floor(diff/3600)+'시간 전';
+  if(diff<604800)return Math.floor(diff/86400)+'일 전';
+  return new Date(isoStr).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+}
+
+// ── Init ──
+(async()=>{
+  await initAuth();
+  await loadFeed();
+  // Auto-open share modal if ?share= param present
+  const shareId=new URLSearchParams(location.search).get('share');
+  if(shareId){
+    history.replaceState(null,'',location.pathname);
+    setTimeout(()=>{
+      if(currentUser){
+        openShareModal();
+        // Pre-select the specified trip
+        setTimeout(()=>{
+          const radio=document.querySelector(`input[name="trip-opt"][value="${shareId}"]`);
+          if(radio){radio.click();}
+        },100);
+      }else{openLoginModal();}
+    },400);
+  }
+})();
+</script>
+</body>
+</html>

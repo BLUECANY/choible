@@ -521,6 +521,10 @@ footer{
       <img src="choible-icon.svg" alt="choible">
       <span class="logo-name">choible</span>
     </a>
+    <nav style="display:flex;align-items:center;gap:4px;">
+      <a href="app.html" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'" onmouseout="this.style.background='';this.style.color='var(--text2)'">✈️ 플래너</a>
+      <a href="community.html" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'" onmouseout="this.style.background='';this.style.color='var(--text2)'">🌐 커뮤니티</a>
+    </nav>
     <div class="header-right">
       <!-- shown only when logged in -->
       <div id="sync-indicator" style="display:none;align-items:center;gap:5px;font-size:12px;color:var(--accent2);font-family:var(--font);font-weight:600;">
@@ -954,6 +958,7 @@ function showMenu(e,id,isCloud){
   const dd=document.getElementById('dropdown');
   dd.innerHTML=`
     <button onclick="renameP('${esc(id)}',${isCloud})">✏️ 이름 변경</button>
+    <button onclick="openCommunityShare('${esc(id)}')">🌐 커뮤니티 공유</button>
     ${isCloud?`<button onclick="shareP('${esc(id)}')">🔗 공유 링크 복사</button>`:''}
     <button class="danger" onclick="deleteP('${esc(id)}',${isCloud})">🗑️ 삭제</button>`;
   const r=e.currentTarget.getBoundingClientRect();
@@ -991,6 +996,17 @@ async function shareP(id){
   const url=location.origin+'/app.html?share='+token;
   await navigator.clipboard.writeText(url).catch(()=>{});
   showToast('🔗 공유 링크가 클립보드에 복사되었습니다');
+}
+
+/* ── Community share ── */
+function openCommunityShare(id){
+  closeMenu();
+  if(!currentUser){
+    if(confirm('커뮤니티 공유는 로그인 후 이용할 수 있어요.\n로그인 페이지로 이동할까요?')){openAuthModal();}
+    return;
+  }
+  // Pass the project ID via URL param to community page
+  window.location.href='community.html?share='+encodeURIComponent(id);
 }
 
 /* ── Account menu ── */
