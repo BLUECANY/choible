@@ -102,10 +102,16 @@ RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
   UPDATE community_posts SET comments_count = comments_count + 1 WHERE id = pid;
 $$;
 
+CREATE OR REPLACE FUNCTION decrement_comments(pid uuid)
+RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
+  UPDATE community_posts SET comments_count = GREATEST(comments_count - 1, 0) WHERE id = pid;
+$$;
+
 -- RPC 권한
 GRANT EXECUTE ON FUNCTION increment_likes TO authenticated;
 GRANT EXECUTE ON FUNCTION decrement_likes TO authenticated;
 GRANT EXECUTE ON FUNCTION increment_comments TO authenticated;
+GRANT EXECUTE ON FUNCTION decrement_comments TO authenticated;
 
 -- ============================================================
 -- 인덱스

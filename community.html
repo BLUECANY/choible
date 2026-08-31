@@ -1070,18 +1070,17 @@ function renderTripSelect(){
   selectedTripId=localTrips[0]?.id||null;
   if(localTrips[0]){
     document.getElementById('share-title').value=localTrips[0].title||'';
-    document.getElementById('share-places').value=localTrips[0].preview||'';
+    document.getElementById('share-places').value=getActualPlaces(localTrips[0].id)||localTrips[0].preview||'';
   }
 }
 
 function onTripSelect(id,title){
   selectedTripId=id;
   document.getElementById('share-title').value=title;
-  // 장소 필드 채우기
+  // 장소 필드 채우기 (실제 장소 이름 우선, 없으면 preview 폴백)
   const trip=localTrips.find(t=>t.id===id);
-  if(trip&&trip.preview){
-    document.getElementById('share-places').value=trip.preview;
-  }
+  const actualPlaces=getActualPlaces(id);
+  document.getElementById('share-places').value=actualPlaces||(trip&&trip.preview?trip.preview:'');
   document.querySelectorAll('.trip-option').forEach(el=>{
     el.classList.toggle('selected',el.querySelector('input').value===id);
   });
@@ -1130,12 +1129,27 @@ async function submitShare(){
   submitBtn.disabled=false;
 }
 
-// ── Planner nav (최근 로컬 프로젝트 있으면 바로 이동) ──
+// ── Planner nav (로컬 프로젝트만 사용 - 클라우드 UUID는 app.html 리디렉션 루프 유발) ──
 function goToPlanner(e){
   e.preventDefault();
   let ps=[];
   try{ps=JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{}
-  window.location.href=ps.length>0?'/app.html?project='+encodeURIComponent(ps[0].id):'/projects.html';
+  const localProj=ps.find(p=>p.id&&p.id.startsWith('local_'));
+  window.location.href=localProj?'/app.html?project='+encodeURIComponent(localProj.id):'/projects.html';
+}
+
+// ── 실제 장소 이름 읽기 (choible_proj_{id}에서 places 배열 추출) ──
+function getActualPlaces(tripId){
+  try{
+    const raw=localStorage.getItem('choible_proj_'+tripId);
+    if(raw){
+      const data=JSON.parse(raw);
+      if(Array.isArray(data.places)&&data.places.length){
+        return data.places.map(p=>p.name||'').filter(Boolean).slice(0,15).join(', ');
+      }
+    }
+  }catch{}
+  return '';
 }
 
 // ── Post context menu ──
@@ -1200,14 +1214,12 @@ function relativeTime(isoStr){
   const shareId=new URLSearchParams(location.search).get('share');
   if(shareId){
     history.replaceState(null,'',location.pathname);
-    setTimeout(()=>{
+    setTimeout(async ()=>{
       if(currentUser){
-        openShareModal();
-        // Pre-select the specified trip
-        setTimeout(()=>{
-          const radio=document.querySelector(`input[name="trip-opt"][value="${shareId}"]`);
-          if(radio){radio.click();}
-        },100);
+        await openShareModal();
+        // Pre-select the specified trip (after modal fully loaded)
+        const radio=document.querySelector(`input[name="trip-opt"][value="${shareId}"]`);
+        if(radio){radio.click();}
       }else{openLoginModal();}
     },400);
   }
