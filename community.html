@@ -301,7 +301,7 @@ header{
 <header>
   <a class="hd-logo" href="/">choible</a>
   <nav class="hd-nav">
-    <a href="/app.html">✈️ 플래너</a>
+    <a href="/projects.html">✈️ 플래너</a>
     <a href="/projects.html">📁 프로젝트</a>
     <a href="/community.html" class="active">🌐 커뮤니티</a>
   </nav>
@@ -423,10 +423,15 @@ let postsCache=[];
 // ── Auth ──
 async function initAuth(){
   try{
-    const r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+(localStorage.getItem('sb-token')||'')}});
-    if(r.ok){
-      const u=await r.json();
-      currentUser=u;currentToken=localStorage.getItem('sb-token');
+    // Supabase JS SDK v2 stores session under this key
+    const stored=localStorage.getItem('sb-rrssuofmyvfxzbliocmn-auth-token');
+    if(stored){
+      const session=JSON.parse(stored);
+      const token=session?.access_token;
+      if(token){
+        const r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+token}});
+        if(r.ok){const u=await r.json();currentUser=u;currentToken=token;}
+      }
     }
   }catch{}
   renderHeader();
