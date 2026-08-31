@@ -1002,7 +1002,7 @@ async function shareP(id){
 function openCommunityShare(id){
   closeMenu();
   if(!currentUser){
-    if(confirm('커뮤니티 공유는 로그인 후 이용할 수 있어요.\n로그인 페이지로 이동할까요?')){openAuthModal();}
+    if(confirm('커뮤니티 공유는 로그인 후 이용할 수 있어요.\n로그인 페이지로 이동할까요?')){window.location.href='/auth.html?redirect='+encodeURIComponent('/projects.html');}
     return;
   }
   // Pass the project ID via URL param to community page
@@ -1178,13 +1178,11 @@ function toggleAcctMenu(){
 async function doSignOut(){if(sb)await sb.auth.signOut();currentUser=null;updateHeader(null);loadProjects();}
 
 /* ── Auth modal ── */
-function openAuthModal(){
-  document.getElementById('auth-modal').classList.add('open');
-  document.getElementById('auth-err').style.display='none';
-  setTimeout(()=>document.getElementById('f-email').focus(),100);
+function openAuthModal(mode){
+  window.location.href='/auth.html?redirect='+encodeURIComponent('/projects.html')+(mode?'&mode='+mode:'');
 }
-function closeAuthModal(){document.getElementById('auth-modal').classList.remove('open');}
-function handleModalOverlay(e){if(e.target===document.getElementById('auth-modal'))closeAuthModal();}
+function closeAuthModal(){}
+function handleModalOverlay(e){}
 function onFormKey(e){if(e.key==='Enter')submitForm();}
 
 function toggleMode(){

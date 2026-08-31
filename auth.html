@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>로그인 · choible</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg:#f8f8f6;--surface:#fff;--border:#e5e5e0;
+  --text1:#1a1a1a;--text2:#555;--text3:#999;
+  --accent:#5b8af5;--accent2:#4a78e8;--accent-soft:rgba(91,138,245,.1);
+  --red:#ef4444;--green:#10b981;
+  --radius:14px;--shadow:0 4px 24px rgba(0,0,0,.08);
+}
+@media(prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#111;--surface:#1e1e1e;--border:#2e2e2e;
+    --text1:#f0f0f0;--text2:#a0a0a0;--text3:#555;
+    --accent-soft:rgba(91,138,245,.15);--shadow:0 4px 24px rgba(0,0,0,.4);
+  }
+}
+[data-theme="dark"]{
+  --bg:#111;--surface:#1e1e1e;--border:#2e2e2e;
+  --text1:#f0f0f0;--text2:#a0a0a0;--text3:#555;
+  --accent-soft:rgba(91,138,245,.15);--shadow:0 4px 24px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
+
+.logo-link{display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:32px;}
+.logo-icon{width:36px;height:36px;}
+.logo-name{font-size:22px;font-weight:800;color:var(--text1);letter-spacing:-.5px;}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);width:100%;max-width:420px;padding:32px;}
+
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.tab-btn{flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:10px 0;font-size:15px;font-weight:600;color:var(--text2);cursor:pointer;margin-bottom:-1px;transition:all .15s;}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+
+.form-label{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;}
+.form-group{margin-bottom:16px;}
+.form-input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);color:var(--text1);font-size:15px;outline:none;transition:border-color .15s;}
+.form-input:focus{border-color:var(--accent);}
+.form-input::placeholder{color:var(--text3);}
+
+.err-box{background:#fef2f2;border:1px solid #fecaca;color:var(--red);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none;}
+.err-box.visible{display:block;}
+.ok-box{background:#f0fdf4;border:1px solid #bbf7d0;color:var(--green);font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;display:none;}
+.ok-box.visible{display:block;}
+
+.submit-btn{width:100%;padding:13px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:15px;font-weight:700;cursor:pointer;transition:background .15s;margin-bottom:16px;}
+.submit-btn:hover{background:var(--accent2);}
+.submit-btn:disabled{opacity:.6;cursor:not-allowed;}
+
+.switch-row{text-align:center;font-size:13px;color:var(--text2);}
+.switch-row a{color:var(--accent);font-weight:600;text-decoration:none;}
+
+/* OTP area */
+.otp-area{display:none;}
+.otp-area.visible{display:block;}
+.otp-title{font-size:16px;font-weight:700;margin-bottom:8px;}
+.otp-desc{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+.otp-email{font-weight:600;color:var(--accent);}
+.otp-back{background:none;border:none;color:var(--text2);font-size:13px;cursor:pointer;margin-top:8px;padding:0;}
+.otp-back:hover{color:var(--text1);}
+
+.divider{height:1px;background:var(--border);margin:20px 0;}
+.footer-note{font-size:12px;color:var(--text3);text-align:center;margin-top:24px;line-height:1.7;}
+.footer-note a{color:var(--text2);}
+</style>
+</head>
+<body>
+
+<a href="/" class="logo-link">
+  <svg class="logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="40" height="40" rx="12" fill="#5b8af5"/>
+    <path d="M20 8C13.373 8 8 13.373 8 20C8 26.627 13.373 32 20 32C26.627 32 32 26.627 32 20C32 13.373 26.627 8 20 8Z" fill="white" fill-opacity="0.2"/>
+    <path d="M20 12L22.5 17.5L28.5 18.3L24.2 22.4L25.3 28.3L20 25.5L14.7 28.3L15.8 22.4L11.5 18.3L17.5 17.5L20 12Z" fill="white"/>
+  </svg>
+  <span class="logo-name">choible</span>
+</a>
+
+<div class="card">
+  <!-- 탭 -->
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" id="tab-login" onclick="setMode('login')">로그인</button>
+    <button class="tab-btn" id="tab-signup" onclick="setMode('signup')">회원가입</button>
+  </div>
+
+  <!-- 에러 / 성공 박스 -->
+  <div class="err-box" id="err-box"></div>
+  <div class="ok-box" id="ok-box"></div>
+
+  <!-- 로그인 폼 -->
+  <div id="login-form">
+    <div class="form-group">
+      <label class="form-label" for="l-email">이메일</label>
+      <input class="form-input" id="l-email" type="email" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('l-pw').focus()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="l-pw">비밀번호</label>
+      <input class="form-input" id="l-pw" type="password" placeholder="비밀번호" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="submit-btn" id="login-btn" onclick="doLogin()">로그인</button>
+    <div class="switch-row">계정이 없으신가요? <a href="#" onclick="setMode('signup');return false">회원가입</a></div>
+  </div>
+
+  <!-- 회원가입 폼 -->
+  <div id="signup-form" style="display:none">
+    <div class="form-group">
+      <label class="form-label" for="s-email">이메일</label>
+      <input class="form-input" id="s-email" type="email" placeholder="you@example.com" autocomplete="email" onkeydown="if(event.key==='Enter')document.getElementById('s-pw').focus()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="s-pw">비밀번호</label>
+      <input class="form-input" id="s-pw" type="password" placeholder="6자 이상" autocomplete="new-password" onkeydown="if(event.key==='Enter')document.getElementById('s-pw2').focus()">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="s-pw2">비밀번호 확인</label>
+      <input class="form-input" id="s-pw2" type="password" placeholder="비밀번호를 한 번 더 입력" autocomplete="new-password" onkeydown="if(event.key==='Enter')doSignup()">
+    </div>
+    <button class="submit-btn" id="signup-btn" onclick="doSignup()">가입하기</button>
+    <div class="switch-row">이미 계정이 있으신가요? <a href="#" onclick="setMode('login');return false">로그인</a></div>
+  </div>
+
+  <!-- OTP 인증 (회원가입 이메일 확인) -->
+  <div class="otp-area" id="otp-area">
+    <div class="otp-title">📬 이메일을 확인해주세요</div>
+    <div class="otp-desc"><span id="otp-email" class="otp-email"></span>으로 인증 코드를 보냈어요. 코드 6자리를 입력해주세요.</div>
+    <div class="form-group">
+      <label class="form-label" for="f-otp">인증 코드</label>
+      <input class="form-input" id="f-otp" type="text" maxlength="6" placeholder="000000" inputmode="numeric" onkeydown="if(event.key==='Enter')verifyOtp()">
+    </div>
+    <button class="submit-btn" id="otp-btn" onclick="verifyOtp()">인증 완료</button>
+    <button class="otp-back" onclick="cancelOtp()">← 다시 입력하기</button>
+  </div>
+</div>
+
+<div class="footer-note">
+  계속 진행하면 <a href="/privacy.html">개인정보처리방침</a>에 동의하는 것으로 간주됩니다.
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPABASE_URL = 'https://rrssuofmyvfxzbliocmn.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_Bv7Ta8pBlrn8jyjKGoyNNQ_PjGWjCkH';
+let sb = null;
+try { if(window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch(_){}
+
+// ── 리디렉션 대상 ──
+const params = new URLSearchParams(location.search);
+const redirectTo = params.get('redirect') || '/projects.html';
+const initMode = params.get('mode') || 'login';
+
+let currentMode = 'login';
+let pendingEmail = '';
+
+// ── 이미 로그인된 경우 바로 이동 ──
+(async () => {
+  if(!sb) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if(session) {
+    window.location.href = redirectTo;
+  }
+})();
+
+function setMode(mode) {
+  currentMode = mode;
+  clearMessages();
+  document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none';
+  document.getElementById('signup-form').style.display = mode === 'signup' ? 'block' : 'none';
+  document.getElementById('otp-area').classList.remove('visible');
+  document.getElementById('tabs').style.display = 'flex';
+  document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+  // 첫 번째 input 포커스
+  const firstInput = mode === 'login'
+    ? document.getElementById('l-email')
+    : document.getElementById('s-email');
+  setTimeout(() => firstInput.focus(), 50);
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err-box');
+  el.textContent = msg; el.className = 'err-box visible';
+  document.getElementById('ok-box').className = 'ok-box';
+}
+function showOk(msg) {
+  const el = document.getElementById('ok-box');
+  el.textContent = msg; el.className = 'ok-box visible';
+  document.getElementById('err-box').className = 'err-box';
+}
+function clearMessages() {
+  document.getElementById('err-box').className = 'err-box';
+  document.getElementById('ok-box').className = 'ok-box';
+}
+
+function finishAuth() {
+  window.location.href = redirectTo;
+}
+
+async function doLogin() {
+  if(!sb) { showErr('인증 서비스를 사용할 수 없습니다.'); return; }
+  const email = document.getElementById('l-email').value.trim();
+  const pw = document.getElementById('l-pw').value;
+  clearMessages();
+  if(!email || !pw) { showErr('이메일과 비밀번호를 입력해주세요.'); return; }
+  const btn = document.getElementById('login-btn');
+  btn.disabled = true; btn.textContent = '로그인 중…';
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+  btn.disabled = false; btn.textContent = '로그인';
+  if(error) {
+    showErr('이메일 또는 비밀번호가 올바르지 않아요.');
+    return;
+  }
+  finishAuth();
+}
+
+async function doSignup() {
+  if(!sb) { showErr('인증 서비스를 사용할 수 없습니다.'); return; }
+  const email = document.getElementById('s-email').value.trim();
+  const pw = document.getElementById('s-pw').value;
+  const pw2 = document.getElementById('s-pw2').value;
+  clearMessages();
+  if(!email || !pw) { showErr('이메일과 비밀번호를 입력해주세요.'); return; }
+  if(pw.length < 6) { showErr('비밀번호는 6자 이상이어야 해요.'); return; }
+  if(pw !== pw2) { showErr('비밀번호가 일치하지 않아요.'); return; }
+
+  const btn = document.getElementById('signup-btn');
+  btn.disabled = true; btn.textContent = '가입 중…';
+
+  const { data, error } = await sb.auth.signUp({ email, password: pw });
+  btn.disabled = false; btn.textContent = '가입하기';
+
+  if(error) {
+    showErr(error.message || '오류가 발생했어요. 다시 시도해주세요.');
+    return;
+  }
+
+  // ── 핵심: identities가 비어있으면 이미 가입된 이메일 ──
+  if(data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    showErr('이미 가입된 이메일이에요. 로그인 탭에서 로그인해주세요.');
+    return;
+  }
+
+  if(data.session) {
+    // 이메일 확인 불필요 → 바로 이동
+    finishAuth();
+    return;
+  }
+
+  // 이메일 확인 필요 → OTP 입력 화면으로
+  pendingEmail = email;
+  document.getElementById('otp-email').textContent = email;
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('tabs').style.display = 'none';
+  document.getElementById('otp-area').classList.add('visible');
+  document.getElementById('f-otp').value = '';
+  setTimeout(() => document.getElementById('f-otp').focus(), 100);
+}
+
+async function verifyOtp() {
+  if(!sb) return;
+  const code = document.getElementById('f-otp').value.trim();
+  clearMessages();
+  if(code.length < 6) { showErr('인증 코드 6자리를 입력해주세요.'); return; }
+  const btn = document.getElementById('otp-btn');
+  btn.disabled = true; btn.textContent = '확인 중…';
+  const { error } = await sb.auth.verifyOtp({ email: pendingEmail, token: code, type: 'signup' });
+  btn.disabled = false; btn.textContent = '인증 완료';
+  if(error) { showErr('코드가 틀렸거나 만료되었어요. 다시 시도해주세요.'); return; }
+  finishAuth();
+}
+
+function cancelOtp() {
+  document.getElementById('otp-area').classList.remove('visible');
+  document.getElementById('signup-form').style.display = 'block';
+  document.getElementById('tabs').style.display = 'flex';
+  clearMessages();
+}
+
+// 초기 모드 설정
+setMode(initMode);
+</script>
+</body>
+</html>

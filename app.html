@@ -4573,13 +4573,16 @@ self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r
 
   // ── 모달 열기/닫기 ──
   window.openAuthModal = function(){
+    if(!currentUser){
+      // 비로그인 → 통합 로그인 페이지로 이동
+      window.location.href='/auth.html?redirect='+encodeURIComponent(location.pathname+location.search);
+      return;
+    }
     const modal = document.getElementById('auth-modal');
     if(!modal) return;
-    if(currentUser){
-      // 로그인 상태: 바로 내 계정 화면
-      document.getElementById('am-unauth').style.display = 'none';
-      document.getElementById('am-auth').style.display = 'block';
-    }
+    // 로그인 상태: 내 계정 화면
+    document.getElementById('am-unauth').style.display = 'none';
+    document.getElementById('am-auth').style.display = 'block';
     modal.classList.add('open');
     document.getElementById('modal-overlay').style.display = 'block';
   };
