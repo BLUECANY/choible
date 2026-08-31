@@ -301,7 +301,7 @@ header{
 <header>
   <a class="hd-logo" href="/">choible</a>
   <nav class="hd-nav">
-    <a href="/projects.html">✈️ 플래너</a>
+    <a href="/app.html">✈️ 플래너</a>
     <a href="/projects.html">📁 프로젝트</a>
     <a href="/community.html" class="active">🌐 커뮤니티</a>
   </nav>
@@ -662,25 +662,46 @@ async function submitComment(postId){
 }
 
 // ── Share modal ──
-function openShareModal(){
+async function openShareModal(){
   if(!currentUser){openLoginModal();return;}
-  localTrips=getLocalTrips();
-  renderTripSelect();
   document.getElementById('share-title').value='';
   document.getElementById('share-desc').value='';
   document.getElementById('share-err').style.display='none';
   document.getElementById('share-overlay').classList.add('open');
+  // Show loading state
+  document.getElementById('trip-select-list').innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 4px">불러오는 중…</div>';
+  localTrips=await getAllTrips();
+  renderTripSelect();
 }
 function closeShareModal(){document.getElementById('share-overlay').classList.remove('open');}
 
-function getLocalTrips(){
-  try{return JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{return[];}
+async function getAllTrips(){
+  // 1) local trips
+  let trips=[];
+  try{trips=JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{}
+  // 2) cloud trips (Supabase)
+  if(currentUser&&currentToken){
+    try{
+      const r=await sbAuthFetch('/rest/v1/mindmaps?select=id,title,preview,updated_at&user_id=eq.'+currentUser.id+'&order=updated_at.desc&limit=50',currentToken);
+      if(r.ok){
+        const cloudTrips=await r.json();
+        // Merge: avoid duplicates (same id)
+        const localIds=new Set(trips.map(t=>t.id));
+        cloudTrips.forEach(t=>{
+          if(!localIds.has(t.id)){
+            trips.push({id:t.id,title:t.title,preview:t.preview||'',cloud:true,updatedAt:t.updated_at});
+          }
+        });
+      }
+    }catch{}
+  }
+  return trips;
 }
 
 function renderTripSelect(){
   const list=document.getElementById('trip-select-list');
   if(!localTrips.length){
-    list.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 4px">저장된 여행이 없어요.<br><a href="/app.html" style="color:var(--accent);font-weight:600">여행 만들러 가기 →</a></div>';
+    list.innerHTML='<div style="font-size:13px;color:var(--text3);padding:8px 4px">저장된 여행이 없어요.<br><a href="/app.html?newproject=1" style="color:var(--accent);font-weight:600">여행 만들러 가기 →</a></div>';
     selectedTripId=null;return;
   }
   list.innerHTML='';
