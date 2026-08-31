@@ -421,19 +421,38 @@ let localTrips=[];
 let postsCache=[];
 
 // ── Auth ──
+const SB_SESSION_KEY='sb-rrssuofmyvfxzbliocmn-auth-token';
+
 async function initAuth(){
   try{
-    // Supabase JS SDK v2 stores session under this key
-    const stored=localStorage.getItem('sb-rrssuofmyvfxzbliocmn-auth-token');
-    if(stored){
-      const session=JSON.parse(stored);
-      const token=session?.access_token;
-      if(token){
-        const r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+token}});
-        if(r.ok){const u=await r.json();currentUser=u;currentToken=token;}
-      }
+    const stored=localStorage.getItem(SB_SESSION_KEY);
+    if(!stored){renderHeader();renderFAB();return;}
+    const session=JSON.parse(stored);
+    let token=session?.access_token;
+    const expiresAt=session?.expires_at;
+    const now=Math.floor(Date.now()/1000);
+
+    // 토큰 만료됐거나 60초 이내 만료 예정 → refresh
+    if(token && expiresAt && now>expiresAt-60 && session?.refresh_token){
+      try{
+        const rr=await fetch(SB_URL+'/auth/v1/token?grant_type=refresh_token',{
+          method:'POST',
+          headers:{'apikey':SB_KEY,'Content-Type':'application/json'},
+          body:JSON.stringify({refresh_token:session.refresh_token})
+        });
+        if(rr.ok){
+          const ns=await rr.json();
+          token=ns.access_token;
+          localStorage.setItem(SB_SESSION_KEY,JSON.stringify({...ns,expires_at:now+(ns.expires_in||3600)}));
+        }
+      }catch{}
     }
-  }catch{}
+
+    if(token){
+      const r=await fetch(SB_URL+'/auth/v1/user',{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+token}});
+      if(r.ok){currentUser=await r.json();currentToken=token;}
+    }
+  }catch(e){console.warn('auth init',e);}
   renderHeader();
   renderFAB();
 }
@@ -676,24 +695,31 @@ async function openShareModal(){
 function closeShareModal(){document.getElementById('share-overlay').classList.remove('open');}
 
 async function getAllTrips(){
-  // 1) local trips
   let trips=[];
+  // 1) 로컬 저장 여행
   try{trips=JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{}
-  // 2) cloud trips (Supabase)
+
+  // 2) 클라우드 저장 여행 (Supabase mindmaps 테이블)
   if(currentUser&&currentToken){
     try{
-      const r=await sbAuthFetch('/rest/v1/mindmaps?select=id,title,preview,updated_at&user_id=eq.'+currentUser.id+'&order=updated_at.desc&limit=50',currentToken);
+      // id, title만 조회 — 다른 컬럼명 불일치 오류 방지
+      const r=await sbAuthFetch(
+        '/rest/v1/mindmaps?select=id,title&user_id=eq.'+currentUser.id+'&limit=50',
+        currentToken
+      );
       if(r.ok){
         const cloudTrips=await r.json();
-        // Merge: avoid duplicates (same id)
         const localIds=new Set(trips.map(t=>t.id));
         cloudTrips.forEach(t=>{
           if(!localIds.has(t.id)){
-            trips.push({id:t.id,title:t.title,preview:t.preview||'',cloud:true,updatedAt:t.updated_at});
+            trips.push({id:t.id,title:t.title||'제목 없음',preview:'',cloud:true});
           }
         });
+      }else{
+        const errBody=await r.json().catch(()=>({}));
+        console.warn('mindmaps fetch failed',r.status,errBody);
       }
-    }catch{}
+    }catch(e){console.warn('cloud trips error',e);}
   }
   return trips;
 }

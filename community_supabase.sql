@@ -1,6 +1,7 @@
 -- ============================================================
 -- choible community tables
 -- Supabase SQL Editor에서 실행해주세요
+-- 이전에 실행했어도 다시 실행해도 안전합니다 (IF NOT EXISTS 사용)
 -- ============================================================
 
 -- 1. community_posts
@@ -39,6 +40,14 @@ CREATE TABLE IF NOT EXISTS community_comments (
 );
 
 -- ============================================================
+-- 권한 부여 (GRANT) ← 이게 없으면 permission denied 발생!
+-- ============================================================
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON community_posts TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON community_likes TO anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON community_comments TO anon, authenticated;
+
+-- ============================================================
 -- RLS (Row Level Security)
 -- ============================================================
 
@@ -46,20 +55,31 @@ ALTER TABLE community_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE community_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE community_comments ENABLE ROW LEVEL SECURITY;
 
--- community_posts: 누구나 읽기, 로그인한 사용자만 쓰기/삭제
-CREATE POLICY "posts_read_all" ON community_posts FOR SELECT USING (true);
+-- 기존 정책 삭제 후 재생성 (중복 오류 방지)
+DROP POLICY IF EXISTS "posts_read_all" ON community_posts;
+DROP POLICY IF EXISTS "posts_insert_auth" ON community_posts;
+DROP POLICY IF EXISTS "posts_delete_own" ON community_posts;
+DROP POLICY IF EXISTS "likes_read_all" ON community_likes;
+DROP POLICY IF EXISTS "likes_insert_auth" ON community_likes;
+DROP POLICY IF EXISTS "likes_delete_own" ON community_likes;
+DROP POLICY IF EXISTS "comments_read_all" ON community_comments;
+DROP POLICY IF EXISTS "comments_insert_auth" ON community_comments;
+DROP POLICY IF EXISTS "comments_delete_own" ON community_comments;
+
+-- community_posts 정책
+CREATE POLICY "posts_read_all"    ON community_posts FOR SELECT USING (true);
 CREATE POLICY "posts_insert_auth" ON community_posts FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "posts_delete_own" ON community_posts FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "posts_delete_own"  ON community_posts FOR DELETE USING (auth.uid() = user_id);
 
--- community_likes: 누구나 읽기, 로그인한 사용자만 좋아요/취소
-CREATE POLICY "likes_read_all" ON community_likes FOR SELECT USING (true);
+-- community_likes 정책
+CREATE POLICY "likes_read_all"    ON community_likes FOR SELECT USING (true);
 CREATE POLICY "likes_insert_auth" ON community_likes FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "likes_delete_own" ON community_likes FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "likes_delete_own"  ON community_likes FOR DELETE USING (auth.uid() = user_id);
 
--- community_comments: 누구나 읽기, 로그인한 사용자만 작성
-CREATE POLICY "comments_read_all" ON community_comments FOR SELECT USING (true);
+-- community_comments 정책
+CREATE POLICY "comments_read_all"    ON community_comments FOR SELECT USING (true);
 CREATE POLICY "comments_insert_auth" ON community_comments FOR INSERT WITH CHECK (auth.uid() = user_id);
-CREATE POLICY "comments_delete_own" ON community_comments FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "comments_delete_own"  ON community_comments FOR DELETE USING (auth.uid() = user_id);
 
 -- ============================================================
 -- RPC functions (좋아요·댓글 카운트 원자적 업데이트)
@@ -80,8 +100,13 @@ RETURNS void LANGUAGE sql SECURITY DEFINER AS $$
   UPDATE community_posts SET comments_count = comments_count + 1 WHERE id = pid;
 $$;
 
+-- RPC 권한
+GRANT EXECUTE ON FUNCTION increment_likes TO authenticated;
+GRANT EXECUTE ON FUNCTION decrement_likes TO authenticated;
+GRANT EXECUTE ON FUNCTION increment_comments TO authenticated;
+
 -- ============================================================
--- 인덱스 (성능 최적화)
+-- 인덱스
 -- ============================================================
 
 CREATE INDEX IF NOT EXISTS idx_community_posts_created_at ON community_posts(created_at DESC);
