@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="color-scheme" content="light">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>로그인 · choible</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -12,18 +13,6 @@
   --accent:#5b8af5;--accent2:#4a78e8;--accent-soft:rgba(91,138,245,.1);
   --red:#ef4444;--green:#10b981;
   --radius:14px;--shadow:0 4px 24px rgba(0,0,0,.08);
-}
-@media(prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#111;--surface:#1e1e1e;--border:#2e2e2e;
-    --text1:#f0f0f0;--text2:#a0a0a0;--text3:#555;
-    --accent-soft:rgba(91,138,245,.15);--shadow:0 4px 24px rgba(0,0,0,.4);
-  }
-}
-[data-theme="dark"]{
-  --bg:#111;--surface:#1e1e1e;--border:#2e2e2e;
-  --text1:#f0f0f0;--text2:#a0a0a0;--text3:#555;
-  --accent-soft:rgba(91,138,245,.15);--shadow:0 4px 24px rgba(0,0,0,.4);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;}
@@ -68,6 +57,15 @@ body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacS
 .divider{height:1px;background:var(--border);margin:20px 0;}
 .footer-note{font-size:12px;color:var(--text3);text-align:center;margin-top:24px;line-height:1.7;}
 .footer-note a{color:var(--text2);}
+
+@media(max-width:480px){
+  body{padding:16px 12px;}
+  .card{padding:24px 18px;}
+  .logo-link{margin-bottom:20px;}
+  .logo-name{font-size:20px;}
+  .otp-title{font-size:15px;}
+  .submit-btn{padding:12px;}
+}
 </style>
 </head>
 <body>
