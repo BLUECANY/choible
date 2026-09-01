@@ -606,6 +606,29 @@
     #dz-preview{position:absolute;z-index:3;border:2px dashed rgba(91,138,245,.6);background:rgba(91,138,245,.04);border-radius:12px;pointer-events:none}
     #dz-btn.active{background:#5b8af5!important;color:#fff!important;border-color:#5b8af5!important}
 
+    /* ── 활성 모드 상태 바 ── */
+    #mode-bar{
+      position:fixed;top:60px;left:50%;transform:translateX(-50%);
+      display:none;align-items:center;gap:10px;
+      background:#5b8af5;color:#fff;
+      padding:8px 16px 8px 14px;border-radius:22px;
+      font-size:13px;font-weight:700;
+      box-shadow:0 4px 20px rgba(91,138,245,.45);
+      z-index:1500;white-space:nowrap;
+      animation:modeBarIn .2s cubic-bezier(.34,1.56,.64,1);
+    }
+    #mode-bar.show{display:flex}
+    #mode-bar-exit{
+      background:rgba(255,255,255,.25);border:none;color:#fff;
+      font-size:12px;font-weight:800;padding:3px 10px;border-radius:12px;
+      cursor:pointer;margin-left:4px;-webkit-tap-highlight-color:transparent;
+    }
+    #mode-bar-exit:active{background:rgba(255,255,255,.4)}
+    @keyframes modeBarIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+    @media(max-width:640px){
+      #mode-bar{top:56px;font-size:12px;padding:7px 13px 7px 12px;}
+    }
+
     /* ── 버그 문의 모달 ── */
     #bug-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6000;background:#fff;border-radius:22px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:380px;display:none}
     .bm-title{font-size:17px;font-weight:800;color:#1a1a2e;margin-bottom:5px}
@@ -1290,6 +1313,10 @@
 </div>
 
 <div id="hint">장소를 검색해서 추가해보세요!</div>
+<div id="mode-bar">
+  <span id="mode-bar-label">📅 Day 구역 그리기</span>
+  <button id="mode-bar-exit" onclick="toggleDzMode()">✕ 종료</button>
+</div>
 
 <!-- SEO: JS 비활성 환경(검색엔진 봇)을 위한 텍스트 콘텐츠 -->
 <noscript>
@@ -3097,11 +3124,13 @@ function toggleDrawMode(){
     cvs.classList.add(drawTool==='text'?'draw-mode-text':'draw-mode');
     btn.style.cssText='color:#7c3aed;background:rgba(124,58,237,.1);border-color:#7c3aed';
     const isMob=window.innerWidth<=640;
+    setModeBar('🖊️ 그리기 모드 — 손가락으로 그리세요', toggleDrawMode);
     showHint(isMob?'🖊️ 그리기 모드 — 손가락으로 캔버스에 그리세요':'🖊️ 그리기 모드 — 캔버스에 드래그해 그리세요 · T 텍스트 · 🧹 지우개');
   }else{
     cvs.classList.remove('draw-mode','draw-mode-text');
     btn.style.cssText='color:#7c3aed';
     document.getElementById('em-picker')?.classList.remove('show');
+    setModeBar(null);
     showHint('그리기 모드 종료');
   }
 }
@@ -3315,6 +3344,18 @@ function deleteDayZone(id){
   document.getElementById(`dz${id}`)?.remove();
   updateTimeline();
 }
+function setModeBar(text, exitFn){
+  const bar=document.getElementById('mode-bar');
+  const label=document.getElementById('mode-bar-label');
+  const exitBtn=document.getElementById('mode-bar-exit');
+  if(text){
+    label.textContent=text;
+    exitBtn.onclick=exitFn;
+    bar.classList.add('show');
+  }else{
+    bar.classList.remove('show');
+  }
+}
 function toggleDzMode(){
   // 다른 모드 끄기
   if(drawMode)toggleDrawMode();
@@ -3322,6 +3363,7 @@ function toggleDzMode(){
   const btn=document.getElementById('dz-btn');
   btn.classList.toggle('active',dzMode);
   document.getElementById('canvas').style.cursor=dzMode?'crosshair':'';
+  setModeBar(dzMode?'📅 Day 구역 그리기 — 손가락으로 드래그':null, toggleDzMode);
   if(dzMode){const isMob=window.innerWidth<=640;showHint(isMob?'📅 빈 곳을 손가락으로 드래그해서 Day 구역을 그려보세요!':'📅 빈 곳을 드래그해서 Day 구역을 그려보세요!');}
 }
 function clearDayZones(){
