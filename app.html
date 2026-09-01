@@ -625,7 +625,7 @@
     }
     #mode-bar-exit:active{background:rgba(255,255,255,.4)}
     @keyframes modeBarIn{from{opacity:0;transform:translateX(-50%) translateY(-8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
-    @media(max-width:640px){
+    @media(max-width:1024px){
       #mode-bar{top:56px;font-size:12px;padding:7px 13px 7px 12px;}
     }
 
@@ -659,8 +659,80 @@
     .ob-skip{background:none;border:none;color:#ccc;font-size:12px;cursor:pointer;padding:13px 12px;transition:color .15s}
     .ob-skip:hover{color:#888}
 
-    /* ─── 노트북 (641px ~ 1200px) 툴바 압축 ─── */
-    @media(min-width:641px) and (max-width:1200px){
+    /* ─── 태블릿 · 소형 노트북 (641px ~ 1024px) ─── */
+    @media(min-width:641px) and (max-width:1024px){
+      /* 툴바 간소화 — 휴대폰과 동일한 숨김 규칙 */
+      #toolbar .t-div{display:none!important}
+      #toolbar .t-logo{display:none!important}
+      #toolbar .t-zoom-group{display:none!important}
+      #toolbar .t-btn{display:none!important}
+      [data-mob="hide"]{display:none!important}
+      #pg-back-btn{display:none!important}
+      #pg-current-title{display:none!important}
+      #pg-new-btn{display:none!important}
+      #autosave-badge{display:none!important}
+      #overflow-wrap{display:none!important}
+      #auth-btn #auth-label{display:none!important}
+      #auth-btn{min-width:44px;min-height:44px;padding:0 10px;flex-shrink:0;}
+      #tl-toggle{display:none!important}
+      .search-wrap{flex:1;min-width:0}
+      #search-input{width:100%;font-size:14px;padding:9px 14px;border-radius:12px;}
+      .t-home-btn{font-size:18px;padding:6px 10px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+      /* 📋 일정 버튼 (JS 생성) */
+      #mob-tl-btn{
+        display:flex!important;align-items:center;justify-content:center;
+        font-size:13px;font-weight:700;color:#5b8af5;background:#f0f5ff;
+        border:none;border-radius:12px;
+        min-width:52px;min-height:44px;padding:0 12px;
+        cursor:pointer;flex-shrink:0;white-space:nowrap;
+      }
+      #mob-tl-btn:active{background:#dce8ff}
+      /* ⋯ 더보기 버튼 (JS 생성) */
+      #mob-more-btn{
+        display:flex!important;align-items:center;justify-content:center;
+        font-size:20px;font-weight:700;color:#444;background:#f5f5f5;
+        border:none;border-radius:12px;
+        min-width:48px;min-height:44px;padding:0 14px;
+        cursor:pointer;flex-shrink:0;
+      }
+      #mob-more-btn:active{background:#e8edf8}
+
+      /* 더보기 드로어 — 태블릿: 중앙 정렬, 고정 너비 */
+      #mob-drawer{
+        position:fixed;bottom:-100%;
+        left:50%;transform:translateX(-50%);
+        width:min(520px,88vw);z-index:9000;
+        background:#fff;border-radius:22px;
+        box-shadow:0 8px 60px rgba(0,0,0,.2);
+        padding:18px 20px 28px;
+        transition:bottom .28s cubic-bezier(.4,0,.2,1);
+        display:block;
+      }
+      #mob-drawer.open{bottom:24px}
+      #mob-drawer-handle{width:40px;height:4px;background:#e0e0e0;border-radius:3px;margin:0 auto 16px}
+      #mob-drawer-title{font-size:13px;font-weight:800;color:#aaa;letter-spacing:.05em;margin-bottom:14px}
+      #mob-drawer-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+      .mob-d-btn{
+        display:flex;flex-direction:column;align-items:center;gap:6px;
+        padding:16px 4px 12px;border:1.5px solid #eee;border-radius:14px;
+        background:#fafafa;cursor:pointer;font-size:12px;font-weight:700;
+        color:#555;transition:all .15s;
+      }
+      .mob-d-btn:active{background:#f0f5ff;border-color:#c7d8ff;color:#5b8af5;transform:scale(.96)}
+      .mob-d-btn-icon{font-size:26px;line-height:1}
+      #mob-overlay{
+        position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:8999;
+        display:none;backdrop-filter:blur(1px);
+      }
+      #mob-overlay.show{display:block}
+
+      /* 그리기 툴바 */
+      #draw-toolbar{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;}
+      #draw-toolbar::-webkit-scrollbar{display:none}
+    }
+    /* ─── 일반 노트북 (1025px ~ 1200px) 툴바 압축 ─── */
+    @media(min-width:1025px) and (max-width:1200px){
       #toolbar{gap:6px;padding:8px 14px}
       #search-input{width:160px}
       .t-btn{padding:6px 8px;font-size:11px}
@@ -3123,7 +3195,7 @@ function toggleDrawMode(){
   if(drawMode){
     cvs.classList.add(drawTool==='text'?'draw-mode-text':'draw-mode');
     btn.style.cssText='color:#7c3aed;background:rgba(124,58,237,.1);border-color:#7c3aed';
-    const isMob=window.innerWidth<=640;
+    const isMob=window.innerWidth<=1024;
     setModeBar('🖊️ 그리기 모드 — 손가락으로 그리세요', toggleDrawMode);
     showHint(isMob?'🖊️ 그리기 모드 — 손가락으로 캔버스에 그리세요':'🖊️ 그리기 모드 — 캔버스에 드래그해 그리세요 · T 텍스트 · 🧹 지우개');
   }else{
@@ -3364,7 +3436,7 @@ function toggleDzMode(){
   btn.classList.toggle('active',dzMode);
   document.getElementById('canvas').style.cursor=dzMode?'crosshair':'';
   setModeBar(dzMode?'📅 Day 구역 그리기 — 손가락으로 드래그':null, toggleDzMode);
-  if(dzMode){const isMob=window.innerWidth<=640;showHint(isMob?'📅 빈 곳을 손가락으로 드래그해서 Day 구역을 그려보세요!':'📅 빈 곳을 드래그해서 Day 구역을 그려보세요!');}
+  if(dzMode){const isMob=window.innerWidth<=1024;showHint(isMob?'📅 빈 곳을 손가락으로 드래그해서 Day 구역을 그려보세요!':'📅 빈 곳을 드래그해서 Day 구역을 그려보세요!');}
 }
 function clearDayZones(){
   dayZones.forEach(z=>document.getElementById(`dz${z.id}`)?.remove());
@@ -3771,7 +3843,7 @@ window.addEventListener('load',()=>initOnboard());
 // 모바일 툴바 설정
 // ══════════════════════════════════════════
 (function setupMobileToolbar(){
-  if(window.innerWidth > 640) return; // 데스크톱에서는 실행 안 함
+  if(window.innerWidth > 1024) return; // 데스크톱에서는 실행 안 함
   const toolbar = document.getElementById('toolbar');
   if(!toolbar) return;
 
