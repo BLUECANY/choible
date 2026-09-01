@@ -121,10 +121,10 @@ body{background:var(--bg);color:var(--text1);font-family:-apple-system,BlinkMacS
   <!-- OTP 인증 (회원가입 이메일 확인) -->
   <div class="otp-area" id="otp-area">
     <div class="otp-title">📬 이메일을 확인해주세요</div>
-    <div class="otp-desc"><span id="otp-email" class="otp-email"></span>으로 인증 코드를 보냈어요. 코드 6자리를 입력해주세요.</div>
+    <div class="otp-desc"><span id="otp-email" class="otp-email"></span>으로 인증 코드를 보냈어요. 코드 8자리를 입력해주세요.</div>
     <div class="form-group">
       <label class="form-label" for="f-otp">인증 코드</label>
-      <input class="form-input" id="f-otp" type="text" maxlength="6" placeholder="000000" inputmode="numeric" onkeydown="if(event.key==='Enter')verifyOtp()">
+      <input class="form-input" id="f-otp" type="text" maxlength="8" placeholder="00000000" inputmode="numeric" onkeydown="if(event.key==='Enter')verifyOtp()">
     </div>
     <button class="submit-btn" id="otp-btn" onclick="verifyOtp()">인증 완료</button>
     <button class="otp-back" onclick="cancelOtp()">← 다시 입력하기</button>
@@ -258,7 +258,7 @@ async function verifyOtp() {
   if(!sb) return;
   const code = document.getElementById('f-otp').value.trim();
   clearMessages();
-  if(code.length < 6) { showErr('인증 코드 6자리를 입력해주세요.'); return; }
+  if(code.length < 8) { showErr('인증 코드 8자리를 입력해주세요.'); return; }
   const btn = document.getElementById('otp-btn');
   btn.disabled = true; btn.textContent = '확인 중…';
   const { error } = await sb.auth.verifyOtp({ email: pendingEmail, token: code, type: 'signup' });
