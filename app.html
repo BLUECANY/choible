@@ -2376,6 +2376,7 @@ document.addEventListener('touchmove',e=>{
 document.addEventListener('touchend',()=>{
   if(drag)lastDragMoved=drag.moved;
   drag=null;
+  dzDragSt=null;
   cvs.classList.remove('panning');
 },{passive:true});
 
@@ -2440,13 +2441,44 @@ cvs.addEventListener('touchstart',e=>{
     // 핀치 줌 시작
     e.preventDefault();
     touchPinchDist=getTouchDist(e.touches);
-    panSt=null;drag=null;
+    panSt=null;drag=null;dzDrawSt=null;
     return;
   }
   if(e.touches.length===1&&!drag){
     const t=e.touches[0];
     const target=t.target;
     const onBg=target===cvs||target===world||target.id==='svg'||target.id==='draw-layer'||target.id==='empty'||target.closest('#empty');
+    // 그리기 모드 터치 지원
+    if(drawMode&&onBg&&!target.classList.contains('day-zone')&&!target.classList.contains('dz-label')){
+      e.preventDefault();
+      beginDraw(t.clientX,t.clientY);
+      return;
+    }
+    // Day 구역 그리기 모드 터치 지원
+    if(dzMode&&onBg){
+      e.preventDefault();
+      const wc=toWorldCoords(t.clientX,t.clientY);
+      dzDrawSt={sx:wc.x,sy:wc.y,ex:wc.x,ey:wc.y};
+      if(dzPreview){dzPreview.remove();dzPreview=null;}
+      dzPreview=document.createElement('div');
+      dzPreview.id='dz-preview';
+      dzPreview.style.cssText=`left:${wc.x}px;top:${wc.y}px;width:0;height:0;`;
+      world.appendChild(dzPreview);
+      return;
+    }
+    // Day 구역 드래그 (터치)
+    if(!dzMode&&(target.classList.contains('day-zone')||target.classList.contains('dz-label'))){
+      const dzEl=target.closest('.day-zone');
+      if(dzEl){
+        const zid=parseInt(dzEl.id.replace('dz',''));
+        const zone=dayZones.find(z=>z.id===zid);
+        if(zone){
+          const wc=toWorldCoords(t.clientX,t.clientY);
+          dzDragSt={zone,ox:wc.x-zone.x,oy:wc.y-zone.y};
+          return;
+        }
+      }
+    }
     if(onBg){
       panSt={sx:t.clientX,sy:t.clientY,px:panX,py:panY,moved:false};
       cvs.classList.add('panning');
@@ -2467,6 +2499,26 @@ cvs.addEventListener('touchmove',e=>{
   }
   if(e.touches.length===1){
     const t=e.touches[0];
+    // 그리기 모드 터치
+    if(drawMode&&isDrawing){continueDraw(t.clientX,t.clientY);return;}
+    // Day 구역 그리기 미리보기
+    if(dzDrawSt&&dzPreview){
+      const wc=toWorldCoords(t.clientX,t.clientY);
+      dzDrawSt.ex=wc.x;dzDrawSt.ey=wc.y;
+      const rx=Math.min(dzDrawSt.sx,wc.x),ry=Math.min(dzDrawSt.sy,wc.y);
+      const rw=Math.abs(wc.x-dzDrawSt.sx),rh=Math.abs(wc.y-dzDrawSt.sy);
+      dzPreview.style.cssText=`left:${rx}px;top:${ry}px;width:${rw}px;height:${rh}px;`;
+      return;
+    }
+    // Day 구역 드래그 이동
+    if(dzDragSt){
+      const wc=toWorldCoords(t.clientX,t.clientY);
+      dzDragSt.zone.x=wc.x-dzDragSt.ox;
+      dzDragSt.zone.y=wc.y-dzDragSt.oy;
+      const dzEl=document.getElementById(`dz${dzDragSt.zone.id}`);
+      if(dzEl){dzEl.style.left=Math.round(dzDragSt.zone.x)+'px';dzEl.style.top=Math.round(dzDragSt.zone.y)+'px';}
+      return;
+    }
     // 노드 드래그
     if(drag){
       const dx=t.clientX-drag.sx,dy=t.clientY-drag.sy;
@@ -2491,6 +2543,24 @@ cvs.addEventListener('touchmove',e=>{
 
 cvs.addEventListener('touchend',e=>{
   if(e.touches.length<2)touchPinchDist=null;
+  // Day 구역 생성 완료 (터치)
+  if(dzDrawSt){
+    const {sx,sy,ex,ey}=dzDrawSt;
+    const x=Math.min(sx,ex),y=Math.min(sy,ey);
+    const w=Math.abs(ex-sx),h=Math.abs(ey-sy);
+    dzDrawSt=null;
+    if(dzPreview){dzPreview.remove();dzPreview=null;}
+    if(w>=60&&h>=60){
+      const day=getNextZoneDay();
+      const zone={id:++dzCtr,day,x,y,w,h};
+      dayZones.push(zone);buildDayZone(zone);
+      updateTimeline();showHint(`✅ Day ${day} 구역 생성됨! 드래그로 위치 조정, ✕로 삭제`);
+    }else if(w>5||h>5){showHint('구역이 너무 작아요. 더 크게 드래그해보세요!');}
+    return;
+  }
+  // 그리기 종료 (터치)
+  if(isDrawing){endDraw();}
+  dzDragSt=null;
   if(drag)lastDragMoved=drag.moved;
   if(panSt)panMoved=panSt.moved;
   drag=null;panSt=null;
@@ -3026,7 +3096,8 @@ function toggleDrawMode(){
   if(drawMode){
     cvs.classList.add(drawTool==='text'?'draw-mode-text':'draw-mode');
     btn.style.cssText='color:#7c3aed;background:rgba(124,58,237,.1);border-color:#7c3aed';
-    showHint('🖊️ 그리기 모드 — 캔버스에 드래그해 그리세요 · T 텍스트 · 🧹 지우개');
+    const isMob=window.innerWidth<=640;
+    showHint(isMob?'🖊️ 그리기 모드 — 손가락으로 캔버스에 그리세요':'🖊️ 그리기 모드 — 캔버스에 드래그해 그리세요 · T 텍스트 · 🧹 지우개');
   }else{
     cvs.classList.remove('draw-mode','draw-mode-text');
     btn.style.cssText='color:#7c3aed';
@@ -3251,7 +3322,7 @@ function toggleDzMode(){
   const btn=document.getElementById('dz-btn');
   btn.classList.toggle('active',dzMode);
   document.getElementById('canvas').style.cursor=dzMode?'crosshair':'';
-  if(dzMode)showHint('📅 빈 곳을 드래그해서 Day 구역을 그려보세요!');
+  if(dzMode){const isMob=window.innerWidth<=640;showHint(isMob?'📅 빈 곳을 손가락으로 드래그해서 Day 구역을 그려보세요!':'📅 빈 곳을 드래그해서 Day 구역을 그려보세요!');}
 }
 function clearDayZones(){
   dayZones.forEach(z=>document.getElementById(`dz${z.id}`)?.remove());
