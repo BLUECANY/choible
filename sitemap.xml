@@ -18,6 +18,18 @@
     <lastmod>2026-08-30</lastmod>
   </url>
   <url>
+    <loc>https://choible.com/guide.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-09-07</lastmod>
+  </url>
+  <url>
+    <loc>https://choible.com/community.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2026-09-07</lastmod>
+  </url>
+  <url>
     <loc>https://choible.com/privacy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
