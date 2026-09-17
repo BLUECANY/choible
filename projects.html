@@ -43,16 +43,16 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 .page{display:flex;flex-direction:column;min-height:100vh;}
 
 /* ── Nav ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,4vw,60px);height:60px;box-shadow:0 1px 12px rgba(79,110,247,.06);}
-.nav-logo{font-size:15px;font-weight:900;color:var(--text);display:flex;align-items:center;gap:7px;text-decoration:none;flex:1 1 0;min-width:0;}
-.nav-links{display:flex;gap:4px;align-items:center;}
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;padding:0 clamp(14px,4vw,60px);height:60px;box-shadow:0 1px 12px rgba(79,110,247,.06);}
+.nav-logo{font-size:15px;font-weight:900;color:var(--text);display:flex;align-items:center;gap:7px;text-decoration:none;flex-shrink:0;}
+.nav-links{display:flex;gap:4px;align-items:center;flex:1;overflow:hidden;min-width:0;}
 .nav-link{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 12px;border-radius:18px;transition:all .15s;white-space:nowrap;}
 .nav-link:hover,.nav-link.active{color:var(--accent);background:var(--accent-soft);}
-.nav-cta{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:8px 18px;border-radius:18px;text-decoration:none;transition:opacity .15s;white-space:nowrap;}
+.nav-cta{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:8px 18px;border-radius:18px;text-decoration:none;transition:opacity .15s;white-space:nowrap;flex-shrink:0;}
 .nav-cta:hover{opacity:.85;}
 @media(max-width:560px){.nav-link:not(.nav-link-home){display:none;}}
 
-.header-right{display:flex;align-items:center;gap:8px;flex:1 1 0;justify-content:flex-end;min-width:0;}
+.header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .btn{
   border:none;cursor:pointer;font-family:var(--font);
   display:inline-flex;align-items:center;gap:6px;
@@ -517,7 +517,6 @@ footer{
       <a href="guide-korea.html" class="nav-link">국내여행</a>
       <a href="community.html" class="nav-link">커뮤니티</a>
       <a href="about.html" class="nav-link">소개</a>
-      <a href="app.html" class="nav-cta">앱 시작하기 →</a>
     </div>
     <div class="header-right">
       <!-- shown only when logged in -->
@@ -542,6 +541,7 @@ footer{
         </div>
       </div>
     </div>
+    <a href="app.html" class="nav-cta">앱 시작하기 →</a>
   </nav>
 
   <!-- Main content -->
@@ -1226,7 +1226,7 @@ async function verifyOtp(){
   const code=document.getElementById('f-otp').value.trim();
   const errEl=document.getElementById('auth-err');
   errEl.style.display='none';
-  if(code.length<6){errEl.textContent='인증 코드를 확인해주세요.';errEl.style.display='block';return;}
+  if(code.length<8){errEl.textContent='인증 코드 8자리를 입력해주세요.';errEl.style.display='block';return;}
   if(!sb){errEl.textContent='인증 서비스를 사용할 수 없습니다.';errEl.style.display='block';return;}
   const {error}=await sb.auth.verifyOtp({email:pendingEmail,token:code,type:'signup'});
   if(error){errEl.textContent='코드가 틀렸거나 만료되었습니다.';errEl.style.display='block';return;}
