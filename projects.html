@@ -498,6 +498,10 @@ footer{
   .grid{grid-template-columns:repeat(2,1fr);gap:12px;}
   footer{flex-direction:column;align-items:flex-start;gap:8px;}
 }
+.hdr-nav-extra{display:flex;align-items:center;gap:2px;}
+.hdr-nav-extra a{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;}
+.hdr-nav-extra a:hover{background:var(--accent-soft);color:var(--accent);}
+@media(max-width:620px){.hdr-nav-extra{display:none;}}
 @media(max-width:520px){
   .hdr-nav-lbl{display:none;}
   .hdr-nav-link{padding:6px 8px;}
@@ -526,6 +530,11 @@ footer{
       <span class="logo-name">choible</span>
     </a>
     <nav style="display:flex;align-items:center;gap:4px;">
+      <div class="hdr-nav-extra">
+        <a href="guide.html">가이드</a>
+        <a href="guide-korea.html">국내여행</a>
+        <a href="about.html">소개</a>
+      </div>
       <a href="#" onclick="(function(e){e.preventDefault();var ps=[];try{ps=JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{}var lp=ps.find(function(p){return p.id&&p.id.startsWith('local_');});if(lp){window.location.href='/app.html?project='+encodeURIComponent(lp.id);}else{var fp=ps[0];if(fp)window.location.href='/app.html?project='+encodeURIComponent(fp.id);};})(event)" class="hdr-nav-link" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'" onmouseout="this.style.background='';this.style.color='var(--text2)'">✈️ <span class="hdr-nav-lbl">플래너</span></a>
       <a href="community.html" class="hdr-nav-link" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'" onmouseout="this.style.background='';this.style.color='var(--text2)'">🌐 <span class="hdr-nav-lbl">커뮤니티</span></a>
     </nav>
