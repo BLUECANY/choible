@@ -55,8 +55,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255
 .hd-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .hd-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;cursor:pointer;overflow:hidden;flex-shrink:0;}
 .hd-avatar img{width:100%;height:100%;object-fit:cover;}
-.hd-login-btn{font-size:13px;font-weight:600;color:var(--accent);background:var(--accent-soft);border:none;border-radius:20px;padding:6px 14px;cursor:pointer;transition:all .15s;}
-.hd-login-btn:hover{background:var(--accent);color:#fff;}
+.hd-login-btn{font-size:12px;font-weight:700;color:var(--accent);background:#fff;border:1.5px solid #d0ddff;border-radius:20px;padding:7px 14px;cursor:pointer;transition:all .15s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px;flex-shrink:0;}
+.hd-login-btn:hover{background:#f0f5ff;border-color:var(--accent);}
+.nav-auth-label{font-size:12px;}
+.nav-projects-btn{font-size:12px;font-weight:700;color:var(--accent);padding:7px 14px;border-radius:20px;background:rgba(79,110,247,.1);border:1.5px solid rgba(79,110,247,.2);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .15s;display:inline-flex;align-items:center;gap:4px;}
+.nav-projects-btn:hover{background:rgba(79,110,247,.18);}
+@media(max-width:480px){.nav-auth-label{display:none;}}
+@media(max-width:540px){.hd-login-btn{padding:6px 10px;font-size:11px;}.nav-projects-btn{padding:6px 10px;font-size:11px;}.nav-cta{padding:7px 12px;font-size:11px;}}
+@media(max-width:400px){.nav-cta{display:none!important;}}
 
 /* ── Main layout ── */
 .main{max-width:640px;margin:0 auto;padding:80px 16px 120px;}
@@ -386,8 +392,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255
   </div>
   <div class="hd-right" id="hd-right">
     <div class="hd-avatar" id="hd-avatar" onclick="handleAvatarClick()" style="display:none"></div>
-    <button class="hd-login-btn" id="hd-login-btn" onclick="openLoginModal()" style="display:none">로그인</button>
+    <button class="hd-login-btn" id="hd-login-btn" onclick="openLoginModal()" style="display:none">👤 <span class="nav-auth-label">로그인</span></button>
   </div>
+  <a href="/projects.html" class="nav-projects-btn">📁 <span class="nav-auth-label">프로젝트</span></a>
   <a href="/app.html" class="nav-cta">앱 시작하기 →</a>
 </nav>
 

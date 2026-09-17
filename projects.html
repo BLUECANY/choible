@@ -53,6 +53,14 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255
 @media(max-width:560px){.nav-link:not(.nav-link-home){display:none;}}
 
 .header-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.nav-auth-label{font-size:12px;}
+#header-login-btn{font-size:12px!important;font-weight:700!important;color:var(--accent)!important;padding:7px 14px!important;border-radius:20px!important;border:1.5px solid #d0ddff!important;background:#fff!important;white-space:nowrap;gap:5px;}
+#header-login-btn:hover{background:#f0f5ff!important;border-color:var(--accent)!important;}
+.nav-projects-btn{font-size:12px;font-weight:700;color:#fff;padding:7px 14px;border-radius:20px;background:var(--accent);border:1.5px solid var(--accent);text-decoration:none;white-space:nowrap;flex-shrink:0;transition:all .15s;display:inline-flex;align-items:center;gap:4px;}
+.nav-projects-btn:hover{opacity:.88;}
+@media(max-width:480px){.nav-auth-label{display:none;}}
+@media(max-width:540px){#header-login-btn{padding:6px 10px!important;font-size:11px!important;}.nav-projects-btn{padding:6px 10px;font-size:11px;}.nav-cta{padding:7px 12px;font-size:11px;}}
+@media(max-width:400px){.nav-cta{display:none!important;}}
 .btn{
   border:none;cursor:pointer;font-family:var(--font);
   display:inline-flex;align-items:center;gap:6px;
@@ -525,7 +533,7 @@ footer{
         클라우드 연결
       </div>
       <!-- shown only when NOT logged in -->
-      <button id="header-login-btn" class="btn btn-outline" onclick="openAuthModal()" style="display:none">로그인 / 가입</button>
+      <button id="header-login-btn" class="btn" onclick="openAuthModal()" style="display:none">👤 <span class="nav-auth-label">로그인</span></button>
       <!-- shown only when logged in -->
       <div id="header-user" style="display:none;position:relative;">
         <button class="avatar-btn" id="avatar-btn" onclick="toggleAcctMenu()">
@@ -541,6 +549,7 @@ footer{
         </div>
       </div>
     </div>
+    <a href="projects.html" class="nav-projects-btn">📁 <span class="nav-auth-label">프로젝트</span></a>
     <a href="app.html" class="nav-cta">앱 시작하기 →</a>
   </nav>
 
