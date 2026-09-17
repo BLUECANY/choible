@@ -64,14 +64,12 @@ nav {
   font-weight: 800; font-size: 17px; letter-spacing: -.4px;
 }
 .nav-logo img { width: 28px; height: 28px; border-radius: 8px; }
-.nav-back {
-  font-family: 'Plus Jakarta Sans', sans-serif;
-  font-size: 14px; font-weight: 600;
-  color: var(--text2);
-  display: flex; align-items: center; gap: 6px;
-  transition: color .15s;
-}
-.nav-back:hover { color: var(--accent); }
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-link { font-size: 13px; font-weight: 600; color: var(--text2); text-decoration: none; padding: 6px 12px; border-radius: 18px; transition: all .15s; white-space: nowrap; }
+.nav-link:hover { color: var(--accent); background: rgba(79,110,247,.08); }
+.nav-cta-sm { background: var(--accent); color: #fff; font-size: 12px; font-weight: 700; padding: 8px 18px; border-radius: 18px; text-decoration: none; transition: opacity .15s; }
+.nav-cta-sm:hover { opacity: .85; }
+@media(max-width:560px) { .nav-link { display: none; } }
 
 /* MAIN */
 main {
@@ -182,7 +180,14 @@ footer {
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="/"><img src="/choible-icon.svg" alt="choible">choible</a>
-  <a class="nav-back" href="/">← 홈으로</a>
+  <div class="nav-links">
+    <a href="/" class="nav-link">홈</a>
+    <a href="/guide.html" class="nav-link">가이드</a>
+    <a href="/guide-korea.html" class="nav-link">국내여행</a>
+    <a href="/community.html" class="nav-link">커뮤니티</a>
+    <a href="/about.html" class="nav-link">소개</a>
+    <a href="/app.html" class="nav-cta-sm">앱 시작하기 →</a>
+  </div>
 </nav>
 
 <!-- MAIN -->

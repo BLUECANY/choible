@@ -118,6 +118,10 @@ nav{
 .nav-login.logged-in{color:#10b981;border-color:#a7f3d0}
 .nav-login.logged-in:hover{background:#ecfdf5}
 .nav-right{display:flex;align-items:center;gap:8px}
+.nav-links-left{display:flex;gap:2px;align-items:center;margin-right:4px}
+.nav-link-item{font-size:13px;font-weight:600;color:#5a6280;text-decoration:none;padding:6px 11px;border-radius:18px;transition:all .15s;white-space:nowrap}
+.nav-link-item:hover{color:#4F6EF7;background:#EEF2FF}
+@media(max-width:680px){.nav-links-left{display:none}}
 .nav-cta{
   background:#4F6EF7;color:#fff;font-size:clamp(11px,3vw,12px);font-weight:700;
   padding:8px clamp(12px,3vw,20px);border-radius:20px;text-decoration:none;
@@ -366,10 +370,15 @@ footer{
 <!-- NAV -->
 <nav>
   <a class="nav-logo" href="/"><img src="/choible-icon.svg" alt="choible" width="28" height="28" style="border-radius:8px;flex-shrink:0"> choible</a>
+  <div class="nav-links-left">
+    <a href="guide.html" class="nav-link-item">가이드</a>
+    <a href="guide-korea.html" class="nav-link-item">국내여행</a>
+    <a href="community.html" class="nav-link-item">커뮤니티</a>
+    <a href="about.html" class="nav-link-item">소개</a>
+  </div>
   <div class="nav-right">
-    <a href="community.html" class="nav-community" style="font-size:13px;font-weight:600;color:#5a6280;text-decoration:none;padding:6px 12px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='#eef1fe';this.style.color='#4f6ef7'" onmouseout="this.style.background='';this.style.color='#5a6280'">🌐 <span class="nav-community-label">커뮤니티</span></a>
     <button class="nav-login" id="nav-login-btn" onclick="openIndexAuth()">👤 <span id="nav-login-label">로그인</span></button>
-    <a class="nav-cta" href="projects.html">지금 시작하기 →</a>
+    <a class="nav-cta" href="app.html">앱 시작하기 →</a>
   </div>
 </nav>
 
