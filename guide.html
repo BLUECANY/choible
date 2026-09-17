@@ -57,7 +57,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
 body{font-family:'Noto Sans KR',system-ui,sans-serif;background:#F7FAFF;color:#0B1526;overflow-x:hidden;font-size:15px;line-height:1.8}
 
 /* NAV */
@@ -188,7 +188,9 @@ footer{border-top:1px solid #DDE6F8;padding:20px clamp(16px,5vw,60px);display:fl
   <div class="nav-links">
     <a href="/" class="nav-link nav-link-home">홈</a>
     <a href="guide.html" class="nav-link active">가이드</a>
+    <a href="guide-korea.html" class="nav-link">국내여행</a>
     <a href="community.html" class="nav-link">커뮤니티</a>
+    <a href="about.html" class="nav-link">소개</a>
     <a href="projects.html" class="nav-cta">여행 계획 시작 →</a>
   </div>
 </nav>
@@ -607,8 +609,10 @@ footer{border-top:1px solid #DDE6F8;padding:20px clamp(16px,5vw,60px);display:fl
   <span class="ft-logo"><img src="/choible-icon.svg" alt="choible" width="20" height="20" style="border-radius:5px;vertical-align:middle;margin-right:5px"> choible</span>
   <div class="ft-links">
     <a class="ft-link" href="/">홈</a>
-    <a class="ft-link" href="guide.html">여행 가이드</a>
+    <a class="ft-link" href="guide.html">해외 여행 가이드</a>
+    <a class="ft-link" href="guide-korea.html">국내 여행</a>
     <a class="ft-link" href="community.html">커뮤니티</a>
+    <a class="ft-link" href="about.html">소개</a>
     <a class="ft-link" href="projects.html">앱 열기</a>
     <a class="ft-link" href="privacy.html">개인정보처리방침</a>
   </div>
@@ -616,19 +620,31 @@ footer{border-top:1px solid #DDE6F8;padding:20px clamp(16px,5vw,60px);display:fl
 </footer>
 
 <script>
-// TOC active state on scroll
-const sections = document.querySelectorAll('section[id]');
+// TOC active state — scroll position based (reliable for all section sizes)
+const sections = Array.from(document.querySelectorAll('section[id]'));
 const tocLinks = document.querySelectorAll('.toc-link');
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if(e.isIntersecting){
-      tocLinks.forEach(l => l.classList.remove('active'));
-      const link = document.querySelector('.toc-link[href="#'+e.target.id+'"]');
-      if(link) link.classList.add('active');
+const OFFSET = 125; // nav(60) + toc-bar(~40) + buffer
+
+function updateToc() {
+  const scrollY = window.scrollY;
+  let current = sections[0]?.id || '';
+  for (const s of sections) {
+    if (scrollY >= s.offsetTop - OFFSET) {
+      current = s.id;
     }
+  }
+  tocLinks.forEach(l => {
+    l.classList.toggle('active', l.getAttribute('href') === '#' + current);
   });
-}, {threshold: 0.3, rootMargin: '-60px 0px -60% 0px'});
-sections.forEach(s => io.observe(s));
+  // auto-scroll active link into view inside toc-bar
+  const activeLink = document.querySelector('.toc-link.active');
+  if (activeLink) {
+    activeLink.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+  }
+}
+
+window.addEventListener('scroll', updateToc, {passive: true});
+updateToc();
 </script>
 </body>
 </html>

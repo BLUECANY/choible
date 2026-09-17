@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-74QYS1D4W4"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-74QYS1D4W4');
+</script>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>choible 소개 — 여행 마인드맵 플래너를 만든 이야기</title>
+<meta name="description" content="choible은 복잡한 여행 일정을 한 화면에서 시각적으로 계획할 수 있는 무료 여행 마인드맵 플래너입니다. 만든 이유, 개발 과정, 서비스 철학을 소개합니다.">
+<meta name="keywords" content="choible 소개, 여행 플래너 개발, 여행 마인드맵 앱, 무료 여행 계획 도구, 개발자 소개">
+<meta name="author" content="choible">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://choible.com/about.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ko_KR">
+<meta property="og:url" content="https://choible.com/about.html">
+<meta property="og:site_name" content="choible">
+<meta property="og:title" content="choible 소개 — 여행 마인드맵 플래너를 만든 이야기">
+<meta property="og:description" content="복잡한 여행 일정을 한 화면에서 시각적으로 계획할 수 있는 무료 여행 마인드맵 플래너 choible을 소개합니다.">
+<meta property="og:image" content="https://choible.com/choible-icon-512.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/choible-icon.svg">
+<link rel="apple-touch-icon" sizes="192x192" href="/choible-icon-192.png">
+<meta name="theme-color" content="#5B8DEE">
+<link rel="manifest" href="/manifest.json">
+
+<!-- Google AdSense -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2293239362569484" crossorigin="anonymous"></script>
+
+<!-- Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "choible 소개",
+  "url": "https://choible.com/about.html",
+  "description": "여행 마인드맵 플래너 choible의 제작 배경과 서비스 철학",
+  "publisher": {
+    "@type": "Organization",
+    "name": "choible",
+    "url": "https://choible.com",
+    "logo": {"@type": "ImageObject", "url": "https://choible.com/choible-icon-512.png"},
+    "contactPoint": {"@type": "ContactPoint", "email": "ch52maker@gmail.com", "contactType": "customer support"}
+  }
+}
+</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Noto Sans KR',system-ui,sans-serif;background:#F7FAFF;color:#0B1526;overflow-x:hidden;line-height:1.8}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.93);backdrop-filter:blur(14px);border-bottom:1px solid #EDF0FA;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,4vw,60px);height:60px;box-shadow:0 1px 12px rgba(79,110,247,.06)}
+.nav-logo{font-size:16px;font-weight:900;color:#0B1526;display:flex;align-items:center;gap:7px;text-decoration:none}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav-link{font-size:13px;font-weight:600;color:#5A6A8A;text-decoration:none;padding:6px 12px;border-radius:18px;transition:all .15s}
+.nav-link:hover,.nav-link.active{color:#4F6EF7;background:#EEF2FF}
+.nav-cta{background:#4F6EF7;color:#fff;font-size:12px;font-weight:700;padding:8px 18px;border-radius:18px;text-decoration:none;transition:opacity .15s}
+.nav-cta:hover{opacity:.85}
+@media(max-width:560px){.nav-link:not(.nav-link-home){display:none}}
+
+/* HERO */
+.about-hero{padding:100px clamp(16px,5vw,80px) 56px;text-align:center;background:#fff;border-bottom:1px solid #EDF0FA}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(79,110,247,.08);border:1px solid rgba(79,110,247,.16);color:#4F6EF7;font-size:11px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:.6px;margin-bottom:20px}
+.hero-h1{font-size:clamp(26px,4.5vw,46px);font-weight:900;color:#0B1526;line-height:1.15;margin-bottom:16px;letter-spacing:-.5px;text-wrap:balance}
+.hero-sub{font-size:15px;color:#5A6A8A;max-width:560px;margin:0 auto;line-height:1.9}
+
+/* LAYOUT */
+.wrap{max-width:780px;margin:0 auto;padding:0 clamp(16px,4vw,40px)}
+
+/* SECTION */
+.section{padding:64px 0 0}
+.section-tag{display:inline-block;background:rgba(79,110,247,.08);color:#4F6EF7;font-size:11px;font-weight:800;padding:4px 13px;border-radius:14px;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.section-h2{font-size:clamp(20px,3vw,28px);font-weight:900;color:#0B1526;line-height:1.2;margin-bottom:16px;letter-spacing:-.3px}
+
+/* PROSE */
+.prose p{font-size:14px;color:#3A4A6A;line-height:1.95;margin-bottom:16px}
+.prose strong{color:#0B1526;font-weight:700}
+.prose h3{font-size:17px;font-weight:800;color:#0B1526;margin:28px 0 10px}
+
+/* STORY TIMELINE */
+.timeline{position:relative;padding-left:32px;margin:28px 0}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,#4F6EF7,#22C55E)}
+.tl-item{position:relative;margin-bottom:32px}
+.tl-item:last-child{margin-bottom:0}
+.tl-dot{position:absolute;left:-26px;top:4px;width:14px;height:14px;border-radius:50%;background:#4F6EF7;border:3px solid #fff;box-shadow:0 0 0 2px #4F6EF7}
+.tl-item:nth-child(2) .tl-dot{background:#8B5CF6}
+.tl-item:nth-child(2) .tl-dot{box-shadow:0 0 0 2px #8B5CF6}
+.tl-item:nth-child(3) .tl-dot{background:#F59E0B;box-shadow:0 0 0 2px #F59E0B}
+.tl-item:nth-child(4) .tl-dot{background:#22C55E;box-shadow:0 0 0 2px #22C55E}
+.tl-date{font-size:11px;font-weight:800;color:#9AAAC8;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.tl-title{font-size:15px;font-weight:800;color:#0B1526;margin-bottom:6px}
+.tl-desc{font-size:13px;color:#5A6A8A;line-height:1.8}
+
+/* FEATURE CARDS */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:16px;margin:24px 0}
+.feat-card{background:#fff;border:1.5px solid #DDE6F8;border-radius:16px;padding:22px;transition:transform .18s,box-shadow .18s}
+.feat-card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(79,110,247,.1)}
+.fc-icon{font-size:26px;margin-bottom:10px}
+.fc-title{font-size:13px;font-weight:800;color:#0B1526;margin-bottom:6px}
+.fc-desc{font-size:12px;color:#6A7894;line-height:1.7}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:28px 0;text-align:center}
+@media(max-width:480px){.stat-row{grid-template-columns:1fr 1fr}}
+.stat-card{background:#fff;border:1.5px solid #DDE6F8;border-radius:16px;padding:20px 12px}
+.stat-num{font-size:clamp(22px,4vw,32px);font-weight:900;color:#4F6EF7;letter-spacing:-.5px;line-height:1.1;margin-bottom:4px}
+.stat-label{font-size:11px;color:#9AAAC8;font-weight:600}
+
+/* CONTACT BOX */
+.contact-box{background:linear-gradient(135deg,rgba(79,110,247,.06),rgba(34,197,94,.05));border:1.5px solid #DDE6F8;border-radius:20px;padding:32px;margin:32px 0}
+.cb-title{font-size:18px;font-weight:900;color:#0B1526;margin-bottom:6px}
+.cb-sub{font-size:13px;color:#6A7894;margin-bottom:20px;line-height:1.7}
+.cb-items{display:flex;flex-direction:column;gap:12px}
+.cb-item{display:flex;align-items:center;gap:12px;font-size:14px;color:#3A4A6A}
+.cb-item a{color:#4F6EF7;text-decoration:none;font-weight:600}
+.cb-item a:hover{text-decoration:underline}
+.cb-icon{width:36px;height:36px;border-radius:10px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+
+/* POLICY CARDS */
+.policy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:12px;margin:20px 0}
+.policy-card{background:#fff;border:1.5px solid #DDE6F8;border-radius:14px;padding:16px 18px}
+.pc-title{font-size:13px;font-weight:800;color:#0B1526;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.pc-desc{font-size:12px;color:#6A7894;line-height:1.7}
+
+/* CTA */
+.cta-block{background:linear-gradient(135deg,#3855F2,#5B8AF5);border-radius:20px;padding:36px;text-align:center;margin:48px 0}
+.cta-block h3{font-size:20px;font-weight:900;color:#fff;margin-bottom:8px}
+.cta-block p{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:22px}
+.cta-btn{display:inline-block;background:#fff;color:#4F6EF7;font-size:14px;font-weight:800;padding:13px 28px;border-radius:20px;text-decoration:none;box-shadow:0 4px 18px rgba(0,0,0,.14);transition:transform .18s}
+.cta-btn:hover{transform:translateY(-2px)}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(90deg,transparent,#DDE6F8,transparent);margin:8px 0}
+
+/* FOOTER */
+footer{border-top:1px solid #DDE6F8;padding:20px clamp(16px,5vw,60px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;background:#F7FAFF}
+.ft-logo{font-size:13px;font-weight:900;color:#0B1526}
+.ft-links{display:flex;gap:16px;flex-wrap:wrap}
+.ft-link{font-size:12px;color:#9AAAC8;text-decoration:none;transition:color .15s}
+.ft-link:hover{color:#4F6EF7}
+.ft-note{font-size:11px;color:#B0BCCC}
+@media(max-width:480px){footer{flex-direction:column;align-items:flex-start;gap:8px}.ft-note{display:none}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="/"><img src="/choible-icon.svg" alt="choible" width="26" height="26" style="border-radius:7px"> choible</a>
+  <div class="nav-links">
+    <a href="/" class="nav-link nav-link-home">홈</a>
+    <a href="guide.html" class="nav-link">가이드</a>
+    <a href="community.html" class="nav-link">커뮤니티</a>
+    <a href="about.html" class="nav-link active">소개</a>
+    <a href="projects.html" class="nav-cta">여행 계획 시작 →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="about-hero">
+  <div class="hero-badge">✈️ choible 소개</div>
+  <h1 class="hero-h1">여행 계획이<br>이렇게 복잡할 필요가 없다</h1>
+  <p class="hero-sub">스프레드시트와 메모 앱을 번갈아 쓰는 불편함에서 출발한 choible — 한 화면에서 모든 여행 계획을 끝낼 수 있도록 만들었습니다.</p>
+</div>
+
+<div class="wrap">
+
+  <!-- 만든 이유 -->
+  <section class="section">
+    <div class="section-tag">🗺️ 왜 만들었나요</div>
+    <h2 class="section-h2">"여행 계획을 짜는 게<br>여행보다 더 힘들었어요"</h2>
+
+    <div class="prose">
+      <p>여행을 좋아하는 사람이라면 한 번쯤 이런 상황을 경험했을 겁니다. 엑셀에 장소를 정리하다가 지도 앱으로 위치를 확인하고, 네이버 블로그에서 후기를 찾고, 다시 숙박 사이트를 열고... 탭이 수십 개 열리는 순간 의욕이 뚝 떨어집니다.</p>
+      <p>choible은 바로 이 불편함을 해결하고 싶어서 만들었습니다. <strong>장소 검색, 경로 연결, 메모, 경비 관리, 일정 내보내기</strong>까지 — 여행 계획의 모든 과정을 캔버스 하나에서 처리할 수 있도록요.</p>
+      <p>특히 한국 여행자를 위해 처음부터 <strong>한국어 장소 검색에 최적화</strong>해서 만들었습니다. "경복궁", "광안리 맛집", "제주 성산일출봉" 같은 한국어 검색어로도 정확하게 장소를 찾을 수 있습니다.</p>
+
+      <h3>기존 도구들의 한계</h3>
+      <p>구글 맵스 마이플레이스는 경로 연결과 메모가 불편하고, 노션이나 에버노트는 지도 기반 시각화가 없습니다. 트리플·마이리얼트립 같은 국내 앱들은 기능은 많지만 내가 원하는 순서와 방식으로 자유롭게 계획하기가 어렵습니다.</p>
+      <p>choible은 <strong>자유도를 최대한 높이는 방향</strong>으로 설계했습니다. 노드를 드래그해서 위치를 바꾸고, 경로를 원하는 방식으로 연결하고, 메모와 사진을 붙여두는 것 모두 자유롭게 할 수 있습니다. 정해진 틀 없이 내 여행 스타일대로 계획할 수 있는 빈 캔버스가 목표였습니다.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 서비스 역사 -->
+  <section class="section">
+    <div class="section-tag">📅 개발 과정</div>
+    <h2 class="section-h2">choible이 걸어온 길</h2>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2024년 초</div>
+        <div class="tl-title">아이디어 시작</div>
+        <div class="tl-desc">오사카 자유여행 계획을 짜면서 "이거 한 화면에서 할 수 있으면 좋겠다"는 생각이 시작점이 됐습니다. 직접 쓰고 싶은 도구를 만들자는 마음으로 개발을 시작했습니다.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2024년 중반</div>
+        <div class="tl-title">핵심 기능 구현</div>
+        <div class="tl-desc">장소 검색과 노드 연결 기능을 먼저 만들었고, 친구들에게 베타 테스트를 요청했습니다. "경로 이동 시간도 보여주면 좋겠어", "경비를 같이 관리하고 싶어"라는 피드백을 반영해 기능을 확장했습니다.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025년 초</div>
+        <div class="tl-title">클라우드 저장 & 첫 출시</div>
+        <div class="tl-desc">Supabase를 도입해 클라우드 저장과 계정 기능을 추가하고 choible.com 도메인으로 정식 출시했습니다. 30초 자동 저장, 다기기 동기화, PWA 설치 기능도 이 시기에 구현했습니다.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025년 이후 ~ 현재</div>
+        <div class="tl-title">지속 개선</div>
+        <div class="tl-desc">커뮤니티 기능, 터치 조작 최적화, Day 구역 나누기, 그리기 모드 등 사용자 피드백을 바탕으로 꾸준히 기능을 추가하고 있습니다. 한국 여행자에게 가장 편한 여행 계획 도구를 만드는 것이 목표입니다.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 주요 기능 -->
+  <section class="section">
+    <div class="section-tag">⚡ 핵심 기능</div>
+    <h2 class="section-h2">choible이 제공하는 것들</h2>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="fc-icon">🔍</div>
+        <div class="fc-title">한국어 최적화 장소 검색</div>
+        <div class="fc-desc">국내 관광지·맛집·숙소를 한국어로 정확하게 검색할 수 있습니다. 전 세계 장소도 지원합니다.</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon">🗺️</div>
+        <div class="fc-title">자유로운 캔버스</div>
+        <div class="fc-desc">노드를 드래그해서 자유롭게 배치하고, 클릭 두 번으로 경로를 연결합니다. 이동 시간이 자동 계산됩니다.</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon">💰</div>
+        <div class="fc-title">카테고리별 경비 관리</div>
+        <div class="fc-desc">숙박·식비·교통·쇼핑을 구분해 입력하고 파이 차트로 한눈에 확인합니다. 다국 통화 자동 환산 지원.</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon">📅</div>
+        <div class="fc-title">캘린더 내보내기</div>
+        <div class="fc-desc">.ics 파일로 Google·애플·Outlook 캘린더에 일정을 가져올 수 있습니다.</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon">🔄</div>
+        <div class="fc-title">30초 자동 저장</div>
+        <div class="fc-desc">작업 내용이 30초마다 자동으로 클라우드에 저장됩니다. 모바일·PC 어디서든 이어서 계획할 수 있습니다.</div>
+      </div>
+      <div class="feat-card">
+        <div class="fc-icon">📱</div>
+        <div class="fc-title">PWA 오프라인 지원</div>
+        <div class="fc-desc">홈 화면에 설치해서 앱처럼 사용할 수 있고, 인터넷이 없는 환경에서도 기본 기능을 이용할 수 있습니다.</div>
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num">무료</div>
+        <div class="stat-label">모든 기능 무료</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">핵심 기능</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">전세계</div>
+        <div class="stat-label">장소 검색 지원</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 서비스 철학 -->
+  <section class="section">
+    <div class="section-tag">💡 서비스 철학</div>
+    <h2 class="section-h2">choible이 지키는 원칙</h2>
+
+    <div class="policy-grid">
+      <div class="policy-card">
+        <div class="pc-title">🆓 영구 무료</div>
+        <div class="pc-desc">핵심 기능은 계속 무료로 제공합니다. 회원가입도 무료이고 데이터 저장도 무료입니다. 여행 계획에 돈이 들어서는 안 된다고 생각합니다.</div>
+      </div>
+      <div class="policy-card">
+        <div class="pc-title">🔒 데이터 안전</div>
+        <div class="pc-desc">모든 데이터는 Supabase 클라우드에 암호화되어 저장됩니다. 사용자의 여행 계획 데이터를 제3자에게 판매하거나 공유하지 않습니다.</div>
+      </div>
+      <div class="policy-card">
+        <div class="pc-title">📱 모든 기기 지원</div>
+        <div class="pc-desc">스마트폰·태블릿·PC 모두에서 최적화된 경험을 제공하는 것을 목표로 합니다. 터치 조작을 특히 꼼꼼하게 구현합니다.</div>
+      </div>
+      <div class="policy-card">
+        <div class="pc-title">🇰🇷 한국어 우선</div>
+        <div class="pc-desc">처음부터 한국 여행자를 위해 설계했습니다. 한국어 장소 검색 최적화, 원화 지원, 한국 여행 콘텐츠를 꾸준히 업데이트합니다.</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>광고에 대한 입장</h3>
+      <p>choible은 서비스 운영 비용을 충당하기 위해 Google AdSense 광고를 일부 페이지에 게재합니다. 광고는 콘텐츠 페이지(홈, 가이드, 소개 등)에만 표시되며, 앱 화면(캔버스, 프로젝트 목록)에는 광고를 넣지 않습니다. 사용자 경험을 최대한 해치지 않는 범위에서 최소한의 광고만 운영합니다.</p>
+      <p>쿠팡파트너스 링크도 일부 포함되어 있습니다. 이는 여행 준비물을 소개하는 콘텐츠에서 제품 링크로 이어지는 방식으로, 링크를 통해 구매가 이루어질 경우 소정의 수수료를 받습니다. 이를 통해 더 좋은 서비스를 지속적으로 개발할 수 있습니다.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- 연락처 -->
+  <section class="section" id="contact">
+    <div class="section-tag">📮 문의 & 연락처</div>
+    <h2 class="section-h2">궁금한 점이 있으신가요?</h2>
+
+    <div class="contact-box">
+      <div class="cb-title">choible에 연락하기</div>
+      <div class="cb-sub">버그 신고, 기능 제안, 파트너십 문의 등 어떤 내용이든 환영합니다. 보통 1~3 영업일 내에 답변 드립니다.</div>
+      <div class="cb-items">
+        <div class="cb-item">
+          <div class="cb-icon">📧</div>
+          <div>이메일: <a href="mailto:ch52maker@gmail.com">ch52maker@gmail.com</a></div>
+        </div>
+        <div class="cb-item">
+          <div class="cb-icon">🌐</div>
+          <div>웹사이트: <a href="https://choible.com">choible.com</a></div>
+        </div>
+        <div class="cb-item">
+          <div class="cb-icon">💬</div>
+          <div>커뮤니티: <a href="community.html">choible 커뮤니티</a>에서 다른 여행자들과 소통하세요</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <h3>자주 묻는 질문</h3>
+      <p><strong>Q. choible은 정말 무료인가요?</strong><br>네, 회원가입·로그인·데이터 저장·모든 핵심 기능이 완전 무료입니다. 별도 구독이나 프리미엄 플랜 없이 모든 기능을 이용할 수 있습니다.</p>
+      <p><strong>Q. 계정 없이도 사용할 수 있나요?</strong><br>네, 로그인 없이도 앱을 사용할 수 있습니다. 다만 데이터가 브라우저 로컬에 저장되어 기기를 바꾸거나 브라우저 데이터를 삭제하면 사라질 수 있습니다. 클라우드 동기화를 원하시면 무료 계정을 만들어주세요.</p>
+      <p><strong>Q. 저장한 여행 계획을 다운로드할 수 있나요?</strong><br>네, HTML 파일로 내보내거나 .ics 파일로 캘린더에 가져올 수 있습니다. 앱 내 저장(💾) 버튼을 눌러 캔버스를 HTML로 저장하거나, 캘린더 내보내기 기능을 이용하세요.</p>
+      <p><strong>Q. 모바일에서도 잘 됩니까?</strong><br>스마트폰과 태블릿에 최적화되어 있습니다. 터치로 노드를 드래그하고, 검색창으로 장소를 추가하고, 구역을 나누는 것 모두 모바일에서 가능합니다. iOS·Android 모두 지원합니다.</p>
+    </div>
+  </section>
+
+  <div class="cta-block">
+    <h3>지금 바로 여행을 계획해보세요</h3>
+    <p>회원가입도 무료, 모든 기능도 무료 — choible로 나만의 여행 마인드맵을 만들어보세요.</p>
+    <a href="projects.html" class="cta-btn">무료로 시작하기 →</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="ft-logo"><img src="/choible-icon.svg" alt="choible" width="20" height="20" style="border-radius:5px;vertical-align:middle;margin-right:5px"> choible</span>
+  <div class="ft-links">
+    <a class="ft-link" href="/">홈</a>
+    <a class="ft-link" href="guide.html">여행 가이드</a>
+    <a class="ft-link" href="guide-korea.html">국내 여행</a>
+    <a class="ft-link" href="community.html">커뮤니티</a>
+    <a class="ft-link" href="about.html">소개</a>
+    <a class="ft-link" href="projects.html">앱 열기</a>
+    <a class="ft-link" href="privacy.html">개인정보처리방침</a>
+  </div>
+  <span class="ft-note">© 2026 choible · ch52maker@gmail.com</span>
+</footer>
+
+</body>
+</html>

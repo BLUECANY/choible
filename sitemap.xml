@@ -24,6 +24,18 @@
     <lastmod>2026-09-07</lastmod>
   </url>
   <url>
+    <loc>https://choible.com/guide-korea.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.85</priority>
+    <lastmod>2026-09-16</lastmod>
+  </url>
+  <url>
+    <loc>https://choible.com/about.html</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.75</priority>
+    <lastmod>2026-09-16</lastmod>
+  </url>
+  <url>
     <loc>https://choible.com/community.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
