@@ -42,21 +42,15 @@ html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--t
 /* ── Page shell ── */
 .page{display:flex;flex-direction:column;min-height:100vh;}
 
-/* ── Header ── */
-header{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 24px;height:56px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:200;
-  box-shadow:var(--shadow-sm);
-}
-.logo{
-  display:flex;align-items:center;gap:8px;
-  text-decoration:none;color:var(--text1,var(--text));
-  font-size:18px;font-weight:800;letter-spacing:-.4px;
-}
-.logo img{width:28px;height:28px;border-radius:8px;}
-.logo-name{display:flex;align-items:center;}
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(255,255,255,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 clamp(14px,4vw,60px);height:60px;box-shadow:0 1px 12px rgba(79,110,247,.06);}
+.nav-logo{font-size:15px;font-weight:900;color:var(--text);display:flex;align-items:center;gap:7px;text-decoration:none;}
+.nav-links{display:flex;gap:4px;align-items:center;}
+.nav-link{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 12px;border-radius:18px;transition:all .15s;white-space:nowrap;}
+.nav-link:hover,.nav-link.active{color:var(--accent);background:var(--accent-soft);}
+.nav-cta{background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:8px 18px;border-radius:18px;text-decoration:none;transition:opacity .15s;white-space:nowrap;}
+.nav-cta:hover{opacity:.85;}
+@media(max-width:560px){.nav-link:not(.nav-link-home){display:none;}}
 
 .header-right{display:flex;align-items:center;gap:8px;}
 .btn{
@@ -105,7 +99,7 @@ header{
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── Main ── */
-main{flex:1;padding:28px 24px 48px;max-width:1200px;margin:0 auto;width:100%;}
+main{flex:1;padding:88px 24px 48px;max-width:1200px;margin:0 auto;width:100%;}
 
 /* ── Welcome banner (non-logged) ── */
 .welcome-banner{
@@ -492,26 +486,17 @@ footer{
 /* ── Responsive ── */
 @media(max-width:600px){
   main{padding:20px 14px 40px;}
-  header{padding:0 14px;}
   .welcome-banner{flex-direction:column;gap:14px;padding:22px 18px;}
   .welcome-banner .btn-white{width:100%;justify-content:center;}
   .grid{grid-template-columns:repeat(2,1fr);gap:12px;}
   footer{flex-direction:column;align-items:flex-start;gap:8px;}
 }
-.hdr-nav-extra{display:flex;align-items:center;gap:2px;}
-.hdr-nav-extra a{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;}
-.hdr-nav-extra a:hover{background:var(--accent-soft);color:var(--accent);}
-@media(max-width:620px){.hdr-nav-extra{display:none;}}
 @media(max-width:520px){
-  .hdr-nav-lbl{display:none;}
-  .hdr-nav-link{padding:6px 8px;}
   #sync-indicator{display:none!important;}
   .section-bar{flex-direction:column;align-items:flex-start;}
   .search-box{max-width:100%;width:100%;}
 }
 @media(max-width:400px){
-  .logo-name{display:none;}
-  header{padding:0 10px;}
   .new-hero{flex-direction:column;gap:12px;}
   .new-hero-icon{width:44px;height:44px;}
   .grid{grid-template-columns:1fr;gap:12px;}
@@ -523,21 +508,17 @@ footer{
 
 <div class="page" id="page-body">
 
-  <!-- Header -->
-  <header>
-    <a href="index.html" class="logo">
-      <img src="choible-icon.svg" alt="choible">
-      <span class="logo-name">choible</span>
-    </a>
-    <nav style="display:flex;align-items:center;gap:4px;">
-      <div class="hdr-nav-extra">
-        <a href="guide.html">가이드</a>
-        <a href="guide-korea.html">국내여행</a>
-        <a href="about.html">소개</a>
-      </div>
-      <a href="#" onclick="(function(e){e.preventDefault();var ps=[];try{ps=JSON.parse(localStorage.getItem('choible_projects')||'[]');}catch{}var lp=ps.find(function(p){return p.id&&p.id.startsWith('local_');});if(lp){window.location.href='/app.html?project='+encodeURIComponent(lp.id);}else{var fp=ps[0];if(fp)window.location.href='/app.html?project='+encodeURIComponent(fp.id);};})(event)" class="hdr-nav-link" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'" onmouseout="this.style.background='';this.style.color='var(--text2)'">✈️ <span class="hdr-nav-lbl">플래너</span></a>
-      <a href="community.html" class="hdr-nav-link" style="font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;padding:6px 11px;border-radius:20px;transition:all .15s;" onmouseover="this.style.background='var(--accent-soft)';this.style.color='var(--accent)'" onmouseout="this.style.background='';this.style.color='var(--text2)'">🌐 <span class="hdr-nav-lbl">커뮤니티</span></a>
-    </nav>
+  <!-- Nav -->
+  <nav>
+    <a class="nav-logo" href="/"><img src="choible-icon.svg" alt="choible" width="26" height="26" style="border-radius:7px"> choible</a>
+    <div class="nav-links">
+      <a href="/" class="nav-link nav-link-home">홈</a>
+      <a href="guide.html" class="nav-link">가이드</a>
+      <a href="guide-korea.html" class="nav-link">국내여행</a>
+      <a href="community.html" class="nav-link">커뮤니티</a>
+      <a href="about.html" class="nav-link">소개</a>
+      <a href="app.html" class="nav-cta">앱 시작하기 →</a>
+    </div>
     <div class="header-right">
       <!-- shown only when logged in -->
       <div id="sync-indicator" style="display:none;align-items:center;gap:5px;font-size:12px;color:var(--accent2);font-family:var(--font);font-weight:600;">
@@ -561,7 +542,7 @@ footer{
         </div>
       </div>
     </div>
-  </header>
+  </nav>
 
   <!-- Main content -->
   <main>
