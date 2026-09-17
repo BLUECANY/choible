@@ -191,10 +191,7 @@ footer{border-top:1px solid #DDE6F8;padding:20px clamp(16px,5vw,60px);display:fl
 
 <!-- NAV -->
 <nav>
-  <a href="/" class="nav-logo">
-    <svg width="22" height="22" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="18" r="18" fill="#4F6EF7"/><circle cx="18" cy="18" r="5" fill="#fff"/><line x1="18" y1="4" x2="18" y2="13" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="18" y1="23" x2="18" y2="32" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="4" y1="18" x2="13" y2="18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><line x1="23" y1="18" x2="32" y2="18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
-    choible
-  </a>
+  <a class="nav-logo" href="/"><img src="/choible-icon.svg" alt="choible" width="26" height="26" style="border-radius:7px"> choible</a>
   <div class="nav-links">
     <a href="/" class="nav-link nav-link-home">홈</a>
     <a href="guide.html" class="nav-link">가이드</a>
@@ -589,8 +586,13 @@ function updateToc() {
   tocLinks.forEach(l => {
     l.classList.toggle('active', l.getAttribute('href') === '#' + current);
   });
+  // scroll active link into view inside toc-bar (horizontal only — avoid page scroll interference)
   const activeLink = document.querySelector('.toc-link.active');
-  if (activeLink) activeLink.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+  const tocBar = document.querySelector('.toc-bar');
+  if (activeLink && tocBar) {
+    const target = activeLink.offsetLeft - (tocBar.offsetWidth / 2) + (activeLink.offsetWidth / 2);
+    tocBar.scrollLeft = target;
+  }
 }
 window.addEventListener('scroll', updateToc, {passive: true});
 updateToc();

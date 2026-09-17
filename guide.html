@@ -191,7 +191,7 @@ footer{border-top:1px solid #DDE6F8;padding:20px clamp(16px,5vw,60px);display:fl
     <a href="guide-korea.html" class="nav-link">국내여행</a>
     <a href="community.html" class="nav-link">커뮤니티</a>
     <a href="about.html" class="nav-link">소개</a>
-    <a href="projects.html" class="nav-cta">여행 계획 시작 →</a>
+    <a href="app.html" class="nav-cta">앱 시작하기 →</a>
   </div>
 </nav>
 
@@ -636,10 +636,12 @@ function updateToc() {
   tocLinks.forEach(l => {
     l.classList.toggle('active', l.getAttribute('href') === '#' + current);
   });
-  // auto-scroll active link into view inside toc-bar
+  // scroll active link into view inside toc-bar (horizontal only — avoid page scroll interference)
   const activeLink = document.querySelector('.toc-link.active');
-  if (activeLink) {
-    activeLink.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
+  const tocBar = document.querySelector('.toc-bar');
+  if (activeLink && tocBar) {
+    const target = activeLink.offsetLeft - (tocBar.offsetWidth / 2) + (activeLink.offsetWidth / 2);
+    tocBar.scrollLeft = target;
   }
 }
 
