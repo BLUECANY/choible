@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /choible-site/
 Disallow: /choible-site-final.zip
 Disallow: /choible-site.zip
 Disallow: /choible-update.zip
